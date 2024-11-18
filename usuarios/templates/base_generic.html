@@ -1,0 +1,85 @@
+<!-- templates/base_generic.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Fondo general de la página en celeste muy claro */
+        body {
+            background-color: #f0f9fc; /* Celeste muy suave */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        /* Barra de navegación en tono azul claro */
+        .navbar {
+            background-color: #4fc3f7; /* Azul claro */
+        }
+
+        /* Contenedor del contenido principal */
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Espacio alrededor */
+        }
+
+        /* Caja de contenido centrada */
+        .content-box {
+            background-color: #ffffff; /* Blanco puro */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px; /* Ajusta el ancho máximo */
+        }
+
+        /* Pie de página en tono azul claro */
+        footer {
+            background-color: #4fc3f7; /* Azul claro */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand text-white" href="{% url 'roles:admin_dashboard' %}">Inicio</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'usuarios:lista_usuarios' %}">Usuarios</a></li>
+                <!-- Agrega más enlaces aquí -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenido principal, centrado vertical y horizontalmente -->
+    <main class="content">
+        <div class="content-box">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>Sistema de Gestión de Agua Potable &copy; 2023</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

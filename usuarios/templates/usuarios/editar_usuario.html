@@ -1,0 +1,52 @@
+<!-- usuarios/templates/usuarios/editar_usuario.html -->
+{% extends "base_generic.html" %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+  <div class="container">
+      <h2 class="mb-4">Editar Usuario</h2>
+      <form method="post" class="border p-4 rounded shadow-sm">
+        {% csrf_token %}
+        
+        <!-- Campos del formulario organizados en formato vertical con etiquetas arriba -->
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="d-block" for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                {{ form.nombre }}
+                <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="d-block" for="{{ form.rut.id_for_label }}">{{ form.rut.label }}</label>
+                {{ form.rut }}
+                <small class="form-text text-muted">{{ form.rut.help_text }}</small>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="d-block" for="{{ form.correo.id_for_label }}">{{ form.correo.label }}</label>
+                {{ form.correo }}
+                <small class="form-text text-muted">{{ form.correo.help_text }}</small>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="d-block" for="{{ form.telefono.id_for_label }}">{{ form.telefono.label }}</label>
+                {{ form.telefono }}
+                <small class="form-text text-muted">{{ form.telefono.help_text }}</small>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label class="d-block" for="{{ form.direccion.id_for_label }}">{{ form.direccion.label }}</label>
+                {{ form.direccion }}
+                <small class="form-text text-muted">{{ form.direccion.help_text }}</small>
+            </div>
+        </div>
+
+        <!-- Botones de acción alineados a la derecha -->
+        <div class="d-flex justify-content-end">
+            <a href="javascript:history.back()" class="btn btn-secondary mr-2">Volver Atrás</a>
+            <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
+        </div>
+      </form>
+  </div>
+{% endblock %}

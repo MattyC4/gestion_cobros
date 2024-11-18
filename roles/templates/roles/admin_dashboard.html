@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+
+{% block title %}Dashboard del Administrador{% endblock %}
+
+{% block content %}
+<h2>{{ titulo }}</h2>
+<p>{{ mensaje_bienvenida }}</p>
+
+<div class="admin-actions mt-4">
+    <!-- Gestión de Usuarios -->
+    <h3>Gestión de Usuarios</h3>
+    <a href="{% url 'usuarios:agregar_usuario' %}" class="btn btn-primary mb-2">Agregar Usuario</a>
+    <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-secondary mb-2">Ver Lista de Usuarios</a>
+
+    <!-- Gestión de Medidores -->
+    <h3>Gestión de Medidores</h3>
+    <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-primary mb-2">Asignar Medidor a Usuario</a>
+    <a href="{% url 'medidores:historial_medidores' %}" class="btn btn-secondary mb-2">Historial de Medidores</a>
+
+    <!-- Gestión de Tarifas -->
+    <h3>Gestión de Tarifas</h3>
+    <a href="{% url 'tarifas:agregar_tarifa' %}" class="btn btn-primary mb-2">Agregar Tarifa</a>
+    <a href="{% url 'tarifas:historial_tarifas' %}" class="btn btn-secondary mb-2">Ver Historial de Tarifas</a>
+
+    <!-- Gestión de Consumos -->
+    <h3>Gestión de Consumos</h3>
+    <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-primary mb-2">Registrar Nuevo Consumo</a>
+    <a href="{% url 'consumos:usuarios-consumos' %}" class="btn btn-secondary mb-2">Usuarios con Consumos</a>
+    
+    <h4>Ver Historial de Consumos</h4>
+    <form method="get" action="{% url 'consumos:historial_consumos' usuario_id=1 %}" class="d-inline">
+        <input type="number" name="usuario_id" placeholder="Ingrese ID del Usuario" required class="form-control d-inline-block mb-2" style="width: auto;">
+        <button type="submit" class="btn btn-secondary mb-2">Ver Historial</button>
+    </form>
+</div>
+{% endblock %}

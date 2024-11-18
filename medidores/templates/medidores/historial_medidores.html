@@ -1,0 +1,41 @@
+<!-- medidores/templates/medidores/historial_medidores.html -->
+{% extends "base_generic.html" %}
+
+{% block title %}Historial de Medidores{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Historial de Medidores</h2>
+    <a href="{% url 'roles:admin_dashboard' %}" class="btn btn-secondary">Volver</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Código Serial</th>
+            <th>Usuario</th>
+            <th>Fecha de Instalación</th>
+            <th>Fecha de Registro</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for medidor in medidores %}
+        <tr>
+            <td>{{ medidor.codigo_serial }}</td>
+            <td>{{ medidor.usuario.nombre }}</td>
+            <td>{{ medidor.fecha_instalacion }}</td>
+            <td>{{ medidor.fecha_registro|date:"Y-m-d H:i" }}</td>
+            <td>{{ medidor.estado }}</td>
+            <td>
+                <form action="{% url 'medidores:eliminar_medidor' medidor.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este medidor?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

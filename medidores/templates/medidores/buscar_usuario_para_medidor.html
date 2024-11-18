@@ -1,0 +1,43 @@
+<!-- medidores/templates/medidores/buscar_usuario_para_medidor.html -->
+{% extends "base_generic.html" %}
+
+{% block title %}Buscar Usuario para Asignar Medidor{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Buscar Usuario para Asignar Medidor</h2>
+</div>
+
+<form method="get" action="{% url 'medidores:buscar_usuario_para_medidor' %}" class="form-inline">
+    <input type="text" name="q" placeholder="Buscar usuario" value="{{ query }}" class="form-control mb-3 mr-2">
+    <button type="submit" class="btn btn-primary mb-3 mr-2">Buscar</button>
+    <a href="{% url 'roles:admin_dashboard' %}" class="btn btn-secondary mb-3">Volver</a>  <!-- Botón de volver al dashboard -->
+</form>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Correo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.rut }}</td>
+            <td>{{ usuario.correo }}</td>
+            <td>
+                {% if usuario.medidores.exists %}
+                    <span class="badge badge-info">Ya tiene medidor</span>
+                {% else %}
+                    <a href="{% url 'medidores:asignar_medidor_usuario' usuario.id %}" class="btn btn-success">Asignar Medidor</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

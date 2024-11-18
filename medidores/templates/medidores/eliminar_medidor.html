@@ -1,0 +1,14 @@
+<!-- medidores/templates/medidores/eliminar_medidor.html -->
+{% extends "base_generic.html" %}
+
+{% block title %}Eliminar Medidor{% endblock %}
+
+{% block content %}
+<h2>Eliminar Medidor</h2>
+<p>¿Estás seguro de que deseas eliminar el medidor con código serial <strong>{{ medidor.codigo_serial }}</strong> asignado a <strong>{{ medidor.usuario.nombre }}</strong>?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+    <a href="{% url 'medidores:historial_medidores' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!-- tarifas/templates/tarifas/historial_tarifas.html -->
+{% extends "base_generic.html" %}
+
+{% block title %}Historial de Tarifas{% endblock %}
+
+{% block content %}
+<h2>Historial de Tarifas</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Valor</th>
+            <th>Fecha de Vigencia</th>
+            <th>Fecha de Fin de Vigencia</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tarifa in tarifas %}
+        <tr>
+            <td>{{ tarifa.valor }}</td>
+            <td>{{ tarifa.fecha_vigencia }}</td>
+            <td>{{ tarifa.fecha_fin_vigencia|default:"-" }}</td>
+            <td>{{ tarifa.descripcion }}</td>
+            <td>{% if tarifa.activo %}Activa{% else %}Histórica{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'tarifas:agregar_tarifa' %}" class="btn btn-primary">Agregar Nueva Tarifa</a>
+<a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+{% endblock %}

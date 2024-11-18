@@ -1,0 +1,14 @@
+<!-- tarifas/templates/tarifas/agregar_tarifa.html -->
+{% extends "base_generic.html" %}
+
+{% block title %}Agregar Tarifa{% endblock %}
+
+{% block content %}
+<h2>Agregar Tarifa</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Guardar Tarifa</button>
+    <a href="{% url 'tarifas:historial_tarifas' %}" class="btn btn-secondary">Ver Historial de Tarifas</a>
+</form>
+{% endblock %}

@@ -1,0 +1,25 @@
+<form method="get">
+    <input type="text" name="search" placeholder="Buscar usuario..." value="{{ request.GET.search }}">
+    <button type="submit">Buscar</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.rut }}</td>
+            <td>
+                <a href="{% url 'consumos:historial_consumos' usuario.id %}">Ver Historial</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

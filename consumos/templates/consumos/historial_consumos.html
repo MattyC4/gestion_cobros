@@ -1,0 +1,22 @@
+<h2>Historial de Consumos de {{ usuario.nombre }}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Medidor</th>
+            <th>Consumo</th>
+            <th>Tarifa</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for consumo in consumos %}
+        <tr>
+            <td>{{ consumo.fecha_consumo }}</td>
+            <td>{{ consumo.medidor.codigo_serial }}</td>
+            <td>{{ consumo.cantidad_consumida }}</td>
+            <td>{{ consumo.tarifa_aplicada.valor }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
