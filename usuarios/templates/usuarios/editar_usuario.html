@@ -1,52 +1,66 @@
-<!-- usuarios/templates/usuarios/editar_usuario.html -->
-{% extends "base_generic.html" %}
+{% extends "usuarios/base_usuarios.html" %}
 
 {% block title %}Editar Usuario{% endblock %}
 
 {% block content %}
-  <div class="container">
-      <h2 class="mb-4">Editar Usuario</h2>
-      <form method="post" class="border p-4 rounded shadow-sm">
-        {% csrf_token %}
-        
-        <!-- Campos del formulario organizados en formato vertical con etiquetas arriba -->
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label class="d-block" for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
-                {{ form.nombre }}
-                <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
-            </div>
-            <div class="form-group col-md-6">
-                <label class="d-block" for="{{ form.rut.id_for_label }}">{{ form.rut.label }}</label>
-                {{ form.rut }}
-                <small class="form-text text-muted">{{ form.rut.help_text }}</small>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label class="d-block" for="{{ form.correo.id_for_label }}">{{ form.correo.label }}</label>
-                {{ form.correo }}
-                <small class="form-text text-muted">{{ form.correo.help_text }}</small>
-            </div>
-            <div class="form-group col-md-6">
-                <label class="d-block" for="{{ form.telefono.id_for_label }}">{{ form.telefono.label }}</label>
-                {{ form.telefono }}
-                <small class="form-text text-muted">{{ form.telefono.help_text }}</small>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-12">
-                <label class="d-block" for="{{ form.direccion.id_for_label }}">{{ form.direccion.label }}</label>
-                {{ form.direccion }}
-                <small class="form-text text-muted">{{ form.direccion.help_text }}</small>
-            </div>
-        </div>
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-4 text-center">Editar Usuario</h2>
+        <p class="text-muted text-center">
+            Modifica la información necesaria del usuario y guarda los cambios. Asegúrate de que los datos sean correctos antes de confirmar.
+        </p>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
 
-        <!-- Botones de acción alineados a la derecha -->
-        <div class="d-flex justify-content-end">
-            <a href="javascript:history.back()" class="btn btn-secondary mr-2">Volver Atrás</a>
-            <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
-        </div>
-      </form>
-  </div>
+            <!-- Mostrar errores globales del formulario -->
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-circle"></i> Se encontraron errores en el formulario:</h5>
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        <li>{{ field }}: {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Campos del formulario -->
+            <div class="mb-3">
+                <label for="id_nombre" class="form-label fw-bold">Nombre Completo</label>
+                {{ form.nombre }}
+                <small class="form-text text-muted">Ejemplo: Juan Pérez</small>
+            </div>
+            <div class="mb-3">
+                <label for="id_rut" class="form-label fw-bold">RUT</label>
+                {{ form.rut }}
+                <small class="form-text text-muted">Formato: 12.345.678-K</small>
+            </div>
+            <div class="mb-3">
+                <label for="id_correo" class="form-label fw-bold">Correo Electrónico</label>
+                {{ form.correo }}
+                <small class="form-text text-muted">Ejemplo: usuario@dominio.com</small>
+            </div>
+            <div class="mb-3">
+                <label for="id_direccion" class="form-label fw-bold">Dirección</label>
+                {{ form.direccion }}
+                <small class="form-text text-muted">Ejemplo: Calle Falsa 123, Santiago</small>
+            </div>
+            <div class="mb-3">
+                <label for="id_telefono" class="form-label fw-bold">Teléfono</label>
+                {{ form.telefono }}
+                <small class="form-text text-muted">Formato: +569XXXXXXXX</small>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+                <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

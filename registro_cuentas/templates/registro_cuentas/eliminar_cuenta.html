@@ -1,0 +1,18 @@
+{% extends "registro_cuentas/base_registro_cuentas.html" %}
+
+{% block title %}Eliminar Cuenta{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="mb-4 text-center text-danger">Eliminar Cuenta</h2>
+    <p class="text-center">¿Estás seguro de que deseas eliminar la cuenta de <strong>{{ cuenta.username }}</strong>?</p>
+    <p class="text-center text-muted">
+        Esta acción es irreversible y eliminará todos los datos relacionados con esta cuenta.
+    </p>
+    <form method="post" class="d-flex justify-content-center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger me-2">Eliminar</button>
+        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

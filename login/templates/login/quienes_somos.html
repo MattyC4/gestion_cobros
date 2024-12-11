@@ -1,0 +1,122 @@
+{% extends "login/base_login.html" %}
+
+{% block title %}¿Quiénes somos? - Comité APR Nahueltoro{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título principal -->
+    <div class="text-center">
+        <h1 class="mb-4 text-primary" style="font-size: 2.5rem; font-weight: bold;">¿Quiénes somos?</h1>
+        <p class="lead" style="font-size: 1.2rem; line-height: 1.6;">
+            En el <strong>Comité APR Nahueltoro</strong>, trabajamos con dedicación para garantizar el acceso al agua potable en nuestra comunidad rural. Creemos en la sostenibilidad, el compromiso social y la transparencia como pilares fundamentales de nuestro servicio.
+        </p>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Misión y Visión -->
+    <div class="row mt-5">
+        <!-- Misión -->
+        <div class="col-md-6 d-flex align-items-stretch">
+            <div class="card shadow-lg border-0 w-100">
+                <div class="card-body text-center">
+                    <h3 class="text-primary"><i class="fas fa-hand-holding-water fa-2x mb-3"></i><br>Misión</h3>
+                    <p>
+                        Proveer agua potable de calidad, garantizar la sostenibilidad de los recursos y apoyar a nuestra comunidad en su desarrollo, asegurando la accesibilidad y la equidad en el servicio.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visión -->
+        <div class="col-md-6 d-flex align-items-stretch">
+            <div class="card shadow-lg border-0 w-100">
+                <div class="card-body text-center">
+                    <h3 class="text-primary"><i class="fas fa-globe fa-2x mb-3"></i><br>Visión</h3>
+                    <p>
+                        Ser un referente en la gestión eficiente del agua potable rural, destacándonos por nuestra transparencia, compromiso social y cuidado del medio ambiente.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Valores -->
+    <div class="text-center">
+        <h3 class="text-primary mb-4" style="font-weight: bold;"><i class="fas fa-users fa-2x"></i><br> Nuestros valores</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-handshake fa-2x mb-3 text-primary"></i>
+                        <p>Compromiso con la comunidad</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-balance-scale fa-2x mb-3 text-primary"></i>
+                        <p>Transparencia y ética en la gestión</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-leaf fa-2x mb-3 text-primary"></i>
+                        <p>Sostenibilidad ambiental</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-people-carry fa-2x mb-3 text-primary"></i>
+                        <p>Responsabilidad social</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Preguntas frecuentes -->
+    <div class="text-center">
+        <h3 class="text-primary mb-4" style="font-weight: bold;"><i class="fas fa-question-circle fa-2x"></i><br> Preguntas frecuentes</h3>
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
+                        ¿Cómo puedo contactarlos si tengo un problema?
+                    </button>
+                </h2>
+                <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqHeadingOne">
+                    <div class="accordion-body">
+                        Puedes escribirnos a nuestro correo <a href="mailto:soporte@aprnahueltoro.cl">soporte@aprnahueltoro.cl</a>, donde un miembro de nuestro equipo estará encantado de ayudarte.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
+                        ¿Dónde se encuentra el Comité APR Nahueltoro?
+                    </button>
+                </h2>
+                <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo">
+                    <div class="accordion-body">
+                        Estamos ubicados en la comunidad de Nahueltoro, comprometidos a servir a todas las familias rurales de la región.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 text-center">
+        <a href="{% url 'login:home' %}" class="btn btn-primary btn-lg px-5 py-3">Volver al inicio</a>
+    </div>
+</div>
+{% endblock %}

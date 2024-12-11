@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,6 +27,8 @@ SECRET_KEY = 'django-insecure-q#-bca#4vby5raltrj1!@)w0)%w72wn5#xvz&$mxrsrl9m=jrj
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+
 
 
 # Application definition
@@ -45,7 +48,20 @@ INSTALLED_APPS = [
     'medidores',
     'tarifas',
     'consumos',
+    'registro_cuentas',
+    'login',
+    'reportes',
+    'widget_tweaks',
+    'boletas',
 ]
+
+AUTH_USER_MODEL = 'registro_cuentas.Cuenta'
+
+LOGIN_REDIRECT_URL = '/roles/redireccion/'
+LOGOUT_REDIRECT_URL = '/login/'  # Opcional: página a la que se redirige tras cerrar sesión
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

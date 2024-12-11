@@ -1,0 +1,87 @@
+{% extends "registro_cuentas/base_registro_cuentas.html" %}
+
+{% block title %}{% if cuenta %}Editar Cuenta{% else %}Agregar Nueva Cuenta{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg p-5 mt-4">
+    <h2 class="mb-4 text-center text-primary">
+        {% if cuenta %}Editar Cuenta{% else %}Agregar Nueva Cuenta{% endif %}
+    </h2>
+    <p class="text-center text-muted">
+        Complete el formulario para {% if cuenta %}actualizar{% else %}crear{% endif %} una cuenta. 
+        Siga las instrucciones proporcionadas para evitar errores.
+    </p>
+    <form method="post" novalidate class="needs-validation">
+        {% csrf_token %}
+
+        <!-- Mensajes de error globales específicos de registro_cuentas -->
+        {% if messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                {% if "registro_cuentas" in message.tags %}
+                <span>{{ message }}</span>
+                {% endif %}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+
+        <!-- Campos del formulario -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="id_username" class="form-label fw-bold">Nombre de Usuario</label>
+                {{ form.username }}
+                <small class="form-text text-muted">{{ form.username.help_text }}</small>
+                {% if form.username.errors %}
+                <div class="text-danger">{{ form.username.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="id_email" class="form-label fw-bold">Correo Electrónico</label>
+                {{ form.email }}
+                <small class="form-text text-muted">{{ form.email.help_text }}</small>
+                {% if form.email.errors %}
+                <div class="text-danger">{{ form.email.errors|first }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="id_rol" class="form-label fw-bold">Rol</label>
+                {{ form.rol }}
+                <small class="form-text text-muted">{{ form.rol.help_text }}</small>
+                {% if form.rol.errors %}
+                <div class="text-danger">{{ form.rol.errors|first }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="id_password" class="form-label fw-bold">Contraseña</label>
+                {{ form.password }}
+                <small class="form-text text-muted">{{ form.password.help_text }}</small>
+                {% if form.password.errors %}
+                <div class="text-danger">{{ form.password.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="id_confirm_password" class="form-label fw-bold">Confirmar Contraseña</label>
+                {{ form.confirm_password }}
+                {% if form.confirm_password.errors %}
+                <div class="text-danger">{{ form.confirm_password.errors|first }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-success me-2 px-4">
+                {% if cuenta %}<i class="fas fa-save"></i> Actualizar{% else %}<i class="fas fa-plus"></i> Registrar{% endif %}
+            </button>
+            <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-secondary px-4">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

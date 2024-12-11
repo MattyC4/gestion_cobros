@@ -1,0 +1,104 @@
+{% extends "login/base_login.html" %}
+
+{% block title %}Inicio - Comité APR Nahueltoro{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <!-- Bienvenida y Misión -->
+    <h1 class="mb-4" style="font-size: 2.5rem; color: #007bff;">Bienvenido al Comité APR Nahueltoro</h1>
+    <p class="mb-4" style="font-size: 1.2rem; color: #555;">
+        Gestiona tus consumos y accede a información esencial sobre el agua potable en nuestra comunidad.
+    </p>
+    <div class="mt-5 text-center">
+        <h2 style="color: #007bff;">Nuestra Misión</h2>
+        <p style="color: #555;">
+            En el Comité APR Nahueltoro, nos dedicamos a garantizar el suministro de agua potable de calidad para nuestra comunidad, promoviendo el uso responsable y sostenible de este recurso vital.
+        </p>
+    </div>
+
+    <!-- Botones con guías -->
+    <div class="mb-5">
+        <!-- Iniciar Sesión -->
+        <div class="mb-4">
+            <a href="{% url 'login:login' %}" class="btn btn-primary btn-lg d-block mx-auto" style="max-width: 300px;">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+            <p class="mt-2 text-muted" style="font-size: 0.9rem;">
+                Solo para personal administrativo autorizado.
+            </p>
+        </div>
+
+        <!-- Revisar Consumo -->
+        <div class="mb-4">
+            <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-info btn-lg d-block mx-auto text-light" style="max-width: 300px;">
+                <i class="bi bi-bar-chart"></i> Revisar Mi Consumo
+            </a>
+            <p class="mt-2 text-muted" style="font-size: 0.9rem;">
+                Consulta tu historial de consumos y estado de agua potable.
+            </p>
+        </div>
+    </div>
+
+    <!-- Información sobre Subsidios de Agua Potable -->
+    <div class="mt-5 bg-light p-4 rounded" style="box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);">
+        <h2 class="mb-3" style="font-size: 1.8rem; color: #333;">Subsidios de Agua Potable</h2>
+        <p style="font-size: 1rem; color: #555;">
+            El Estado chileno ofrece subsidios para ayudar a las familias a cubrir el costo del consumo de agua potable y servicios de alcantarillado. Para más información sobre cómo postular y los requisitos necesarios, visita el siguiente enlace:
+        </p>
+        <a href="https://www.chileatiende.gob.cl/fichas/51314-subsidio-al-pago-de-consumo-de-agua-potable-y-servicio-de-alcantarillado" target="_blank" class="text-info" style="text-decoration: none;">
+            <i class="bi bi-droplet"></i> Subsidio al pago de consumo de agua potable y servicio de alcantarillado
+        </a>
+    </div>
+
+    <!-- Consejos para el Uso Responsable del Agua -->
+    <div class="mt-5 bg-light p-4 rounded" style="box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);">
+        <h2 class="mb-3" style="font-size: 1.8rem; color: #333;">Consejos para Cuidar el Agua</h2>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-wrench" style="font-size: 2rem; color: #007bff;"></i>
+                        <h5 class="card-title mt-3">Repara Fugas</h5>
+                        <p class="card-text">Repara las fugas en grifos y tuberías para evitar desperdicios.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-washing-machine" style="font-size: 2rem; color: #007bff;"></i>
+                        <h5 class="card-title mt-3">Usa Cargas Completas</h5>
+                        <p class="card-text">Utiliza la lavadora y el lavavajillas con cargas completas para maximizar su eficiencia.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-sunset" style="font-size: 2rem; color: #007bff;"></i>
+                        <h5 class="card-title mt-3">Riega en Horarios Correctos</h5>
+                        <p class="card-text">Riega las plantas durante las horas de menor evaporación, como temprano en la mañana o al atardecer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Noticias y Actualizaciones Relevantes -->
+    <div class="mt-5 bg-light p-4 rounded" style="box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);">
+        <h2 class="mb-3" style="font-size: 1.8rem; color: #333;">Noticias y Actualizaciones</h2>
+        <ul style="list-style: none; padding: 0;">
+            <li class="mb-3">
+                <a href="https://www.gob.cl/noticias/gobierno-lanza-campana-nacional-de-ahorro-de-agua/" target="_blank" class="text-info" style="text-decoration: none;">
+                    <i class="bi bi-megaphone"></i> Gobierno lanza campaña nacional de ahorro de agua
+                </a>
+            </li>
+            <li class="mb-3">
+                <a href="https://www.biobiochile.cl/noticias/ciencia-y-tecnologia/ciencia/2023/03/22/chile-tiene-el-agua-potable-mas-segura-de-sudamerica-segun-estudio-cuales-son-los-primeros.shtml" target="_blank" class="text-info" style="text-decoration: none;">
+                    <i class="bi bi-award"></i> Chile tiene el agua potable más segura de Sudamérica según estudio
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "reportes/base_reportes.html" %}
+
+{% block title %}Simulación de Pago{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Simulación de Pago</h2>
+        <p class="text-center text-muted">
+            Ingresa los datos de tu tarjeta para pagar la boleta.
+        </p>
+
+        <!-- Mostrar mensajes -->
+        {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Información de la boleta -->
+        <div class="alert alert-info">
+            <strong>Boleta #{{ boleta.id }}</strong><br>
+            Total a pagar: <strong>${{ boleta.total_a_pagar }}</strong>
+        </div>
+
+        <!-- Formulario de pago -->
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="tarjeta_nombre" class="form-label">Nombre del Titular</label>
+                <input type="text" class="form-control" id="tarjeta_nombre" name="tarjeta_nombre" placeholder="Ej: Juan Pérez" required>
+            </div>
+            <div class="mb-3">
+                <label for="tarjeta_numero" class="form-label">Número de Tarjeta</label>
+                <input type="text" class="form-control" id="tarjeta_numero" name="tarjeta_numero" placeholder="Ej: 4242 4242 4242 4242" maxlength="19" required>
+                <small class="text-muted">Ingresa 16 dígitos sin espacios ni guiones.</small>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="tarjeta_expiracion" class="form-label">Fecha de Expiración</label>
+                    <input type="text" class="form-control" id="tarjeta_expiracion" name="tarjeta_expiracion" placeholder="MM/YY" maxlength="5" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="tarjeta_cvv" class="form-label">CVV</label>
+                    <input type="text" class="form-control" id="tarjeta_cvv" name="tarjeta_cvv" placeholder="123" maxlength="3" required>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-credit-card"></i> Realizar Pago
+                </button>
+                <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

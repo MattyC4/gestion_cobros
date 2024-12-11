@@ -1,0 +1,22 @@
+{% extends "boletas/base_boletas.html" %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center text-danger">Confirmar Eliminación</h2>
+        <p class="text-center">
+            ¿Estás seguro de que deseas eliminar la boleta <strong>#{{ boleta.id }}</strong>?<br>
+            Esta acción no se puede deshacer.
+        </p>
+        <div class="text-center mt-4">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+                <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Boleta #{{ boleta.id }}</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 20px;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 0;
+            font-size: 16px;
+            color: #555;
+        }
+        .details, .consumption {
+            margin-bottom: 20px;
+        }
+        .details table, .consumption table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f5f5f5;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            margin-top: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="header">
+            <img src="{% static 'static/img/logo.png' %}" alt="Logo Comité APR">
+            <h1>Comité APR Nahueltoro</h1>
+            <p>Boleta de Agua Potable</p>
+        </div>
+
+        <!-- Información del Usuario -->
+        <div class="details">
+            <h3>Detalles del Cliente</h3>
+            <table>
+                <tr>
+                    <th>Nombre</th>
+                    <td>{{ usuario.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>RUT</th>
+                    <td>{{ usuario.rut }}</td>
+                </tr>
+                <tr>
+                    <th>Dirección</th>
+                    <td>{{ usuario.direccion }}</td>
+                </tr>
+                <tr>
+                    <th>Teléfono</th>
+                    <td>{{ usuario.telefono }}</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Emisión</th>
+                    <td>{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Detalles de Consumo -->
+        <div class="consumption">
+            <h3>Detalles del Consumo</h3>
+            <table>
+                <tr>
+                    <th>Consumo Total</th>
+                    <td>{{ boleta.consumo_total }} m³</td>
+                </tr>
+                <tr>
+                    <th>Tarifa Base</th>
+                    <td>${{ boleta.tarifa_base }}</td>
+                </tr>
+                <tr>
+                    <th>Total a Pagar</th>
+                    <td class="highlight">${{ boleta.total_a_pagar }}</td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td class="highlight">{{ boleta.pagado|yesno:"Pagado,Pendiente" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Pie de página -->
+        <div class="footer">
+            <p>Gracias por su preferencia. Si tiene consultas, contáctenos al <strong>(+56) 9 1234 5678</strong>.</p>
+            <p>Comité APR Nahueltoro, Región del Biobío</p>
+        </div>
+    </div>
+</body>
+</html>
