@@ -1,0 +1,61 @@
+{% extends "boletas/base_boletas.html" %}
+
+{% block title %}Seleccionar Consumos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-4 text-center">Seleccionar Consumos</h2>
+        <p class="text-center text-muted">
+            Por favor, selecciona el rango de consumos para generar la boleta del usuario. Asegúrate de que el consumo inicial sea <strong>anterior</strong> al consumo final.
+        </p>
+
+        <!-- Mostrar errores filtrados si los hay -->
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Información del usuario -->
+        <div class="mb-4">
+            <h5>Usuario: {{ usuario.nombre }}</h5>
+            <p><strong>RUT:</strong> {{ usuario.rut }}</p>
+        </div>
+
+        <!-- Formulario para seleccionar consumos -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="consumo_inicio" class="form-label">Consumo Inicial</label>
+                    <select id="consumo_inicio" name="consumo_inicio" class="form-select" required>
+                        <option value="" disabled selected>Selecciona el consumo inicial</option>
+                        {% for consumo in consumos %}
+                        <option value="{{ consumo.id }}">{{ consumo.fecha_consumo }} - {{ consumo.cantidad_consumida }} m³</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">Selecciona el consumo desde donde iniciar el cálculo.</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="consumo_fin" class="form-label">Consumo Final</label>
+                    <select id="consumo_fin" name="consumo_fin" class="form-select" required>
+                        <option value="" disabled selected>Selecciona el consumo final</option>
+                        {% for consumo in consumos %}
+                        <option value="{{ consumo.id }}">{{ consumo.fecha_consumo }} - {{ consumo.cantidad_consumida }} m³</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">Selecciona el consumo hasta donde finalizar el cálculo.</small>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">Generar Boleta</button>
+                <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

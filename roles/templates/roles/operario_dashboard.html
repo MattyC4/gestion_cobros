@@ -1,0 +1,57 @@
+{% extends "roles/base_roles.html" %}
+
+{% block title %}Panel del Operario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-4 text-center">Panel de Gestión - Operario</h2>
+        <p class="text-center text-muted">
+            Bienvenido al panel de gestión del operario. Desde aquí puedes gestionar los consumos de los usuarios y administrar los medidores para mantener el sistema actualizado.
+        </p>
+
+        <!-- Datos Relevantes -->
+        <div class="row text-center mb-4">
+            <div class="col-md-6">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Usuarios Totales</h5>
+                    <p class="display-6 text-primary">{{ total_usuarios }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Medidores Activos</h5>
+                    <p class="display-6 text-warning">{{ medidores_activos }}</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Gestión de Funcionalidades -->
+        <div class="row mt-4">
+            <!-- Gestión de Consumos -->
+            <div class="col-md-6 mb-4">
+                <div class="card border-primary h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">Registrar Consumos</h5>
+                        <p>Registra y actualiza los consumos de agua de los usuarios.</p>
+                        <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-primary btn-sm">Registrar Consumo</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Medidores -->
+            <div class="col-md-6 mb-4">
+                <div class="card border-info h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-info">Gestión de Medidores</h5>
+                        <p>Asigna y gestiona los medidores para los usuarios registrados.</p>
+                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm">Gestionar Medidores</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

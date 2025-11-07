@@ -1,0 +1,54 @@
+{% extends "consumos/base_consumos.html" %}
+{% load moneda %}
+
+{% block title %}Historial de Consumos{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="mb-4 text-center">Historial de Consumos</h2>
+    <p class="text-muted text-center mb-4">
+        Aquí puedes ver el historial de consumos registrados para el usuario <strong>{{ usuario.nombre }}</strong>.
+    </p>
+
+    <!-- Tabla de consumos -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Cantidad Consumida (m³)</th>
+                    <th>Tarifa Aplicada</th>
+                    <th>Medidor</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consumo in consumos %}
+                <tr>
+                    <td>{{ consumo.fecha_consumo }}</td>
+                    <td>{{ consumo.cantidad_consumida }}</td>
+                    <td>{{ consumo.tarifa_aplicada.valor|formato_moneda }}</td>
+                    <td>{{ consumo.medidor.codigo_serial }}</td>
+                    <td>
+                        <a href="{% url 'consumos:eliminar_consumo' consumo.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No se encontraron consumos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Botón de retorno -->
+    <div class="d-flex justify-content-end mt-3">
+        <a href="{% url 'consumos:lista_usuarios_consumos' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+{% endblock %}

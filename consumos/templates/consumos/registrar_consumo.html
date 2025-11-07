@@ -1,0 +1,47 @@
+{% extends "consumos/base_consumos.html" %}
+
+{% block title %}Registrar Consumo{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="mb-4 text-center text-primary">Registrar Consumo</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="cantidad_consumida" class="form-label fw-bold">
+                <i class="fas fa-tint"></i> Cantidad Consumida (m³)
+            </label>
+            <input 
+                type="number" 
+                name="cantidad_consumida" 
+                id="cantidad_consumida" 
+                class="form-control" 
+                step="0.01" 
+                placeholder="Ingrese la cantidad consumida" 
+                required>
+            <small class="form-text text-muted">
+                Debe ser mayor al último consumo registrado.
+            </small>
+        </div>
+        <div class="mb-4">
+            <label for="fecha_consumo" class="form-label fw-bold">
+                <i class="fas fa-calendar-alt"></i> Fecha del Consumo
+            </label>
+            <input 
+                type="date" 
+                name="fecha_consumo" 
+                id="fecha_consumo" 
+                class="form-control" 
+                required>
+        </div>
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check"></i> Registrar
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

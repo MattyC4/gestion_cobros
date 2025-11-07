@@ -1,0 +1,50 @@
+{% extends "boletas/base_boletas.html" %}
+
+{% block title %}Seleccionar Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Seleccionar Usuario</h2>
+        <p class="text-center text-muted">
+            Selecciona un usuario con consumos registrados para generar una nueva boleta.
+        </p>
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar usuario por nombre..." value="{{ request.GET.search }}">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>RUT</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.nombre }}</td>
+                        <td>{{ usuario.rut }}</td>
+                        <td>
+                            <a href="{% url 'boletas:seleccionar_consumos' usuario.id %}" class="btn btn-sm btn-primary">
+                                Seleccionar
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-muted">
+                            <i class="fas fa-info-circle"></i> No se encontraron usuarios con consumos registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

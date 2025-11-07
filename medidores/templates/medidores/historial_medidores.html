@@ -1,0 +1,69 @@
+{% extends "medidores/base_medidores.html" %}
+
+{% block title %}Historial de Medidores{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Historial de Medidores</h1>
+
+    {% if medidores %}
+        <table class="table table-striped table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Código Serial</th>
+                    <th>Usuario</th>
+                    <th>Fecha Registro</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medidor in medidores %}
+                <tr>
+                    <td>{{ medidor.codigo_serial }}</td>
+                    <td>
+                        {% if medidor.usuario %}
+                            {{ medidor.usuario.nombre }}
+                        {% else %}
+                            <span class="text-muted">Sin asignar</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ medidor.fecha_registro }}</td>
+                    <td>
+                        <span class="badge {% if medidor.estado == 'activo' %}bg-success{% elif medidor.estado == 'inactivo' %}bg-secondary{% elif medidor.estado == 'mantenimiento' %}bg-warning text-dark{% elif medidor.estado == 'danado' %}bg-danger{% endif %}">
+                            {{ medidor.get_estado_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <!-- Botón para cambiar estado -->
+                        <a href="{% url 'medidores:confirmar_cambio_estado' medidor.id %}" 
+                           class="btn btn-primary btn-sm mb-1">
+                            Cambiar Estado
+                        </a>
+                        <!-- Botón para eliminar -->
+                        <a href="{% url 'medidores:eliminar_medidor' medidor.id %}" 
+                           class="btn btn-danger btn-sm mb-1">
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <strong>No hay medidores registrados.</strong>
+        </div>
+    {% endif %}
+
+    <!-- Botones de acción -->
+    <div class="mt-4 d-flex justify-content-between">
+        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Asignar Nuevo Medidor
+        </a>
+    </div>
+</div>
+{% endblock %}

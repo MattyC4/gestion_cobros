@@ -1,0 +1,56 @@
+{% extends "boletas/base_boletas.html" %}
+
+{% block title %}Buscar Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Buscar Usuario</h2>
+        <p class="text-muted text-center">
+            Ingresa el nombre del usuario para buscar su historial de boletas.
+        </p>
+
+        <!-- Formulario de búsqueda -->
+        <form method="get" action="{% url 'boletas:buscar_usuario' %}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por nombre" value="{{ query|default_if_none:'' }}">
+                <button class="btn btn-primary" type="submit">Buscar</button>
+            </div>
+        </form>
+
+        <!-- Tabla de resultados -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>RUT</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.nombre }}</td>
+                        <td>{{ usuario.rut }}</td>
+                        <td>
+                            <a href="{% url 'boletas:historial_usuario' usuario.id %}" class="btn btn-sm btn-primary">
+                                Ver Historial
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-muted">
+                            <i class="fas fa-info-circle"></i> No se encontraron usuarios.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

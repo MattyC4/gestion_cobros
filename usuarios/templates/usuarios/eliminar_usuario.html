@@ -1,0 +1,22 @@
+{% extends "usuarios/base_usuarios.html" %}
+
+{% block title %}Eliminar Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h1 class="text-center text-danger">Eliminar Usuario</h1>
+        <p class="text-center mt-3">
+            ¿Estás seguro de que deseas eliminar al usuario <strong>{{ usuario.nombre }}</strong> con RUT <strong>{{ usuario.rut }}</strong>?
+        </p>
+        <p class="text-center text-warning">
+            Esta acción no se puede deshacer.
+        </p>
+        <form method="post" class="text-center">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+            <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

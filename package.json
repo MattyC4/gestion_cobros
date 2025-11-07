@@ -1,0 +1,19 @@
+{
+  "name": "gestion_cobros-main",
+  "version": "1.0.0",
+  "description": "\"# pgap-cloud\"  \"# pgap-cloud\"  Cuenta de administrador:  Nombre: Administrador_General Correo: admin1@gmail.com Contraseña:",
+  "main": "index.js",
+  "scripts": {
+     "dev": "npx tailwindcss -i ./assets/css/app.css -o ./static/css/app.css --watch",
+    "build": "npx tailwindcss -i ./assets/css/app.css -o ./static/css/app.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "daisyui": "^5.4.2",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16"
+  }
+}

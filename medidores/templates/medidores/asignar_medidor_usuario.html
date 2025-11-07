@@ -1,0 +1,21 @@
+{% extends "medidores/base_medidores.html" %}
+
+{% block title %}Asignar Medidor{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Asignar Medidor a {{ usuario.nombre }}</h2>
+    <form method="post" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check"></i> Asignar
+            </button>
+            <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

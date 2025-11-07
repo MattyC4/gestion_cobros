@@ -1,0 +1,162 @@
+{% extends "roles/base_roles.html" %}
+
+{% block title %}Panel de Administración General{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-4 text-center">Panel de Administración General</h2>
+        <p class="text-center text-muted">
+            ¡Bienvenido al sistema de gestión del <strong>Comité APR Nahueltoro</strong>! 
+            Aquí podrás administrar usuarios, tarifas, medidores y supervisar el consumo de agua de nuestra comunidad.
+        </p>
+
+        <!-- Mensaje de bienvenida con botón de cerrar -->
+        <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
+            Este panel te permite acceder a todas las funcionalidades administrativas de forma centralizada. 
+            Consulta los gráficos para monitorear tendencias y utiliza las opciones de gestión para realizar tareas clave.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Datos Relevantes -->
+        <div class="row text-center mb-4">
+            <div class="col-md-2">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Usuarios Totales</h5>
+                    <p class="display-6 text-primary">{{ total_usuarios }}</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Medidores Activos</h5>
+                    <p class="display-6 text-success">{{ medidores_activos }}</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Medidores Inactivos</h5>
+                    <p class="display-6 text-danger">{{ medidores_inactivos|default:"0" }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Consumo Histórico</h5>
+                    <p class="display-6 text-warning">{{ total_consumo_mes }} m³</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light shadow-sm p-3 h-100">
+                    <h5 class="card-title">Tarifa Actual</h5>
+                    <p class="display-6 text-info">${{ tarifa_actual }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row mt-4">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Evolución de Tarifas</h5>
+                        <canvas id="graficoTarifas"></canvas>
+                        <p class="text-muted text-center mt-2">
+                            Este gráfico muestra la evolución de las tarifas a lo largo del tiempo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Consumo Mensual</h5>
+                        <canvas id="graficoConsumo"></canvas>
+                        <p class="text-muted text-center mt-2">
+                            Observa el consumo mensual registrado por los usuarios.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestión de Funcionalidades -->
+        <h4 class="text-center mt-5">Opciones de Gestión</h4>
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+                <div class="card border-primary h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">Gestión de Cuentas</h5>
+                        <p class="text-muted">Accede a la lista de cuentas registradas.</p>
+                        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-primary btn-sm">Ver Cuentas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-success h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-success">Gestión de Usuarios</h5>
+                        <p class="text-muted">Administra los datos de los usuarios.</p>
+                        <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-success btn-sm">Ver Usuarios</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-info h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-info">Gestión de Medidores</h5>
+                        <p class="text-muted">Asigna y gestiona los medidores.</p>
+                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm">Asignar Medidor</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-warning h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-warning">Gestión de Tarifas</h5>
+                        <p class="text-muted">Configura y administra las tarifas de agua.</p>
+                        <a href="{% url 'tarifas:agregar_tarifa' %}" class="btn btn-warning btn-sm">Agregar Tarifa</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-danger h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-danger">Gestión de Consumos</h5>
+                        <p class="text-muted">Registra y consulta los consumos de agua.</p>
+                        <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-danger btn-sm">Registrar Consumo</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-dark h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-dark">Gestión de Boletas</h5>
+                        <p class="text-muted">Accede al historial de boletas recientes, busca usuarios y genera nuevas boletas.</p>
+                        <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-primary btn-sm">Historial de Boletas Recientes</a>
+                        <a href="{% url 'boletas:buscar_usuario' %}" class="btn btn-secondary btn-sm mt-2">Buscar Usuario</a>
+                        <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-outline-primary btn-sm mt-2">Generar Boleta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const graficoTarifasData = {{ grafico_tarifas_data|safe }};
+    const graficoConsumoData = {{ grafico_consumo_data|safe }};
+
+    const graficoTarifas = new Chart(document.getElementById('graficoTarifas'), {
+        type: 'line',
+        data: graficoTarifasData,
+        options: { responsive: true }
+    });
+
+    const graficoConsumo = new Chart(document.getElementById('graficoConsumo'), {
+        type: 'bar',
+        data: graficoConsumoData,
+        options: { responsive: true }
+    });
+</script>
+{% endblock %}
