@@ -54,62 +54,81 @@
 
 <body class="min-h-screen bg-base-200 text-base-content">
 
-  <!-- NAVBAR -->
-  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-base-300 shadow-sm">
-  <div class="navbar container mx-auto px-4" role="navigation" aria-label="Barra de navegación">
-    <!-- Branding -->
-    <div class="navbar-start">
-      <a href="{% url 'login:home' %}" class="flex items-center gap-3 group">
-        <img src="{% static 'img/logo.png' %}" alt="Logo FlowWeb" class="h-10 w-10 rounded-md shadow-sm ring-1 ring-base-300 group-hover:ring-primary transition">
-        <div class="leading-tight">
-          <span class="font-semibold text-lg tracking-tight text-primary">FlowWeb</span>
-          <div class="text-xs text-base-content/60">Gestión de Agua Potable Rural</div>
-        </div>
-      </a>
-    </div>
+<!-- HEADER FIJO - Comité APR Nahueltoro -->
+<header class="sticky top-0 z-50 flex shadow-md py-4 px-4 sm:px-10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 min-h-[70px] tracking-wide">
+  <div class="flex flex-wrap items-center justify-between gap-5 w-full">
 
-    <!-- Menú desktop -->
-    <div class="navbar-center hidden md:flex">
-      <ul class="menu menu-horizontal gap-2">
-        <li><a href="{% url 'login:home' %}" class="text-sm font-medium hover:text-primary"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
-        <li><a href="{% url 'reportes:revisar_consumo' %}" class="text-sm font-medium hover:text-primary"><i class="bi bi-bar-chart me-1"></i>Consumo</a></li>
-        <li><a href="{% url 'login:quienes_somos' %}" class="text-sm font-medium hover:text-primary"><i class="bi bi-info-circle me-1"></i>Acerca de</a></li>
+    <!-- Logo y Marca -->
+    <a href="{% url 'login:home' %}" class="flex items-center gap-3">
+      <img src="{% static 'img/logo.png' %}" alt="Logo Comité APR Nahueltoro"
+           class="h-10 w-10 rounded-md ring-1 ring-base-300 shadow-sm">
+      <div>
+        <span class="block font-bold text-lg text-[#0077cc]">Comité APR Nahueltoro</span>
+        <span class="block text-xs text-slate-600">Gestión de Agua Potable Rural</span>
+      </div>
+    </a>
+
+    <!-- Menú Principal -->
+    <div id="collapseMenu" class="max-lg:hidden lg:!block">
+      <ul
+        class="lg:flex gap-x-6 max-lg:space-y-3 max-lg:fixed max-lg:bg-white max-lg:w-1/2 max-lg:min-w-[250px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
+
+        <!-- Logo Móvil -->
+        <li class="mb-6 hidden max-lg:block">
+          <a href="{% url 'login:home' %}" class="flex items-center gap-2">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="h-8 w-8 rounded-md ring-1 ring-base-300">
+            <span class="font-semibold text-[#0077cc]">Nahueltoro</span>
+          </a>
+        </li>
+
+        <li><a href="{% url 'login:home' %}" class="block font-medium text-[15px] text-slate-800 hover:text-[#0077cc] transition">Inicio</a></li>
+        <li><a href="{% url 'reportes:revisar_consumo' %}" class="block font-medium text-[15px] text-slate-800 hover:text-[#0077cc] transition">Consumo</a></li>
+        <li><a href="{% url 'login:quienes_somos' %}" class="block font-medium text-[15px] text-slate-800 hover:text-[#0077cc] transition">Acerca de</a></li>
+
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'admin:index' %}" class="block font-medium text-[15px] text-slate-800 hover:text-[#0077cc] transition">Panel</a></li>
+          <li><a href="{% url 'logout' %}" class="block font-medium text-[15px] text-slate-800 hover:text-red-600 transition">Salir</a></li>
+        {% endif %}
       </ul>
     </div>
 
-    <!-- Acciones / usuario -->
-    <div class="navbar-end">
+    <!-- Acciones (Botón derecha) -->
+    <div class="flex max-lg:ml-auto items-center gap-3">
       {% if user.is_authenticated %}
-        <div class="hidden md:flex items-center gap-2">
-          <a href="{% url 'admin:index' %}" class="btn btn-sm btn-ghost"><i class="bi bi-speedometer2 me-1"></i>Panel</a>
-          <a href="{% url 'logout' %}" class="btn btn-sm btn-primary"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
-        </div>
+        <a href="{% url 'logout' %}"
+           class="px-6 py-2.5 rounded-full cursor-pointer text-[#0077cc] hover:text-white text-sm tracking-wider font-medium border border-[#0077cc] outline-0 bg-transparent hover:bg-[#0077cc] transition-all duration-300">
+          Salir
+        </a>
       {% else %}
-        <div class="hidden md:flex items-center gap-2">
-          <a href="{% url 'login:login' %}" class="btn btn-sm btn-primary"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</a>
-        </div>
+        <a href="{% url 'login:login' %}"
+           class="px-6 py-2.5 rounded-full cursor-pointer text-[#0077cc] hover:text-white text-sm tracking-wider font-medium border border-[#0077cc] outline-0 bg-transparent hover:bg-[#0077cc] transition-all duration-300">
+          Iniciar sesión
+        </a>
       {% endif %}
 
-      <!-- Menú móvil -->
-      <div class="md:hidden dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost btn-square" aria-label="Abrir menú">
-          <i class="bi bi-list text-xl"></i>
-        </label>
-        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 p-2 shadow bg-white rounded-box w-56">
-          <li><a href="{% url 'login:home' %}">Inicio</a></li>
-          <li><a href="{% url 'reportes:revisar_consumo' %}">Consumo</a></li>
-          <li><a href="{% url 'login:quienes_somos' %}">Acerca de</a></li>
-          {% if user.is_authenticated %}
-            <li><a href="{% url 'admin:index' %}">Panel</a></li>
-            <li><a href="{% url 'logout' %}">Salir</a></li>
-          {% else %}
-            <li><a href="{% url 'login:login' %}">Iniciar sesión</a></li>
-          {% endif %}
-        </ul>
-      </div>
+      <!-- Botón Menú Móvil -->
+      <button id="toggleOpen"
+              class="lg:hidden cursor-pointer p-2 border border-gray-300 rounded-full hover:bg-gray-100">
+        <svg class="w-6 h-6 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+                d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2z"
+                clip-rule="evenodd"></path>
+        </svg>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- Script para el menú móvil -->
+<script>
+  const toggleOpen = document.getElementById("toggleOpen");
+  const collapseMenu = document.getElementById("collapseMenu");
+
+  toggleOpen?.addEventListener("click", () => {
+    collapseMenu.classList.toggle("max-lg:hidden");
+  });
+</script>
+
 
 
   <!-- HERO (limpio, sin degradado fuerte) -->
