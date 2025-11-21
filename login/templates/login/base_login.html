@@ -87,7 +87,7 @@
 
         {% if user.is_authenticated %}
           <li><a href="{% url 'admin:index' %}" class="block font-medium text-[15px] text-slate-800 hover:text-[#0077cc] transition">Panel</a></li>
-          <li><a href="{% url 'logout' %}" class="block font-medium text-[15px] text-slate-800 hover:text-red-600 transition">Salir</a></li>
+          <li><a href="{% url 'login:logout' %}" class="block font-medium text-[15px] text-slate-800 hover:text-red-600 transition">Salir</a></li>
         {% endif %}
       </ul>
     </div>
@@ -95,7 +95,7 @@
     <!-- Acciones (Botón derecha) -->
     <div class="flex max-lg:ml-auto items-center gap-3">
       {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}"
+        <a href="{% url 'login:logout' %}"
            class="px-6 py-2.5 rounded-full cursor-pointer text-[#0077cc] hover:text-white text-sm tracking-wider font-medium border border-[#0077cc] outline-0 bg-transparent hover:bg-[#0077cc] transition-all duration-300">
           Salir
         </a>

@@ -97,12 +97,32 @@ WSGI_APPLICATION = 'gestion_cobros.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# settings.py
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.zalpcuibcynyrrinmmxh',      # Tu usuario del Pooler
+        'PASSWORD': 'Fw!2025_demo-APR_93',        # <--- ¡BORRA ESTO Y PON TU CLAVE!
+        'HOST': 'aws-1-sa-east-1.pooler.supabase.com', # Tu Host especial
+        'PORT': '6543',                                # Puerto compatible con IPv4
     }
 }
+
+# settings.py
+
+# Agrega esto para decirle a Django que acepte peticiones desde tu PC local
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
+# settings.py
+
+# En desarrollo (Local) deben estar en False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 
 # Password validation

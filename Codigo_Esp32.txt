@@ -1,0 +1,235 @@
+/*
+ * Medidor de Agua ESP32 (YF-S201 + DS3231) -> Supabase /medidas
+ * Alineado con Modelo Django 'LecturaIoT'
+ * * IMPORTANTE: Antes de usar, asegura que 'esp32-agua-01' existe en la tabla 'medidores'.
+ */
+
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+#include <Wire.h>
+#include <RTClib.h>
+#include <time.h>
+
+// ===== Wi-Fi =====
+const char* WIFI_SSID       = "Maty2.4G";
+const char* WIFI_CONTRASENA = "Maty12345";
+
+// ===== Supabase =====
+const char* URL_SUPABASE        = "https://zalpcuibcynyrrinmmxh.supabase.co";
+// NOTA: Idealmente no subir claves reales a foros, pero para tu prueba mantenemos esta:
+const char* CLAVE_ANON_SUPABASE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphbHBjdWliY3lueXJyaW5tbXhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NzMwNzksImV4cCI6MjA3NjE0OTA3OX0.6xKkzD9-2dBUSelv94zMn-HVIpepO3Uvxxch0WLD7tU";
+const char* ENDPOINT_MEDIDAS    = "/rest/v1/medidas";
+
+// Debe coincidir con un ID existente en la tabla 'medidores'
+const char* ID_MEDIDOR          = "esp32-agua-01"; 
+
+// ===== Sensores =====
+RTC_DS3231 rtc;
+
+// YF-S201
+constexpr int   PIN_FLUJO              = 18;       
+float           K_PULSOS_POR_LITRO     = 450.0f;   
+constexpr unsigned long ANTIRREBOTE_US = 1000;     
+constexpr uint32_t      PERIODO_ENVIO_S= 60;       
+
+// Interrupción y LED
+volatile bool USAR_RISING = false; 
+bool isrAdjunta = false;
+const int  PIN_LED = 2;
+const bool LED_ACTIVO_EN_BAJO = true; // Ajustar según tu placa (algunas son false)
+
+// Estado
+volatile unsigned long conteoPulsos = 0;
+volatile unsigned long ultimoPulsoUs = 0;
+unsigned long conteoPrevio = 0;
+double litrosAcumulados = 0.0;      // Se enviará como 'litros_total'
+
+// ---------- Funciones Auxiliares ----------
+
+// Formato ISO 8601 CON ZONA HORARIA CHILE (-03:00)
+String formatoISO8601(const DateTime& dt) {
+  char buf[30];
+  // Agregamos "-03:00" al final para decirle a Supabase que estamos en Chile
+  snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d-03:00", 
+           dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second());
+  return String(buf);
+}
+
+// Formato solo para visualización Serial (Chile)
+String formatoChileLocal(const DateTime& dtUTC) {
+  // Asumimos que el RTC tiene la hora correcta. 
+  // Si el RTC está en UTC, habría que restar 3 o 4 horas.
+  // Por simplicidad de prototipo, imprimimos lo que tiene el RTC.
+  char buf[32]; 
+  snprintf(buf, sizeof(buf), "%04d-%02d-%02d %02d:%02d:%02d", 
+           dtUTC.year(), dtUTC.month(), dtUTC.day(), dtUTC.hour(), dtUTC.minute(), dtUTC.second());
+  return String(buf);
+}
+
+// ---------- LED & Wi-Fi ----------
+inline void ledOn(){  digitalWrite(PIN_LED, LED_ACTIVO_EN_BAJO?LOW:HIGH); }
+inline void ledOff(){ digitalWrite(PIN_LED, LED_ACTIVO_EN_BAJO?HIGH:LOW); }
+void destello(uint8_t n, uint16_t onMs=120, uint16_t offMs=120){
+  for(uint8_t i=0;i<n;i++){ ledOn(); delay(onMs); ledOff(); delay(offMs); }
+}
+
+void conectarWifi() {
+  static uint32_t ultimoIntento = 0;
+  if (WiFi.status()==WL_CONNECTED) return;
+  if (millis() - ultimoIntento < 10000) return;
+  ultimoIntento = millis();
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_CONTRASENA);
+
+  uint32_t t0=millis();
+  while (WiFi.status()!=WL_CONNECTED && millis()-t0<10000) {
+    delay(500); Serial.print(".");
+  }
+  Serial.println();
+}
+bool asegurarWifi(){ if (WiFi.status()==WL_CONNECTED) return true; conectarWifi(); return WiFi.status()==WL_CONNECTED; }
+
+// ---------- Flujómetro ISR ----------
+void IRAM_ATTR isrFlujo() {
+  unsigned long ahoraUs = micros();
+  if (ahoraUs - ultimoPulsoUs > ANTIRREBOTE_US) {
+    conteoPulsos++; 
+    ultimoPulsoUs = ahoraUs;
+  }
+}
+
+void adjuntarISRFlujo() {
+  if (isrAdjunta) detachInterrupt(digitalPinToInterrupt(PIN_FLUJO));
+  attachInterrupt(digitalPinToInterrupt(PIN_FLUJO), isrFlujo, USAR_RISING ? RISING : FALLING);
+  isrAdjunta = true;
+}
+
+// ---------- Supabase POST ----------
+bool postMedidaSupabase(const String& json, int &codigoHTTP, String &cuerpo) {
+  codigoHTTP=-1; cuerpo="";
+  if (WiFi.status()!=WL_CONNECTED) return false;
+
+  WiFiClientSecure cli; 
+  cli.setInsecure(); // No verifica certificado SSL (simple para prototipos)
+  
+  HTTPClient http;
+  String url = String(URL_SUPABASE) + ENDPOINT_MEDIDAS; 
+  
+  if (!http.begin(cli, url)) return false;
+
+  http.addHeader("apikey", CLAVE_ANON_SUPABASE);
+  http.addHeader("Authorization", String("Bearer ") + CLAVE_ANON_SUPABASE);
+  http.addHeader("Content-Type", "application/json");
+  http.addHeader("Prefer", "return=representation"); // Para ver respuesta
+
+  int code = http.POST(json); 
+  codigoHTTP = code;
+  
+  if (code>0) cuerpo = http.getString();
+  http.end();
+  return (code>=200 && code<300);
+}
+
+// ---------- Comandos Serial (Calibración) ----------
+void comandosSerie() {
+  if (!Serial.available()) return;
+  String s = Serial.readStringUntil('\n'); s.trim();
+  
+  if (s.equalsIgnoreCase("r")) {
+    noInterrupts(); conteoPulsos=0; conteoPrevio=0; interrupts();
+    litrosAcumulados=0; Serial.println("# Reset contadores OK"); return;
+  }
+  if (s.startsWith("k ")) {
+    float v = s.substring(2).toFloat();
+    if (v>0.0f) { K_PULSOS_POR_LITRO=v; Serial.printf("# K=%.3f\n",K_PULSOS_POR_LITRO); }
+    return;
+  }
+}
+
+// ---------- Setup ----------
+void setup() {
+  Serial.begin(115200); delay(500);
+  pinMode(PIN_LED, OUTPUT); ledOff();
+
+  conectarWifi();
+  Serial.printf("\n[WiFi] IP=%s RSSI=%d\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+
+  Wire.begin(21,22); // SDA, SCL
+  if (!rtc.begin()) Serial.println("[RTC] ERROR: No detectado");
+  if (rtc.lostPower()) {
+    Serial.println("[RTC] Ajustando hora a compilacion...");
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
+
+  pinMode(PIN_FLUJO, INPUT_PULLUP);
+  adjuntarISRFlujo();
+
+  Serial.println("--- Iniciando medicion ---");
+  Serial.println("ts, delta_pulsos, caudal_lpm, litros_ciclo, total_acum, http_code");
+}
+
+// ---------- Loop ----------
+void loop() {
+  comandosSerie();
+  asegurarWifi();
+
+  static uint32_t t0 = millis();
+  uint32_t ahora = millis();
+
+  // Ciclo de envío
+  if ((uint32_t)(ahora - t0) >= PERIODO_ENVIO_S * 1000UL) {
+    float dt = (ahora - t0) / 1000.0f; 
+    t0 = ahora;
+
+    // Lectura atómica de pulsos
+    noInterrupts();
+    unsigned long pulsosActuales = conteoPulsos;
+    interrupts();
+
+    unsigned long delta = pulsosActuales - conteoPrevio;
+    conteoPrevio = pulsosActuales;
+
+    // Cálculos físicos
+    float litrosPeriodo = delta / K_PULSOS_POR_LITRO;
+    litrosAcumulados += litrosPeriodo;
+    
+    float freqHz = (dt > 0) ? ((float)delta / dt) : 0.0f;
+    float caudalLpm = freqHz / 7.5f; // Aprox para YF-S201, ajustar K si es preciso
+    
+    float tempC = rtc.getTemperature();
+    DateTime now = rtc.now();
+
+    // --- CONSTRUCCIÓN DEL JSON (Coherente con Django LecturaIoT) ---
+    // Campos: id_medidor, ts_utc, pulsos_periodo, caudal_lpm_prom, litros_periodo, litros_total, temperatura_c, bateria_v
+    
+    String json = "{";
+    json += "\"id_medidor\":\"" + String(ID_MEDIDOR) + "\",";
+    json += "\"ts_utc\":\"" + formatoISO8601(now) + "\",";
+    json += "\"pulsos_periodo\":" + String(delta) + ",";
+    json += "\"caudal_lpm_prom\":" + String(caudalLpm, 3) + ",";
+    json += "\"litros_periodo\":" + String(litrosPeriodo, 3) + ",";
+    json += "\"litros_total\":" + String(litrosAcumulados, 3) + ",";
+    json += "\"temperatura_c\":" + String(tempC, 2) + ",";
+    json += "\"bateria_v\":null,"; // Null si no mides batería
+    json += "\"envio_ok\":true";
+    json += "}";
+
+    // Envío
+    int httpCode = 0;
+    String resp = "";
+    bool exito = postMedidaSupabase(json, httpCode, resp);
+
+    if (exito) destello(1); 
+    else destello(3, 50, 50); // 3 parpadeos rápidos = error
+
+    // Debug Serial
+    Serial.printf("%s, %lu, %.2f, %.3f, %.3f, %d\n", 
+      formatoChileLocal(now).c_str(), delta, caudalLpm, litrosPeriodo, litrosAcumulados, httpCode);
+    
+    if (httpCode == 409) {
+        Serial.println("ERROR 409: Chequea que el ID 'esp32-agua-01' exista en la tabla 'medidores'!");
+    }
+  }
+}

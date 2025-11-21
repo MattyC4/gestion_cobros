@@ -1,12 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone  # <--- IMPORTANTE: Necesario para la fecha
+
+# Modelos
 from usuarios.models import Usuario
 from medidores.models import Medidor
 from tarifas.models import Tarifa
-from .models import Consumo
-from django.contrib.auth.decorators import login_required
-
+from .models import Consumo, MedidaRaw # <--- IMPORTANTE: Agregamos MedidaRaw
 
 @login_required
 def lista_usuarios(request):
@@ -29,7 +31,7 @@ def lista_usuarios(request):
 @login_required
 def registrar_consumo(request, usuario_id):
     """
-    Vista para registrar consumo de un usuario.
+    Vista para registrar consumo de un usuario MANUALMENTE.
     """
     if request.user.rol not in ['admin', 'operario']:
         messages.error(request, "No tienes permiso para acceder a esta función.")
@@ -128,3 +130,74 @@ def eliminar_consumo(request, consumo_id):
         return redirect('consumos:historial_consumos', usuario_id=usuario_id)
 
     return render(request, 'consumos/eliminar_consumo.html', {'consumo': consumo})
+
+
+# --- NUEVA FUNCIÓN: SINCRONIZACIÓN IOT ---
+@login_required
+def sincronizar_lecturas_iot(request):
+    """
+    Busca la última lectura en la tabla 'medidas' (ESP32) para cada medidor
+    y crea/actualiza el registro de Consumo del día de hoy.
+    """
+    if request.user.rol not in ['admin', 'operario']:
+        messages.error(request, "No tienes permiso para sincronizar medidores.")
+        return redirect('roles:redireccion_dashboard')
+
+    # 1. Buscamos todos los medidores activos en el sistema
+    medidores_activos = Medidor.objects.filter(estado='activo')
+    
+    # 2. Verificamos si hay tarifa activa
+    tarifa_actual = Tarifa.objects.filter(activo=True).first()
+    if not tarifa_actual:
+        messages.error(request, "No hay tarifa activa. No se pueden procesar lecturas IoT.")
+        return redirect('consumos:lista_usuarios_consumos')
+
+    contadores = {'creados': 0, 'actualizados': 0, 'errores': 0}
+    fecha_hoy = timezone.now().date()
+
+    for medidor in medidores_activos:
+        # Solo procesamos si el medidor tiene usuario asignado
+        if not medidor.usuario:
+            continue
+
+        # 3. Buscamos la ÚLTIMA lectura cruda que coincida con el serial del medidor
+        ultima_lectura = MedidaRaw.objects.filter(
+            id_medidor=medidor.codigo_serial # El link entre ESP32 y Django
+        ).order_by('-ts_utc').first()
+
+        if ultima_lectura:
+            try:
+                # 4. Intentamos crear o recuperar el consumo de HOY
+                consumo_obj, created = Consumo.objects.get_or_create(
+                    medidor=medidor,
+                    fecha_consumo=fecha_hoy,
+                    defaults={
+                        'usuario': medidor.usuario,
+                        'tarifa_aplicada': tarifa_actual,
+                        'cantidad_consumida': ultima_lectura.litros_total,
+                        'fecha_registro': timezone.now()
+                    }
+                )
+
+                if created:
+                    contadores['creados'] += 1
+                else:
+                    # Si ya existía (ej: sincronizaste en la mañana y ahora de nuevo en la tarde),
+                    # actualizamos el valor al más reciente.
+                    if consumo_obj.cantidad_consumida != ultima_lectura.litros_total:
+                        consumo_obj.cantidad_consumida = ultima_lectura.litros_total
+                        consumo_obj.fecha_registro = timezone.now()
+                        consumo_obj.save()
+                        contadores['actualizados'] += 1
+            
+            except ValidationError:
+                # Si la validación falla (ej: lectura menor a la anterior por reset del ESP32)
+                contadores['errores'] += 1
+    
+    # Mensaje final al usuario
+    mensaje = f"Sincronización IoT: {contadores['creados']} nuevos, {contadores['actualizados']} actualizados."
+    if contadores['errores'] > 0:
+        mensaje += f" ({contadores['errores']} errores de validación)."
+    
+    messages.success(request, mensaje)
+    return redirect('consumos:lista_usuarios_consumos')
