@@ -1,0 +1,25 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Entornos Virtuales (El motivo principal) ---
+venv/
+.venv/
+env/
+.env/
+
+# --- Base de Datos Local (Para no sobreescribir la de tu compañero) ---
+db.sqlite3
+
+# --- Variables de Entorno y Seguridad (Claves de Supabase) ---
+.env
+*.env
+
+# --- Archivos de Sistema Operativo (Basura) ---
+.DS_Store
+Thumbs.db
+
+# --- IDEs (Configuraciones personales de tu editor) ---
+.vscode/
+.idea/
