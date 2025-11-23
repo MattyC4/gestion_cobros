@@ -2,121 +2,134 @@
 
 {% block title %}¿Quiénes somos? - Comité APR Nahueltoro{% endblock %}
 
+{% block extra_head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <!-- Título principal -->
-    <div class="text-center">
-        <h1 class="mb-4 text-primary" style="font-size: 2.5rem; font-weight: bold;">¿Quiénes somos?</h1>
-        <p class="lead" style="font-size: 1.2rem; line-height: 1.6;">
+<div class="container mx-auto px-4 py-12 max-w-6xl">
+    
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">¿Quiénes somos?</h1>
+        <p class="text-lg md:text-xl text-base-content/80 leading-relaxed max-w-3xl mx-auto">
             En el <strong>Comité APR Nahueltoro</strong>, trabajamos con dedicación para garantizar el acceso al agua potable en nuestra comunidad rural. Creemos en la sostenibilidad, el compromiso social y la transparencia como pilares fundamentales de nuestro servicio.
         </p>
     </div>
 
-    <hr class="my-5">
+    <div class="divider"></div>
 
-    <!-- Misión y Visión -->
-    <div class="row mt-5">
-        <!-- Misión -->
-        <div class="col-md-6 d-flex align-items-stretch">
-            <div class="card shadow-lg border-0 w-100">
-                <div class="card-body text-center">
-                    <h3 class="text-primary"><i class="fas fa-hand-holding-water fa-2x mb-3"></i><br>Misión</h3>
-                    <p>
-                        Proveer agua potable de calidad, garantizar la sostenibilidad de los recursos y apoyar a nuestra comunidad en su desarrollo, asegurando la accesibilidad y la equidad en el servicio.
-                    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+        <div class="card bg-base-100 shadow-xl border border-base-300 h-full hover:shadow-2xl transition-shadow duration-300">
+            <div class="card-body text-center items-center">
+                <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <i class="fas fa-hand-holding-water text-4xl"></i>
                 </div>
+                <h3 class="card-title text-2xl text-primary mb-2">Misión</h3>
+                <p class="text-base-content/70">
+                    Proveer agua potable de calidad, garantizar la sostenibilidad de los recursos y apoyar a nuestra comunidad en su desarrollo, asegurando la accesibilidad y la equidad en el servicio.
+                </p>
             </div>
         </div>
 
-        <!-- Visión -->
-        <div class="col-md-6 d-flex align-items-stretch">
-            <div class="card shadow-lg border-0 w-100">
-                <div class="card-body text-center">
-                    <h3 class="text-primary"><i class="fas fa-globe fa-2x mb-3"></i><br>Visión</h3>
-                    <p>
-                        Ser un referente en la gestión eficiente del agua potable rural, destacándonos por nuestra transparencia, compromiso social y cuidado del medio ambiente.
-                    </p>
+        <div class="card bg-base-100 shadow-xl border border-base-300 h-full hover:shadow-2xl transition-shadow duration-300">
+            <div class="card-body text-center items-center">
+                <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <i class="fas fa-globe text-4xl"></i>
+                </div>
+                <h3 class="card-title text-2xl text-primary mb-2">Visión</h3>
+                <p class="text-base-content/70">
+                    Ser un referente en la gestión eficiente del agua potable rural, destacándonos por nuestra transparencia, compromiso social y cuidado del medio ambiente.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider my-12"></div>
+
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full text-primary mb-4">
+            <i class="fas fa-users text-3xl"></i>
+        </div>
+        <h3 class="text-3xl font-bold text-primary mb-8">Nuestros valores</h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
+                <div class="card-body items-center text-center p-6">
+                    <div class="text-secondary mb-4">
+                        <i class="fas fa-handshake text-5xl"></i>
+                    </div>
+                    <p class="font-semibold text-lg text-base-content">Compromiso</p>
+                </div>
+            </div>
+            <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
+                <div class="card-body items-center text-center p-6">
+                    <div class="text-secondary mb-4">
+                        <i class="fas fa-balance-scale text-5xl"></i>
+                    </div>
+                    <p class="font-semibold text-lg text-base-content">Transparencia</p>
+                </div>
+            </div>
+            <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
+                <div class="card-body items-center text-center p-6">
+                    <div class="text-secondary mb-4">
+                        <i class="fas fa-leaf text-5xl"></i>
+                    </div>
+                    <p class="font-semibold text-lg text-base-content">Sostenibilidad</p>
+                </div>
+            </div>
+            <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
+                <div class="card-body items-center text-center p-6">
+                    <div class="text-secondary mb-4">
+                        <i class="fas fa-people-carry text-5xl"></i>
+                    </div>
+                    <p class="font-semibold text-lg text-base-content">Responsabilidad</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <hr class="my-5">
+    <div class="divider my-12"></div>
 
-    <!-- Valores -->
-    <div class="text-center">
-        <h3 class="text-primary mb-4" style="font-weight: bold;"><i class="fas fa-users fa-2x"></i><br> Nuestros valores</h3>
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <i class="fas fa-handshake fa-2x mb-3 text-primary"></i>
-                        <p>Compromiso con la comunidad</p>
-                    </div>
-                </div>
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full text-primary mb-4">
+                <i class="fas fa-question-circle text-3xl"></i>
             </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <i class="fas fa-balance-scale fa-2x mb-3 text-primary"></i>
-                        <p>Transparencia y ética en la gestión</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <i class="fas fa-leaf fa-2x mb-3 text-primary"></i>
-                        <p>Sostenibilidad ambiental</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <i class="fas fa-people-carry fa-2x mb-3 text-primary"></i>
-                        <p>Responsabilidad social</p>
-                    </div>
-                </div>
-            </div>
+            <h3 class="text-3xl font-bold text-primary">Preguntas frecuentes</h3>
         </div>
-    </div>
 
-    <hr class="my-5">
+        <div class="flex flex-col gap-4">
+            
+            <details class="group bg-base-100 border border-base-300 shadow-sm rounded-lg overflow-hidden open:bg-base-200/30 transition-all">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none py-4 px-5 text-base-content hover:bg-base-200/50 transition select-none text-lg">
+                    <span>¿Cómo puedo contactarlos si tengo un problema?</span>
+                    <span class="transition-transform duration-300 group-open:rotate-45 text-primary bg-primary/10 rounded-full w-8 h-8 flex items-center justify-center">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                </summary>
+                <div class="text-base-content/70 px-5 pb-5 text-base border-t border-base-200/50 pt-4">
+                    Puedes escribirnos a nuestro correo 
+                    <a href="mailto:soporte@aprnahueltoro.cl" class="link link-primary font-semibold inline-flex items-center gap-1">
+                        <i class="fas fa-envelope"></i> soporte@aprnahueltoro.cl
+                    </a>, 
+                    donde un miembro de nuestro equipo estará encantado de ayudarte.
+                </div>
+            </details>
 
-    <!-- Preguntas frecuentes -->
-    <div class="text-center">
-        <h3 class="text-primary mb-4" style="font-weight: bold;"><i class="fas fa-question-circle fa-2x"></i><br> Preguntas frecuentes</h3>
-        <div class="accordion" id="faqAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
-                        ¿Cómo puedo contactarlos si tengo un problema?
-                    </button>
-                </h2>
-                <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqHeadingOne">
-                    <div class="accordion-body">
-                        Puedes escribirnos a nuestro correo <a href="mailto:soporte@aprnahueltoro.cl">soporte@aprnahueltoro.cl</a>, donde un miembro de nuestro equipo estará encantado de ayudarte.
-                    </div>
+            <details class="group bg-base-100 border border-base-300 shadow-sm rounded-lg overflow-hidden open:bg-base-200/30 transition-all">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none py-4 px-5 text-base-content hover:bg-base-200/50 transition select-none text-lg">
+                    <span>¿Dónde se encuentra el Comité APR Nahueltoro?</span>
+                    <span class="transition-transform duration-300 group-open:rotate-45 text-primary bg-primary/10 rounded-full w-8 h-8 flex items-center justify-center">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                </summary>
+                <div class="text-base-content/70 px-5 pb-5 text-base border-t border-base-200/50 pt-4 inline-flex items-center gap-2">
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                    Estamos ubicados en la comunidad de Nahueltoro, comprometidos a servir a todas las familias rurales de la región.
                 </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faqHeadingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
-                        ¿Dónde se encuentra el Comité APR Nahueltoro?
-                    </button>
-                </h2>
-                <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo">
-                    <div class="accordion-body">
-                        Estamos ubicados en la comunidad de Nahueltoro, comprometidos a servir a todas las familias rurales de la región.
-                    </div>
-                </div>
-            </div>
+            </details>
+
         </div>
-    </div>
-
-    <div class="mt-5 text-center">
-        <a href="{% url 'login:home' %}" class="btn btn-primary btn-lg px-5 py-3">Volver al inicio</a>
     </div>
 </div>
 {% endblock %}

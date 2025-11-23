@@ -1,109 +1,191 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Gestión APR{% endblock %}</title>
-    {% load static %}
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome para iconos -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            background: url("{% static 'img/background.jpg' %}") no-repeat center center fixed;
-            background-size: cover;
-            color: #333;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gestión APR{% endblock %}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            nahueltoro: {
+              light: '#e6f0ff',
+              DEFAULT: '#0077cc',
+              dark: '#005fa3',
+            }
+          }
         }
-        main {
-            flex: 1;
-            background-color: rgba(255, 255, 255, 0.95);
-            margin: 20px auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 1200px;
-        }
-        header {
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
-            padding: 15px 0;
-        }
-        header .logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-        }
-        header .logo img {
-            height: 50px;
-            margin-right: 10px;
-        }
-        header .logo h1 {
-            font-size: 1.8rem;
-            margin: 0;
-        }
-        .navbar .nav-link {
-            color: white;
-        }
-        .navbar .nav-link:hover {
-            text-decoration: underline;
-        }
-        footer {
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            font-size: 0.9rem;
-        }
-    </style>
+      },
+      plugins: [daisyui],
+      daisyui: {
+        themes: [
+          {
+            light: {
+              "primary": "#0077cc",
+              "secondary": "#00bcd4",
+              "accent": "#0066a1",
+              "neutral": "#2a2a2a",
+              "base-100": "#ffffff",
+              "base-200": "#f6f8fb", 
+              "base-300": "#e2e8f0",
+              "base-content": "#1e293b",
+              "info": "#0099ff",
+              "success": "#22c55e",
+              "warning": "#facc15",
+              "error": "#ef4444",
+            },
+          },
+          "dark", 
+        ],
+      },
+    };
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+
+  <style>
+    /* Estilos globales de compatibilidad */
+    body, p, h1, h2, h3, h4, h5, h6, span, div, li, td, th { color: inherit; }
+    input, select, textarea, .form-control, .form-select {
+      background-color: oklch(var(--b1)) !important;
+      color: oklch(var(--bc)) !important;
+      border-color: oklch(var(--b3)) !important;
+    }
+    ::placeholder { opacity: 0.6; color: oklch(var(--bc)) !important; }
+    .table, table { --bs-table-bg: transparent !important; --bs-table-color: inherit !important; color: inherit !important; background-color: transparent !important; }
+    td, th { background-color: transparent !important; border-color: oklch(var(--b3)) !important; }
+    body, header, footer, div, section { transition-property: background-color, border-color, color; transition-duration: 300ms; }
+  </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
 </head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container d-flex justify-content-between align-items-center">
-            <a href="{% url 'login:home' %}" class="logo">
-                <img src="{% static 'img/logo.png' %}" alt="Logo Comité APR">
-                <h1>Gestión de Reportes</h1>
-            </a>
-            <nav class="navbar navbar-expand-lg">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item"><a class="nav-link" href="{% url 'reportes:revisar_consumo' %}"><i class="fas fa-search"></i> Revisar Consumo</a></li>
-                        </ul>
-                        <ul class="navbar-nav ms-auto">
-                            {% if user.is_authenticated %}
-                                <li class="nav-item"><a class="nav-link text-danger" href="{% url 'login:logout' %}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                            {% else %}
-                                <li class="nav-item"><a class="nav-link" href="{% url 'login:home' %}"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+
+<body class="min-h-screen bg-base-200 text-base-content flex flex-col">
+
+  <header class="sticky top-0 z-50 flex shadow-md py-4 px-4 sm:px-10 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80 min-h-[70px] tracking-wide border-b border-base-300 transition-colors duration-300">
+    <div class="flex flex-wrap items-center justify-between gap-5 w-full">
+
+      <a href="{% url 'login:home' %}" class="flex items-center gap-3 group">
+        <img src="{% static 'img/logo.png' %}" alt="Logo Comité APR"
+          class="h-10 w-10 object-contain bg-white rounded-md shadow-sm transition-transform group-hover:scale-105">
+        <div>
+          <span class="block font-bold text-lg text-primary">Comité APR Nahueltoro</span>
+          <span class="block text-xs opacity-70">Gestión de Reportes</span>
         </div>
-    </header>
+      </a>
 
+      <div id="collapseMenu" class="max-lg:hidden lg:!block">
+        <ul class="lg:flex gap-x-6 max-lg:space-y-3 max-lg:fixed max-lg:bg-base-100 max-lg:w-1/2 max-lg:min-w-[250px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
+          
+          <li class="mb-6 hidden max-lg:block">
+            <a href="{% url 'login:home' %}" class="flex items-center gap-2">
+              <img src="{% static 'img/logo.png' %}" alt="Logo" class="h-8 w-8 bg-white rounded">
+              <span class="font-semibold text-primary">Reportes</span>
+            </a>
+          </li>
 
-    <!-- Contenido dinámico -->
-    <main class="container mt-4">
+          <li>
+            <a href="{% url 'reportes:revisar_consumo' %}" 
+               class="block font-medium text-[15px] hover:text-primary transition flex items-center gap-2">
+               <i class="fas fa-search text-sm"></i> Revisar Consumo
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex max-lg:ml-auto items-center gap-3">
+        
+        {% if user.is_authenticated %}
+          <a href="{% url 'login:logout' %}"
+             class="hidden sm:inline-flex items-center gap-2 px-6 py-2.5 rounded-full cursor-pointer text-primary hover:text-white text-sm tracking-wider font-medium border border-primary outline-0 bg-transparent hover:bg-primary transition-all duration-300">
+             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+          </a>
+          <a href="{% url 'login:logout' %}" class="sm:hidden btn btn-ghost btn-circle text-primary">
+            <i class="fas fa-sign-out-alt text-lg"></i>
+          </a>
+        {% else %}
+        <a href="{% url 'login:login' %}"
+           class="px-6 py-2.5 rounded-full cursor-pointer text-primary hover:text-white text-sm tracking-wider font-medium border border-primary outline-0 bg-transparent hover:bg-primary transition-all duration-300">
+          Iniciar sesión
+        </a>
+        {% endif %}
+
+        <div class="flex items-center">
+          <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
+            <input type="checkbox" id="theme-toggle" />
+            <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
+            <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
+          </label>
+        </div>
+
+        <button id="toggleOpen" class="lg:hidden btn btn-ghost btn-circle border border-base-300">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <script>
+    const toggleOpen = document.getElementById("toggleOpen");
+    const collapseMenu = document.getElementById("collapseMenu");
+    toggleOpen?.addEventListener("click", () => {
+      collapseMenu.classList.toggle("max-lg:hidden");
+    });
+  </script>
+
+  <main class="container mx-auto px-4 my-8 flex-grow">
+    <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
         {% block content %}{% endblock %}
-    </main>
+    </div>
+  </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>Gestión de Reportes APR &copy; {{ current_year }}</p>
-    </footer>
+  <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center transition-colors duration-300">
+    <div class="container mx-auto">
+      <p class="text-sm opacity-70">
+        Gestión de Reportes APR &copy; {{ current_year|default:"2024" }}
+      </p>
+    </div>
+  </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    function setAppTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (themeToggle) themeToggle.checked = theme === 'dark';
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setAppTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('change', function () {
+        setAppTheme(this.checked ? 'dark' : 'light');
+      });
+    }
+  </script>
+
 </body>
 </html>
