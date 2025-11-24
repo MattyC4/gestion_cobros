@@ -3,43 +3,57 @@
 {% block title %}Registrar Consumo{% endblock %}
 
 {% block content %}
-<div class="card shadow-lg p-4">
-    <h2 class="mb-4 text-center text-primary">Registrar Consumo</h2>
-    <form method="post">
+<div class="max-w-lg mx-auto">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-primary">Registrar Consumo</h2>
+        <p class="text-base-content/70 mt-2">Ingresa los datos de la lectura actual</p>
+    </div>
+
+    <form method="post" class="card bg-base-100/50 sm:bg-base-100 sm:shadow-lg border border-base-200 p-6 sm:p-8 rounded-2xl">
         {% csrf_token %}
-        <div class="mb-4">
-            <label for="cantidad_consumida" class="form-label fw-bold">
-                <i class="fas fa-tint"></i> Cantidad Consumida (m³)
+
+        <div class="form-control mb-5">
+            <label for="cantidad_consumida" class="label">
+                <span class="label-text font-semibold flex items-center gap-2">
+                    <i class="bi bi-droplet-fill text-info"></i> Cantidad Consumida (m³)
+                </span>
             </label>
             <input 
                 type="number" 
                 name="cantidad_consumida" 
                 id="cantidad_consumida" 
-                class="form-control" 
+                class="input input-bordered w-full focus:input-primary transition-all" 
                 step="0.01" 
-                placeholder="Ingrese la cantidad consumida" 
+                placeholder="Ej: 15.5" 
                 required>
-            <small class="form-text text-muted">
-                Debe ser mayor al último consumo registrado.
-            </small>
+            <label class="label">
+                <span class="label-text-alt text-base-content/60">
+                    <i class="bi bi-info-circle me-1"></i> Debe ser mayor al último consumo registrado.
+                </span>
+            </label>
         </div>
-        <div class="mb-4">
-            <label for="fecha_consumo" class="form-label fw-bold">
-                <i class="fas fa-calendar-alt"></i> Fecha del Consumo
+
+        <div class="form-control mb-8">
+            <label for="fecha_consumo" class="label">
+                <span class="label-text font-semibold flex items-center gap-2">
+                    <i class="bi bi-calendar-event text-secondary"></i> Fecha del Consumo
+                </span>
             </label>
             <input 
                 type="date" 
                 name="fecha_consumo" 
                 id="fecha_consumo" 
-                class="form-control" 
+                class="input input-bordered w-full focus:input-primary transition-all" 
                 required>
         </div>
-        <div class="d-flex justify-content-end">
-            <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-secondary me-2">
-                <i class="fas fa-arrow-left"></i> Cancelar
+
+        <div class="flex items-center justify-end gap-3 mt-2">
+            <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-ghost hover:bg-base-200 text-base-content/80">
+                <i class="bi bi-arrow-left"></i> Cancelar
             </a>
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-check"></i> Registrar
+            
+            <button type="submit" class="btn btn-primary text-white shadow-md shadow-primary/30">
+                <i class="bi bi-check-lg text-lg"></i> Registrar
             </button>
         </div>
     </form>

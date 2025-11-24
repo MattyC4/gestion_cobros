@@ -2,169 +2,300 @@
 
 {% block title %}Panel de Administración General{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Animación de entrada suave */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-entry {
+        opacity: 0;
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    /* Retrasos para efecto cascada */
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="mb-4 text-center">Panel de Administración General</h2>
-        <p class="text-center text-muted">
-            ¡Bienvenido al sistema de gestión del <strong>Comité APR Nahueltoro</strong>!
-            Aquí podrás administrar usuarios, tarifas, medidores y supervisar el consumo de agua de nuestra comunidad.
+<div class="container mx-auto px-4 py-10 max-w-7xl">
+
+    <div class="text-center mb-10 animate-entry">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-primary mb-3">Panel de Administración General</h2>
+        <p class="text-lg text-base-content/70 max-w-3xl mx-auto">
+            ¡Bienvenido al sistema de gestión del <strong>Comité APR Nahueltoro</strong>!<br>
+            Aquí podrás administrar usuarios, tarifas, medidores y supervisar el consumo.
         </p>
+    </div>
 
-        <!-- Mensaje de bienvenida con botón de cerrar -->
-        <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
-            Este panel te permite acceder a todas las funcionalidades administrativas de forma centralizada.
-            Consulta los gráficos para monitorear tendencias y utiliza las opciones de gestión para realizar tareas
-            clave.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    <div class="alert alert-info shadow-md mb-10 animate-entry delay-100 flex items-start bg-info/10 border border-info/20 text-base-content">
+        <i class="bi bi-info-circle-fill text-2xl text-info shrink-0"></i>
+        <div class="flex-1">
+            <h3 class="font-bold">Panel Centralizado</h3>
+            <div class="text-sm opacity-90">
+                Este panel te permite acceder a todas las funcionalidades administrativas. Consulta los gráficos y utiliza las opciones de gestión abajo.
+            </div>
         </div>
+        <button class="btn btn-sm btn-circle btn-ghost text-base-content/50 hover:bg-base-content/10" onclick="this.parentElement.style.display='none';">✕</button>
+    </div>
 
-        <!-- Datos Relevantes -->
-        <div class="row text-center mb-4">
-            <div class="col-md-2">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Usuarios Totales</h5>
-                    <p class="display-6 text-primary">{{ total_usuarios }}</p>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Medidores Activos</h5>
-                    <p class="display-6 text-success">{{ medidores_activos }}</p>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Medidores Inactivos</h5>
-                    <p class="display-6 text-danger">{{ medidores_inactivos|default:"0" }}</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Consumo Histórico</h5>
-                    <p class="display-6 text-warning">{{ total_consumo_mes }} m³</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Tarifa Actual</h5>
-                    <p class="display-6 text-info">${{ tarifa_actual }}</p>
-                </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10 animate-entry delay-200">
+        
+        <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
+            <div class="card-body p-4 text-center">
+                <h5 class="text-xs font-bold uppercase text-base-content/60 tracking-wider">Usuarios Totales</h5>
+                <p class="text-3xl font-extrabold text-primary">{{ total_usuarios }}</p>
             </div>
         </div>
 
-        <!-- Gráficos -->
-        <div class="row mt-4">
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Evolución de Tarifas</h5>
-                        <canvas id="graficoTarifas"></canvas>
-                        <p class="text-muted text-center mt-2">
-                            Este gráfico muestra la evolución de las tarifas a lo largo del tiempo.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Consumo Mensual</h5>
-                        <canvas id="graficoConsumo"></canvas>
-                        <p class="text-muted text-center mt-2">
-                            Observa el consumo mensual registrado por los usuarios.
-                        </p>
-                    </div>
-                </div>
+        <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
+            <div class="card-body p-4 text-center">
+                <h5 class="text-xs font-bold uppercase text-base-content/60 tracking-wider">Medidores Activos</h5>
+                <p class="text-3xl font-extrabold text-success">{{ medidores_activos }}</p>
             </div>
         </div>
 
-        <!-- Gestión de Funcionalidades -->
-        <h4 class="text-center mt-5">Opciones de Gestión</h4>
-        <div class="row mt-4">
-            <div class="col-md-4 mb-4">
-                <div class="card border-primary h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-primary">Gestión de Cuentas</h5>
-                        <p class="text-muted">Accede a la lista de cuentas registradas.</p>
-                        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-primary btn-sm">Ver
-                            Cuentas</a>
-                    </div>
-                </div>
+        <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
+            <div class="card-body p-4 text-center">
+                <h5 class="text-xs font-bold uppercase text-base-content/60 tracking-wider">Medidores Inactivos</h5>
+                <p class="text-3xl font-extrabold text-error">{{ medidores_inactivos|default:"0" }}</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-success h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-success">Gestión de Usuarios</h5>
-                        <p class="text-muted">Administra los datos de los usuarios.</p>
-                        <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-success btn-sm">Ver Usuarios</a>
-                    </div>
-                </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
+            <div class="card-body p-4 text-center">
+                <h5 class="text-xs font-bold uppercase text-base-content/60 tracking-wider">Consumo Histórico</h5>
+                <p class="text-2xl font-extrabold text-warning">{{ total_consumo_mes }} <span class="text-sm text-base-content/60">m³</span></p>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-info h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-info">Gestión de Medidores</h5>
-                        <p class="text-muted">Asigna y gestiona los medidores.</p>
-                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm">Asignar
-                            Medidor</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-warning h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-warning">Gestión de Tarifas</h5>
-                        <p class="text-muted">Configura y administra las tarifas de agua.</p>
-                        <a href="{% url 'tarifas:agregar_tarifa' %}" class="btn btn-warning btn-sm">Agregar Tarifa</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-danger h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-danger">Gestión de Consumos</h5>
-                        <p class="text-muted">Registra y consulta los consumos de agua.</p>
-                        <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-danger btn-sm">Registrar
-                            Consumo</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-dark h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-dark">Gestión de Boletas</h5>
-                        <p class="text-muted">Accede al historial de boletas recientes, busca usuarios y genera nuevas
-                            boletas.</p>
-                        <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-primary btn-sm">Historial de
-                            Boletas Recientes</a>
-                        <a href="{% url 'boletas:buscar_usuario' %}" class="btn btn-secondary btn-sm mt-2">Buscar
-                            Usuario</a>
-                        <a href="{% url 'boletas:seleccionar_usuario' %}"
-                            class="btn btn-outline-primary btn-sm mt-2">Generar Boleta</a>
-                    </div>
-                </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
+            <div class="card-body p-4 text-center">
+                <h5 class="text-xs font-bold uppercase text-base-content/60 tracking-wider">Tarifa Actual</h5>
+                <p class="text-3xl font-extrabold text-info">${{ tarifa_actual }}</p>
             </div>
         </div>
     </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 animate-entry delay-300">
+        
+        <div class="card bg-base-100 shadow-xl border border-base-300">
+            <div class="card-body">
+                <h3 class="card-title text-base-content justify-center mb-4">Evolución de Tarifas</h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="graficoTarifas"></canvas>
+                </div>
+                <p class="text-center text-xs text-base-content/60 mt-2">Historial de precios en el tiempo.</p>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl border border-base-300">
+            <div class="card-body">
+                <h3 class="card-title text-base-content justify-center mb-4">Consumo Mensual</h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="graficoConsumo"></canvas>
+                </div>
+                <p class="text-center text-xs text-base-content/60 mt-2">Registro total de m³ por mes.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider text-primary font-bold text-xl mb-8 animate-entry delay-400">Opciones de Gestión</div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-entry delay-400">
+        
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="card-body items-center text-center">
+                <div class="p-3 bg-primary/10 rounded-full text-primary mb-3">
+                    <i class="bi bi-file-earmark-spreadsheet text-3xl"></i>
+                </div>
+                <h3 class="card-title text-primary text-lg">Gestión de Cuentas</h3>
+                <p class="text-sm text-base-content/70 mb-4">Accede a la lista de cuentas registradas.</p>
+                <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-primary btn-sm w-full text-white">Ver Cuentas</a>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="card-body items-center text-center">
+                <div class="p-3 bg-success/10 rounded-full text-success mb-3">
+                    <i class="bi bi-people text-3xl"></i>
+                </div>
+                <h3 class="card-title text-success text-lg">Gestión de Usuarios</h3>
+                <p class="text-sm text-base-content/70 mb-4">Administra los datos de los usuarios.</p>
+                <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-success btn-sm w-full text-white">Ver Usuarios</a>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="card-body items-center text-center">
+                <div class="p-3 bg-info/10 rounded-full text-info mb-3">
+                    <i class="bi bi-speedometer text-3xl"></i>
+                </div>
+                <h3 class="card-title text-info text-lg">Gestión de Medidores</h3>
+                <p class="text-sm text-base-content/70 mb-4">Asigna y gestiona los medidores.</p>
+                <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm w-full text-white">Asignar Medidor</a>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="card-body items-center text-center">
+                <div class="p-3 bg-warning/10 rounded-full text-warning mb-3">
+                    <i class="bi bi-tags text-3xl"></i>
+                </div>
+                <h3 class="card-title text-warning text-lg">Gestión de Tarifas</h3>
+                <p class="text-sm text-base-content/70 mb-4">Configura y administra las tarifas.</p>
+                <a href="{% url 'tarifas:agregar_tarifa' %}" class="btn btn-warning btn-sm w-full text-white">Agregar Tarifa</a>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="card-body items-center text-center">
+                <div class="p-3 bg-error/10 rounded-full text-error mb-3">
+                    <i class="bi bi-clipboard-data text-3xl"></i>
+                </div>
+                <h3 class="card-title text-error text-lg">Gestión de Consumos</h3>
+                <p class="text-sm text-base-content/70 mb-4">Registra y consulta los consumos.</p>
+                <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-error btn-sm w-full text-white">Registrar Consumo</a>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="card-body items-center text-center">
+                <div class="p-3 bg-neutral/10 rounded-full text-neutral mb-3">
+                    <i class="bi bi-receipt text-3xl"></i>
+                </div>
+                <h3 class="card-title text-neutral text-lg">Gestión de Boletas</h3>
+                <p class="text-sm text-base-content/70 mb-4">Historial, búsqueda y generación.</p>
+                
+                <div class="grid grid-cols-1 gap-2 w-full">
+                    <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-neutral btn-sm w-full">Historial</a>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{% url 'boletas:buscar_usuario' %}" class="btn btn-outline btn-neutral btn-sm">Buscar</a>
+                        <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-outline btn-neutral btn-sm">Generar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
-<!-- Scripts para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const graficoTarifasData = {{ grafico_tarifas_data| safe }};
-    const graficoConsumoData = {{ grafico_consumo_data| safe }};
+    // ===============================================
+    // CORRECCIÓN CRÍTICA DE COLORES
+    // ===============================================
+    function getThemeColors() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        
+        // Lista explícita de temas oscuros conocidos
+        const darkThemes = ['dark', 'business', 'halloween', 'forest', 'black', 'luxury', 'dracula', 'night'];
+        
+        // Solo consideramos "oscuro" si está en la lista O si el sistema lo fuerza y no hay tema definido
+        const isDark = darkThemes.includes(theme) || 
+                       (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    const graficoTarifas = new Chart(document.getElementById('graficoTarifas'), {
+        // CONFIGURACIÓN DE COLORES
+        return {
+            // Si NO es oscuro, forzamos NEGRO PURO (#000000)
+            text: isDark ? '#ffffff' : '#000000', 
+            
+            // Rejillas: Gris oscuro sólido en modo claro para que se vean bien
+            grid: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.3)'
+        };
+    }
+
+    let colors = getThemeColors();
+
+    // Valores por defecto globales para Chart.js
+    Chart.defaults.color = colors.text;
+    Chart.defaults.borderColor = colors.grid;
+    Chart.defaults.font.family = "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+    Chart.defaults.font.weight = 'bold'; // Forzamos negrita para ver mejor
+
+    const graficoTarifasData = {{ grafico_tarifas_data|safe }};
+    const graficoConsumoData = {{ grafico_consumo_data|safe }};
+
+    // 1. Gráfico de TARIFAS
+    const chartTarifas = new Chart(document.getElementById('graficoTarifas'), {
         type: 'line',
         data: graficoTarifasData,
-        options: { responsive: true }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            tension: 0.3,
+            plugins: {
+                legend: {
+                    labels: { color: colors.text, font: { weight: 'bold', size: 12 } }
+                }
+            },
+            scales: {
+                x: { 
+                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
+                    grid: { color: colors.grid } 
+                },
+                y: { 
+                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
+                    grid: { color: colors.grid } 
+                }
+            }
+        }
     });
 
-    const graficoConsumo = new Chart(document.getElementById('graficoConsumo'), {
+    // 2. Gráfico de CONSUMO
+    const chartConsumo = new Chart(document.getElementById('graficoConsumo'), {
         type: 'bar',
         data: graficoConsumoData,
-        options: { responsive: true }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: colors.text, font: { weight: 'bold', size: 12 } }
+                }
+            },
+            scales: {
+                x: { 
+                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
+                    grid: { display: false } 
+                },
+                y: { 
+                    beginAtZero: true, 
+                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
+                    grid: { color: colors.grid } 
+                }
+            }
+        }
     });
+
+    // 3. Observador para cambios en tiempo real
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-theme') {
+                const newColors = getThemeColors();
+                
+                [chartTarifas, chartConsumo].forEach(chart => {
+                    // Actualizamos colores de Texto
+                    chart.options.plugins.legend.labels.color = newColors.text;
+                    chart.options.scales.x.ticks.color = newColors.text;
+                    chart.options.scales.y.ticks.color = newColors.text;
+                    
+                    // Actualizamos colores de Líneas
+                    chart.options.scales.y.grid.color = newColors.grid;
+                    if(chart.options.scales.x.grid.display !== false) {
+                        chart.options.scales.x.grid.color = newColors.grid;
+                    }
+                    
+                    chart.update();
+                });
+            }
+        });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
 </script>
 {% endblock %}

@@ -3,49 +3,62 @@
 {% block title %}Lista de Usuarios con Medidores{% endblock %}
 
 {% block content %}
-<div class="card shadow-lg p-4">
-    <h2 class="mb-3 text-center text-primary">Usuarios con Medidores</h2>
-    <p class="text-muted text-center mb-4">
-        Aquí puedes buscar y seleccionar usuarios con medidores activos asignados para registrar su consumo de agua.
-    </p>
+<div class="flex flex-col gap-6">
 
-    <!-- Formulario de búsqueda -->
-    <div class="card mb-4 p-3">
-        <form method="get">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Buscar usuario por nombre" value="{{ query }}">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> Buscar
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-primary">Usuarios con Medidores</h2>
+            <p class="text-base-content/70 text-sm">Selecciona un usuario para registrar su lectura.</p>
+        </div>
+
+        <form method="get" class="w-full md:w-auto">
+            <div class="join w-full">
+                <input 
+                    type="text" 
+                    name="search" 
+                    class="input input-bordered join-item w-full md:w-64 focus:input-primary" 
+                    placeholder="Buscar por nombre..." 
+                    value="{{ query|default:'' }}">
+                <button type="submit" class="btn btn-primary join-item text-white">
+                    <i class="bi bi-search"></i>
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Tabla de usuarios con medidores -->
-    <div class="table-responsive">
-        <table class="table table-striped table-hover text-center">
-            <thead class="table-dark">
+    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
+        <table class="table table-zebra w-full">
+            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
                 <tr>
-                    <th>Nombre</th>
+                    <th class="py-4 pl-6">Nombre</th>
                     <th>RUT</th>
-                    <th>Acción</th>
+                    <th class="text-center">Acción</th>
                 </tr>
             </thead>
             <tbody>
                 {% for usuario in usuarios %}
-                <tr>
-                    <td>{{ usuario.nombre }}</td>
-                    <td>{{ usuario.rut }}</td>
-                    <td>
-                        <a href="{% url 'consumos:registrar_consumo' usuario.id %}" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Registrar Consumo
+                <tr class="hover transition-colors">
+                    <td class="pl-6 font-medium text-base-content">
+                        {{ usuario.nombre }}
+                    </td>
+                    <td class="font-mono text-base-content/80">
+                        {{ usuario.rut }}
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'consumos:registrar_consumo' usuario.id %}" 
+                           class="btn btn-sm btn-success text-white shadow-sm hover:shadow-md transition-all gap-2">
+                            <i class="bi bi-plus-lg font-bold"></i>
+                            <span class="hidden sm:inline">Registrar</span>
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3" class="text-center text-muted">
-                        <i class="bi bi-info-circle"></i> No se encontraron usuarios con medidores asignados.
+                    <td colspan="3" class="text-center py-10">
+                        <div class="flex flex-col items-center justify-center text-base-content/50">
+                            <i class="bi bi-person-slash text-4xl mb-2"></i>
+                            <p>No se encontraron usuarios con medidores asignados.</p>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -53,11 +66,11 @@
         </table>
     </div>
 
-    <!-- Botón para volver al Dashboard -->
-    <div class="d-flex justify-content-end mt-3">
-        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+    <div class="flex justify-start mt-2">
+        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
+            <i class="bi bi-arrow-left"></i> Volver al Dashboard
         </a>
     </div>
+
 </div>
 {% endblock %}
