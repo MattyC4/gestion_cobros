@@ -3,64 +3,136 @@
 {% block title %}Agregar Usuario{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="mb-4 text-center">Agregar Nuevo Usuario</h2>
-        <p class="text-muted text-center">
-            Completa el formulario con los datos requeridos para registrar un nuevo usuario en el sistema.
+<div class="max-w-2xl mx-auto">
+    
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-primary">Agregar Nuevo Usuario</h2>
+        <p class="text-base-content/70 mt-2">
+            Completa el formulario para registrar un socio en el sistema.
         </p>
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
+    </div>
 
-            <!-- Mostrar errores globales del formulario -->
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <h5><i class="fas fa-exclamation-circle"></i> Se encontraron errores en el formulario:</h5>
-                <ul>
-                    {% for field, errors in form.errors.items %}
-                        <li>{{ field }}: {{ errors|join:", " }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body p-6 sm:p-8">
+            
+            <form method="post" id="form-agregar-usuario" novalidate>
+                {% csrf_token %}
 
-            <!-- Campos del formulario -->
-            <div class="mb-3">
-                <label for="id_nombre" class="form-label fw-bold">Nombre Completo</label>
-                {{ form.nombre }}
-                <small class="form-text text-muted">Ejemplo: Juan Pérez</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_rut" class="form-label fw-bold">RUT</label>
-                {{ form.rut }}
-                <small class="form-text text-muted">Formato: 12.345.678-K</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_correo" class="form-label fw-bold">Correo Electrónico</label>
-                {{ form.correo }}
-                <small class="form-text text-muted">Ejemplo: usuario@dominio.com</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_direccion" class="form-label fw-bold">Dirección</label>
-                {{ form.direccion }}
-                <small class="form-text text-muted">Ejemplo: Calle Falsa 123, Santiago</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_telefono" class="form-label fw-bold">Teléfono</label>
-                {{ form.telefono }}
-                <small class="form-text text-muted">Formato: +569XXXXXXXX</small>
-            </div>
+                {% if form.errors %}
+                <div role="alert" class="alert alert-error mb-6 shadow-sm">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>
+                        <h3 class="font-bold">Se encontraron errores:</h3>
+                        <ul class="text-sm list-disc list-inside">
+                            {% for field, errors in form.errors.items %}
+                                <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
 
-            <!-- Botones de acción -->
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success me-2">
-                    <i class="fas fa-save"></i> Guardar Usuario
-                </button>
-                <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-            </div>
-        </form>
+                <div class="form-control mb-4">
+                    <label for="id_nombre" class="label">
+                        <span class="label-text font-bold flex items-center gap-2">
+                            <i class="bi bi-person-badge text-primary"></i> Nombre Completo
+                        </span>
+                    </label>
+                    <div class="input-group-fix">
+                        {{ form.nombre }}
+                    </div>
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Ejemplo: Juan Pérez</span>
+                    </label>
+                </div>
+
+                <div class="form-control mb-4">
+                    <label for="id_rut" class="label">
+                        <span class="label-text font-bold flex items-center gap-2">
+                            <i class="bi bi-credit-card-2-front text-primary"></i> RUT
+                        </span>
+                    </label>
+                    <div class="input-group-fix">
+                        {{ form.rut }}
+                    </div>
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Formato: 12.345.678-K</span>
+                    </label>
+                </div>
+
+                <div class="form-control mb-4">
+                    <label for="id_correo" class="label">
+                        <span class="label-text font-bold flex items-center gap-2">
+                            <i class="bi bi-envelope text-primary"></i> Correo Electrónico
+                        </span>
+                    </label>
+                    <div class="input-group-fix">
+                        {{ form.correo }}
+                    </div>
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Ejemplo: usuario@dominio.com</span>
+                    </label>
+                </div>
+
+                <div class="form-control mb-4">
+                    <label for="id_direccion" class="label">
+                        <span class="label-text font-bold flex items-center gap-2">
+                            <i class="bi bi-geo-alt text-primary"></i> Dirección
+                        </span>
+                    </label>
+                    <div class="input-group-fix">
+                        {{ form.direccion }}
+                    </div>
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Ejemplo: Calle Principal 123</span>
+                    </label>
+                </div>
+
+                <div class="form-control mb-6">
+                    <label for="id_telefono" class="label">
+                        <span class="label-text font-bold flex items-center gap-2">
+                            <i class="bi bi-telephone text-primary"></i> Teléfono
+                        </span>
+                    </label>
+                    <div class="input-group-fix">
+                        {{ form.telefono }}
+                    </div>
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Formato: +569XXXXXXXX</span>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 mt-4 border-t border-base-200 pt-6">
+                    <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-ghost hover:bg-base-200 text-base-content/80">
+                        <i class="bi bi-x-lg"></i> Cancelar
+                    </a>
+                    
+                    <button type="submit" class="btn btn-success text-white shadow-md">
+                        <i class="bi bi-save"></i> Guardar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Seleccionamos todos los inputs y selects dentro del formulario
+        const inputs = document.querySelectorAll('#form-agregar-usuario input, #form-agregar-usuario select, #form-agregar-usuario textarea');
+        
+        inputs.forEach(input => {
+            // Agregamos clases de DaisyUI y Tailwind
+            input.classList.add('input', 'input-bordered', 'w-full', 'focus:input-primary', 'transition-all');
+            
+            // Si es checkbox, usamos toggle
+            if(input.type === 'checkbox') {
+                input.className = 'toggle toggle-primary';
+            }
+            
+            // Eliminamos la clase 'form-control' de bootstrap si viene desde Python
+            input.classList.remove('form-control');
+        });
+    });
+</script>
 {% endblock %}

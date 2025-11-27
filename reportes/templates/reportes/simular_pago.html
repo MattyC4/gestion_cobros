@@ -3,62 +3,153 @@
 {% block title %}Simulación de Pago{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center mb-4">Simulación de Pago</h2>
-        <p class="text-center text-muted">
-            Ingresa los datos de tu tarjeta para pagar la boleta.
-        </p>
+<div class="max-w-4xl mx-auto">
+    
+    <!-- Encabezado Simple -->
+    <div class="text-center mb-8 md:mb-12">
+        <h2 class="text-3xl font-bold text-primary">Finalizar Pago</h2>
+        <p class="text-base-content/70 mt-2">Completa los datos de tu tarjeta de forma segura.</p>
+    </div>
 
-        <!-- Mostrar mensajes -->
-        {% if messages %}
-        <div class="mt-3">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
+    <!-- Mensajes de Error/Éxito -->
+    {% if messages %}
+    <div class="mb-8 space-y-2">
+        {% for message in messages %}
+        <div role="alert" class="alert alert-{{ message.tags }} shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>{{ message }}</span>
         </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        <!-- Información de la boleta -->
-        <div class="alert alert-info">
-            <strong>Boleta #{{ boleta.id }}</strong><br>
-            Total a pagar: <strong>${{ boleta.total_a_pagar }}</strong>
+    <!-- Layout Grid: Izquierda Formulario, Derecha Resumen -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        <!-- COLUMNA 1: FORMULARIO (Ocupa 7/12 del espacio en PC) -->
+        <div class="md:col-span-7 order-2 md:order-1">
+            <div class="card bg-base-100 shadow-xl border border-base-200">
+                <div class="card-body p-6 sm:p-8">
+                    
+                    <h3 class="font-bold text-lg mb-6 flex items-center gap-2 pb-2 border-b border-base-200">
+                        <i class="bi bi-credit-card-2-front text-primary"></i> Datos de la Tarjeta
+                    </h3>
+
+                    <!-- ID del formulario para vincularlo con el botón externo -->
+                    <form id="payment-form" method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Nombre Titular -->
+                        <div class="form-control w-full mb-5">
+                            <label for="tarjeta_nombre" class="label pt-0">
+                                <span class="label-text font-semibold">Titular de la Tarjeta</span>
+                            </label>
+                            <input type="text" id="tarjeta_nombre" name="tarjeta_nombre" 
+                                   placeholder="Como aparece en el plástico" 
+                                   class="input input-bordered w-full focus:input-primary transition-all" required />
+                        </div>
+
+                        <!-- Número Tarjeta -->
+                        <div class="form-control w-full mb-5">
+                            <label for="tarjeta_numero" class="label">
+                                <span class="label-text font-semibold">Número de Tarjeta</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="tarjeta_numero" name="tarjeta_numero" 
+                                       placeholder="0000 0000 0000 0000" maxlength="19" 
+                                       class="input input-bordered w-full focus:input-primary pl-10 font-mono tracking-wide text-lg" required />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-base-content/50">
+                                    <i class="bi bi-credit-card"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid: Expiración y CVV -->
+                        <div class="grid grid-cols-2 gap-5">
+                            <div class="form-control">
+                                <label for="tarjeta_expiracion" class="label">
+                                    <span class="label-text font-semibold">Vencimiento</span>
+                                </label>
+                                <input type="text" id="tarjeta_expiracion" name="tarjeta_expiracion" 
+                                       placeholder="MM/AA" maxlength="5" 
+                                       class="input input-bordered w-full focus:input-primary text-center" required />
+                            </div>
+                            
+                            <div class="form-control">
+                                <label for="tarjeta_cvv" class="label">
+                                    <span class="label-text font-semibold flex items-center gap-1">
+                                        CVV / CVC
+                                        <div class="tooltip tooltip-left" data-tip="3 dígitos al reverso">
+                                            <i class="bi bi-question-circle-fill text-xs text-base-content/40 cursor-help"></i>
+                                        </div>
+                                    </span>
+                                </label>
+                                <div class="relative">
+                                    <input type="password" id="tarjeta_cvv" name="tarjeta_cvv" 
+                                           placeholder="123" maxlength="3" 
+                                           class="input input-bordered w-full focus:input-primary text-center tracking-widest" required />
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-base-content/30">
+                                        <i class="bi bi-lock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Pagar (Solo visible en Móvil) -->
+                        <div class="mt-8 md:hidden">
+                            <button type="submit" class="btn btn-success text-white w-full shadow-md text-lg">
+                                Pagar ${{ boleta.total_a_pagar }}
+                            </button>
+                            <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-ghost btn-sm w-full mt-2">Cancelar</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center mt-6 flex items-center justify-center gap-2 text-xs text-base-content/50">
+                <i class="bi bi-shield-lock-fill text-success"></i>
+                <span>Transacción segura encriptada de extremo a extremo.</span>
+            </div>
         </div>
 
-        <!-- Formulario de pago -->
-        <form method="post" class="mt-4">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="tarjeta_nombre" class="form-label">Nombre del Titular</label>
-                <input type="text" class="form-control" id="tarjeta_nombre" name="tarjeta_nombre" placeholder="Ej: Juan Pérez" required>
-            </div>
-            <div class="mb-3">
-                <label for="tarjeta_numero" class="form-label">Número de Tarjeta</label>
-                <input type="text" class="form-control" id="tarjeta_numero" name="tarjeta_numero" placeholder="Ej: 4242 4242 4242 4242" maxlength="19" required>
-                <small class="text-muted">Ingresa 16 dígitos sin espacios ni guiones.</small>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="tarjeta_expiracion" class="form-label">Fecha de Expiración</label>
-                    <input type="text" class="form-control" id="tarjeta_expiracion" name="tarjeta_expiracion" placeholder="MM/YY" maxlength="5" required>
+        <!-- COLUMNA 2: RESUMEN (Ocupa 5/12 y es Sticky en PC) -->
+        <div class="md:col-span-5 order-1 md:order-2">
+            <div class="card bg-base-100 shadow-lg border border-primary/20 sticky top-6">
+                <div class="card-body p-6">
+                    <h3 class="font-bold text-lg text-base-content/80 mb-4">Resumen de Compra</h3>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-base-200">
+                        <span class="text-sm opacity-80">Concepto</span>
+                        <span class="font-medium text-right">Pago Boleta #{{ boleta.id }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center py-2 border-b border-base-200">
+                        <span class="text-sm opacity-80">Usuario</span>
+                        <span class="font-medium text-right text-sm">{{ boleta.usuario.nombre|truncatechars:18 }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-4 mb-1">
+                        <span class="font-bold text-lg">Total</span>
+                        <span class="text-3xl font-bold text-primary">${{ boleta.total_a_pagar }}</span>
+                    </div>
+                    
+                    <!-- Botón Pagar (Visible en PC) -->
+                    <div class="hidden md:block mt-6">
+                        <!-- El atributo form="payment-form" vincula este botón externo con el formulario -->
+                        <button type="submit" form="payment-form" class="btn btn-success text-white w-full shadow-md text-lg hover:scale-[1.02] transition-transform">
+                            <i class="bi bi-lock-fill"></i> Confirmar Pago
+                        </button>
+                        
+                        <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-ghost btn-sm w-full mt-3 text-base-content/60 hover:bg-base-200">
+                            Cancelar operación
+                        </a>
+                    </div>
+
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="tarjeta_cvv" class="form-label">CVV</label>
-                    <input type="text" class="form-control" id="tarjeta_cvv" name="tarjeta_cvv" placeholder="123" maxlength="3" required>
-                </div>
             </div>
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-credit-card"></i> Realizar Pago
-                </button>
-                <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
-                </a>
-            </div>
-        </form>
+        </div>
+
     </div>
 </div>
 {% endblock %}

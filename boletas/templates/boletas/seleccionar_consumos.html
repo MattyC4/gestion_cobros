@@ -3,59 +3,96 @@
 {% block title %}Seleccionar Consumos{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="mb-4 text-center">Seleccionar Consumos</h2>
-        <p class="text-center text-muted">
-            Por favor, selecciona el rango de consumos para generar la boleta del usuario. Asegúrate de que el consumo inicial sea <strong>anterior</strong> al consumo final.
-        </p>
-
-        <!-- Mostrar errores filtrados si los hay -->
-        {% if messages %}
-        <div class="alert alert-danger" role="alert">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
+<div class="max-w-3xl mx-auto">
+    
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-primary">Generar Boleta</h2>
+        <div class="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-base-200 rounded-full text-sm text-base-content/80">
+            <i class="bi bi-person-circle"></i>
+            <span>Cliente: <strong>{{ usuario.nombre }}</strong></span>
+            <span class="opacity-50">|</span>
+            <span class="font-mono">{{ usuario.rut }}</span>
         </div>
-        {% endif %}
+    </div>
 
-        <!-- Información del usuario -->
-        <div class="mb-4">
-            <h5>Usuario: {{ usuario.nombre }}</h5>
-            <p><strong>RUT:</strong> {{ usuario.rut }}</p>
-        </div>
-
-        <!-- Formulario para seleccionar consumos -->
-        <form method="post">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="consumo_inicio" class="form-label">Consumo Inicial</label>
-                    <select id="consumo_inicio" name="consumo_inicio" class="form-select" required>
-                        <option value="" disabled selected>Selecciona el consumo inicial</option>
-                        {% for consumo in consumos %}
-                        <option value="{{ consumo.id }}">{{ consumo.fecha_consumo }} - {{ consumo.cantidad_consumida }} m³</option>
-                        {% endfor %}
-                    </select>
-                    <small class="text-muted">Selecciona el consumo desde donde iniciar el cálculo.</small>
-                </div>
-                <div class="col-md-6">
-                    <label for="consumo_fin" class="form-label">Consumo Final</label>
-                    <select id="consumo_fin" name="consumo_fin" class="form-select" required>
-                        <option value="" disabled selected>Selecciona el consumo final</option>
-                        {% for consumo in consumos %}
-                        <option value="{{ consumo.id }}">{{ consumo.fecha_consumo }} - {{ consumo.cantidad_consumida }} m³</option>
-                        {% endfor %}
-                    </select>
-                    <small class="text-muted">Selecciona el consumo hasta donde finalizar el cálculo.</small>
-                </div>
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body p-6 sm:p-10">
+            
+            <div class="flex items-start gap-3 mb-6 p-4 bg-info/10 text-info rounded-lg text-sm">
+                <i class="bi bi-info-circle-fill text-xl mt-0.5"></i>
+                <p>
+                    Selecciona el rango de fechas para calcular el cobro. 
+                    El <strong>Consumo Inicial</strong> debe ser anterior al <strong>Consumo Final</strong>.
+                </p>
             </div>
 
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary">Generar Boleta</button>
-                <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-secondary">Volver</a>
+            {% if messages %}
+            <div role="alert" class="alert alert-error mb-6 shadow-sm">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>
+                    {% for message in messages %}
+                        <div>{{ message }}</div>
+                    {% endfor %}
+                </div>
             </div>
-        </form>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="form-control w-full">
+                        <label for="consumo_inicio" class="label">
+                            <span class="label-text font-bold flex items-center gap-2">
+                                <i class="bi bi-calendar-minus text-secondary"></i> Consumo Inicial
+                            </span>
+                        </label>
+                        <select id="consumo_inicio" name="consumo_inicio" class="select select-bordered w-full focus:select-primary" required>
+                            <option value="" disabled selected>-- Seleccionar --</option>
+                            {% for consumo in consumos %}
+                            <option value="{{ consumo.id }}">
+                                {{ consumo.fecha_consumo|date:"d/m/Y" }} ({{ consumo.cantidad_consumida }} m³)
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/60">Lectura anterior</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label for="consumo_fin" class="label">
+                            <span class="label-text font-bold flex items-center gap-2">
+                                <i class="bi bi-calendar-check text-primary"></i> Consumo Final
+                            </span>
+                        </label>
+                        <select id="consumo_fin" name="consumo_fin" class="select select-bordered w-full focus:select-primary" required>
+                            <option value="" disabled selected>-- Seleccionar --</option>
+                            {% for consumo in consumos %}
+                            <option value="{{ consumo.id }}">
+                                {{ consumo.fecha_consumo|date:"d/m/Y" }} ({{ consumo.cantidad_consumida }} m³)
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/60">Lectura actual</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-8 pt-6 border-t border-base-200">
+                    <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-ghost w-full sm:w-auto hover:bg-base-200 text-base-content/80">
+                        <i class="bi bi-arrow-left"></i> Volver atrás
+                    </a>
+                    
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto text-white shadow-md shadow-primary/30">
+                        <i class="bi bi-receipt-cutoff"></i> Generar Boleta
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

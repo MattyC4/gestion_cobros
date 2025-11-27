@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'login',
     'reportes',
     'widget_tweaks',
-    'boletas'
+    'boletas',
+    'django.contrib.humanize'
 ]
 
 AUTH_USER_MODEL = 'registro_cuentas.Cuenta'

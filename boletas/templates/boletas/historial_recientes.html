@@ -4,80 +4,158 @@
 {% block title %}Historial de Boletas Recientes{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center mb-4">Historial de Boletas Recientes</h2>
-        <p class="text-center text-muted">Aquí puedes ver las boletas generadas recientemente y realizar acciones rápidas.</p>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Consumo Total</th>
-                        <th>Tarifa Base</th>
-                        <th>Total a Pagar</th>
-                        <th>Estado</th>
-                        <th>Fecha de Emisión</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for boleta in boletas %}
-                    <tr>
-                        <td>{{ boleta.id }}</td>
-                        <td>{{ boleta.usuario.nombre }}</td>
-                        <td>{{ boleta.consumo_total }} m³</td>
-                        <td>{{ boleta.tarifa_base|formato_moneda }}</td>
-                        <td>{{ boleta.total_a_pagar|formato_moneda }}</td>
-                        <td>
-                            {% if boleta.pagado %}
-                                <span class="badge bg-success">Pagado</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">Pendiente</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
-                        <td>
-                            <div class="d-flex justify-content-center gap-2">
-                                <!-- Botón para Cambiar Estado -->
-                                {% if not boleta.pagado %}
-                                <a href="{% url 'boletas:confirmar_actualizar_estado_boleta' boleta.id %}" 
-                                   class="btn btn-sm btn-warning" title="Cambiar Estado">
-                                    <i class="fas fa-exchange-alt"></i>
-                                </a>
-                                {% endif %}
-                                
-                                <!-- Botón para Descargar PDF -->
-                                <a href="{% url 'boletas:descargar_pdf' boleta.id %}" 
-                                   class="btn btn-sm btn-secondary" title="Descargar PDF">
-                                    <i class="fas fa-file-download"></i>
-                                </a>
-                                
-                                <!-- Botón para Imprimir Boleta -->
-                                <a href="{% url 'boletas:imprimir_boleta' boleta.id %}" 
-                                   class="btn btn-sm btn-primary" title="Imprimir Boleta">
-                                    <i class="fas fa-print"></i>
-                                </a>
-                                
-                                <!-- Botón para Eliminar Boleta -->
-                                <a href="{% url 'boletas:confirmar_eliminar_boleta' boleta.id %}" 
-                                   class="btn btn-sm btn-danger" title="Eliminar">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-muted">
-                            <i class="fas fa-info-circle"></i> No se encontraron boletas recientes.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="flex flex-col gap-6">
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-primary">Boletas Recientes</h2>
+            <p class="text-base-content/70 text-sm mt-1">Últimos documentos generados en el sistema.</p>
         </div>
+        <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-primary text-white shadow-md gap-2">
+            <i class="bi bi-plus-lg"></i> Nueva Boleta
+        </a>
+    </div>
+
+    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm pb-10">
+        <table class="table table-zebra w-full text-center">
+            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
+                <tr>
+                    <th class="py-4">ID</th>
+                    <th class="text-left pl-6">Usuario</th>
+                    <th>Consumo</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th class="min-w-[200px]">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for boleta in boletas %}
+                <tr class="hover transition-colors group">
+                    <td class="font-mono font-bold text-primary">#{{ boleta.id }}</td>
+                    
+                    <td class="text-left pl-6 font-semibold text-base-content">
+                        {{ boleta.usuario.nombre }}
+                    </td>
+
+                    <td>
+                        <div class="badge badge-ghost font-mono text-xs">{{ boleta.consumo_total }} m³</div>
+                    </td>
+
+                    <td class="font-bold">{{ boleta.total_a_pagar|formato_moneda }}</td>
+
+                    <td>
+                        {% if boleta.pagado %}
+                            <div class="badge badge-success text-white gap-1 font-semibold text-xs">
+                                <i class="bi bi-check-circle-fill"></i> Pagado
+                            </div>
+                        {% else %}
+                            <div class="badge badge-error text-white gap-1 font-semibold text-xs animate-pulse">
+                                <i class="bi bi-clock-history"></i> Pendiente
+                            </div>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-sm opacity-80">{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
+
+                    <td>
+                        <div class="flex items-center justify-center gap-1">
+                            {% if not boleta.pagado %}
+                            <button onclick="abrirModalPagar('{% url 'boletas:confirmar_actualizar_estado_boleta' boleta.id %}', '{{ boleta.id }}')" 
+                               class="btn btn-sm btn-square btn-success text-white shadow-sm" title="Registrar Pago">
+                                <i class="bi bi-cash-coin"></i>
+                            </button>
+                            {% endif %}
+
+                            <a href="{% url 'boletas:imprimir_boleta' boleta.id %}" 
+                               class="btn btn-sm btn-square btn-info text-white shadow-sm" title="Ver Documento">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+
+                            <a href="{% url 'boletas:descargar_pdf' boleta.id %}" 
+                               class="btn btn-sm btn-square btn-secondary text-white shadow-sm" title="Descargar PDF">
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                            </a>
+
+                            <button onclick="abrirModalEliminar('{% url 'boletas:confirmar_eliminar_boleta' boleta.id %}', '{{ boleta.id }}')" 
+                               class="btn btn-sm btn-square btn-error text-white shadow-sm" title="Eliminar">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-12">
+                        <div class="flex flex-col items-center justify-center text-base-content/50">
+                            <i class="bi bi-inbox text-4xl mb-3"></i>
+                            <p class="font-medium">No hay boletas recientes.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
+
+<style>
+    dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(2px);
+    }
+</style>
+
+<dialog id="modal_pagar" class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100">
+    <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-4 text-success">
+            <i class="bi bi-cash-coin text-3xl"></i>
+        </div>
+        <h3 class="font-bold text-lg text-base-content">Registrar Pago</h3>
+        <p class="py-4 text-base-content/70">
+            ¿Confirmas el pago de la boleta <strong class="text-primary">#<span id="txt_boleta_pago"></span></strong>?
+        </p>
+    </div>
+    <div class="modal-action flex flex-col-reverse sm:flex-row gap-2">
+      <form method="dialog" class="flex-1"><button class="btn btn-ghost w-full">Cancelar</button></form>
+      <a id="btn_confirmar_pago" href="#" class="btn btn-success text-white flex-1 shadow-md">Confirmar Pago</a>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<dialog id="modal_eliminar" class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100">
+    <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error animate-pulse">
+            <i class="bi bi-trash3-fill text-3xl"></i>
+        </div>
+        <h3 class="font-bold text-lg text-base-content">¿Eliminar Boleta?</h3>
+        <p class="py-4 text-base-content/70">
+            Estás a punto de eliminar la boleta <strong class="text-base-content">#<span id="txt_boleta_eliminar"></span></strong>.
+            <br><span class="text-error text-xs font-bold uppercase mt-2 block">Esta acción no se puede deshacer.</span>
+        </p>
+    </div>
+    <div class="modal-action flex flex-col-reverse sm:flex-row gap-2">
+      <form method="dialog" class="flex-1"><button class="btn btn-ghost w-full">Cancelar</button></form>
+      <a id="btn_confirmar_eliminar" href="#" class="btn btn-error text-white flex-1 shadow-md">Sí, eliminar</a>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<script>
+    function abrirModalPagar(url, id) {
+        document.getElementById('txt_boleta_pago').innerText = id;
+        document.getElementById('btn_confirmar_pago').href = url;
+        document.getElementById('modal_pagar').showModal();
+    }
+    function abrirModalEliminar(url, id) {
+        document.getElementById('txt_boleta_eliminar').innerText = id;
+        document.getElementById('btn_confirmar_eliminar').href = url;
+        document.getElementById('modal_eliminar').showModal();
+    }
+</script>
+
 {% endblock %}
