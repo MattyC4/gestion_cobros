@@ -3,85 +3,213 @@
 {% block title %}{% if cuenta %}Editar Cuenta{% else %}Agregar Nueva Cuenta{% endif %}{% endblock %}
 
 {% block content %}
-<div class="card shadow-lg p-5 mt-4">
-    <h2 class="mb-4 text-center text-primary">
-        {% if cuenta %}Editar Cuenta{% else %}Agregar Nueva Cuenta{% endif %}
-    </h2>
-    <p class="text-center text-muted">
-        Complete el formulario para {% if cuenta %}actualizar{% else %}crear{% endif %} una cuenta. 
-        Siga las instrucciones proporcionadas para evitar errores.
-    </p>
-    <form method="post" novalidate class="needs-validation">
-        {% csrf_token %}
-
-        <!-- Mensajes de error globales específicos de registro_cuentas -->
-        {% if messages %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {% for message in messages %}
-                {% if "registro_cuentas" in message.tags %}
-                <span>{{ message }}</span>
-                {% endif %}
-            {% endfor %}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
-
-        <!-- Campos del formulario -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="id_username" class="form-label fw-bold">Nombre de Usuario</label>
-                {{ form.username }}
-                <small class="form-text text-muted">{{ form.username.help_text }}</small>
-                {% if form.username.errors %}
-                <div class="text-danger">{{ form.username.errors|first }}</div>
-                {% endif %}
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_email" class="form-label fw-bold">Correo Electrónico</label>
-                {{ form.email }}
-                <small class="form-text text-muted">{{ form.email.help_text }}</small>
-                {% if form.email.errors %}
-                <div class="text-danger">{{ form.email.errors|first }}</div>
-                {% endif %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="id_rol" class="form-label fw-bold">Rol</label>
-                {{ form.rol }}
-                <small class="form-text text-muted">{{ form.rol.help_text }}</small>
-                {% if form.rol.errors %}
-                <div class="text-danger">{{ form.rol.errors|first }}</div>
-                {% endif %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="id_password" class="form-label fw-bold">Contraseña</label>
-                {{ form.password }}
-                <small class="form-text text-muted">{{ form.password.help_text }}</small>
-                {% if form.password.errors %}
-                <div class="text-danger">{{ form.password.errors|first }}</div>
-                {% endif %}
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_confirm_password" class="form-label fw-bold">Confirmar Contraseña</label>
-                {{ form.confirm_password }}
-                {% if form.confirm_password.errors %}
-                <div class="text-danger">{{ form.confirm_password.errors|first }}</div>
-                {% endif %}
+<div class="min-vh-100 bg-light py-5">
+    <div class="container">
+        <!-- Header con Gradient -->
+        <div class="mb-5">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
+                <div class="d-flex align-items-center mb-2">
+                    {% if cuenta %}
+                    <i class="fas fa-edit me-3" style="font-size: 2rem;"></i>
+                    {% else %}
+                    <i class="fas fa-user-plus me-3" style="font-size: 2rem;"></i>
+                    {% endif %}
+                    <div>
+                        <h1 class="h2 fw-bold mb-0">
+                            {% if cuenta %}Editar Cuenta{% else %}Crear Nueva Cuenta{% endif %}
+                        </h1>
+                        <p class="text-light opacity-75 mb-0 mt-1">
+                            {% if cuenta %}
+                            Actualiza la información de la cuenta seleccionada
+                            {% else %}
+                            Registra una nueva cuenta en el sistema
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Botones -->
-        <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn btn-success me-2 px-4">
-                {% if cuenta %}<i class="fas fa-save"></i> Actualizar{% else %}<i class="fas fa-plus"></i> Registrar{% endif %}
-            </button>
-            <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-secondary px-4">
-                <i class="fas fa-times"></i> Cancelar
-            </a>
+        <!-- Card Principal -->
+        <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
+            <!-- Header del Card -->
+            <div class="card-header bg-white border-bottom-2 border-primary p-4">
+                <h5 class="card-title mb-0 text-primary fw-bold">
+                    <i class="fas fa-form me-2"></i>
+                    Información de la Cuenta
+                </h5>
+            </div>
+
+            <div class="card-body p-5">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Mensajes de Error/Éxito -->
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            {% if "registro_cuentas" in message.tags %}
+                            <div class="alert alert-{% if 'error' in message.tags %}danger{% else %}success{% endif %} alert-dismissible fade show d-flex align-items-start" role="alert">
+                                <i class="{% if 'error' in message.tags %}fas fa-exclamation-circle{% else %}fas fa-check-circle{% endif %} me-3 mt-1"></i>
+                                <div>
+                                    <strong>{% if 'error' in message.tags %}Error{% else %}Éxito{% endif %}</strong>
+                                    <p class="mb-0 mt-1">{{ message }}</p>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Campos del Formulario con Separadores -->
+                    <div class="row">
+                        <!-- Username -->
+                        <div class="col-md-6 mb-4">
+                            <label for="id_username" class="form-label fw-bold text-dark">
+                                <i class="fas fa-user text-primary me-2"></i>Nombre de Usuario
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.help_text %}
+                            <small class="form-text text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>{{ form.username.help_text|safe }}
+                            </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6 mb-4">
+                            <label for="id_email" class="form-label fw-bold text-dark">
+                                <i class="fas fa-envelope text-primary me-2"></i>Correo Electrónico
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.help_text %}
+                            <small class="form-text text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>{{ form.email.help_text|safe }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Rol -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="id_rol" class="form-label fw-bold text-dark">
+                                <i class="fas fa-shield-alt text-primary me-2"></i>Rol
+                            </label>
+                            {{ form.rol }}
+                            {% if form.rol.help_text %}
+                            <small class="form-text text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>{{ form.rol.help_text|safe }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <hr class="my-4">
+
+                    <!-- Sección de Contraseña -->
+                    <div class="alert alert-info border-0 bg-light" role="alert">
+                        <i class="fas fa-lock text-info me-2"></i>
+                        <strong>Seguridad:</strong> Las contraseñas deben ser seguras y contener mayúsculas, minúsculas y números.
+                    </div>
+
+                    <div class="row mb-4">
+                        <!-- Password -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_password" class="form-label fw-bold text-dark">
+                                <i class="fas fa-key text-primary me-2"></i>Contraseña
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.help_text %}
+                            <small class="form-text text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>{{ form.password.help_text|safe }}
+                            </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Confirmar Password -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_confirm_password" class="form-label fw-bold text-dark">
+                                <i class="fas fa-check-circle text-primary me-2"></i>Confirmar Contraseña
+                            </label>
+                            {{ form.confirm_password }}
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            {% if cuenta %}
+                            <i class="fas fa-save me-2"></i>Actualizar Cuenta
+                            {% else %}
+                            <i class="fas fa-plus-circle me-2"></i>Crear Cuenta
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
+
+<style>
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        width: 100% !important;
+        padding: 0.65rem 1rem !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 0.5rem !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+        background-color: #f8f9fa !important;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus,
+    textarea:focus {
+        outline: none !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15) !important;
+        background-color: #fff !important;
+    }
+
+    input[type="text"]:hover,
+    input[type="email"]:hover,
+    input[type="password"]:hover,
+    select:hover,
+    textarea:hover {
+        border-color: #0d6efd !important;
+    }
+
+    .bg-gradient-to-r {
+        background: linear-gradient(135deg, #0d6efd 0%, #0059d1 100%);
+    }
+
+    .border-bottom-2 {
+        border-bottom: 3px solid !important;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 600;
+    }
+</style>
 {% endblock %}

@@ -1,112 +1,283 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
+
 <head>
-    <!-- Meta etiquetas -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema Gestión de Cuentas{% endblock %}</title>
-    <!-- Cargar archivos estáticos -->
-    {% load static %}
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome para iconos -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <!-- Estilo personalizado -->
-    <style>
-        body {
-            background: url("{% static 'img/background.jpg' %}") no-repeat center center fixed;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Gestión de Cuentas{% endblock %}</title>
 
-        main {
-            flex: 1;
-            margin-top: 20px;
-        }
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-        .navbar {
-            background-color: rgba(0, 0, 0, 0.85);
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cuentas: {
+              light: '#e8f4f8',
+              DEFAULT: '#5B7C99',
+              dark: '#4A6280',
+            }
+          }
         }
+      },
+      plugins: [daisyui],
+      daisyui: {
+        themes: [
+          {
+            light: {
+              "primary": "#5B7C99",
+              "secondary": "#7A8FA3",
+              "accent": "#52B788",
+              "neutral": "#2a2a2a",
+              "base-100": "#ffffff",
+              "base-200": "#f5f6f8",
+              "base-300": "#e1e4e8",
+              "base-content": "#2c3e50",
+              "info": "#5B7C99",
+              "success": "#52B788",
+              "warning": "#facc15",
+              "error": "#D63031",
+            },
+          },
+          "dark",
+        ],
+      },
+    };
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
 
-        .navbar .navbar-brand {
-            color: #ffffff;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-        }
+  <style>
+    /* Estilos base */
+    [data-theme="dark"] body, [data-theme="dark"] p, [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6, [data-theme="dark"] span, [data-theme="dark"] div, [data-theme="dark"] li, [data-theme="dark"] td, [data-theme="dark"] th {
+      color: inherit;
+    }
 
-        .navbar .navbar-brand img {
-            height: 40px;
-            margin-right: 10px;
-        }
+    input, select, textarea, .form-control, .form-select {
+      background-color: oklch(var(--b1)) !important;
+      color: oklch(var(--bc)) !important;
+      border-color: oklch(var(--b3)) !important;
+    }
 
-        .navbar .nav-link {
-            color: #ffffff;
-        }
+    ::placeholder { opacity: 0.6; color: oklch(var(--bc)) !important; }
+    .table, table { --bs-table-bg: transparent !important; --bs-table-color: inherit !important; color: inherit !important; background-color: transparent !important; }
+    td, th { background-color: transparent !important; border-color: oklch(var(--b3)) !important; }
 
-        .navbar .nav-link:hover {
-            text-decoration: underline;
-        }
+    body, header, footer, div, section {
+      transition-property: background-color, border-color, color;
+      transition-duration: 300ms;
+    }
+  </style>
 
-        .card {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
+  <script>
+    // Inicialización visual mínima hasta que JS de tema se ejecute
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
 
-        footer {
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            font-size: 0.9rem;
-            margin-top: auto;
-        }
-    </style>
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'roles:redireccion_dashboard' %}">
-                <img src="{% static 'img/logo.png' %}" alt="Logo Gestión Cuentas">
-                Gestión de Cuentas
+
+<body class="min-h-screen bg-base-200 text-base-content transition-colors duration-300">
+
+  <!-- Restaurada la estructura que funcionaba: drawer sin forzar abierto -->
+  <div class="drawer min-h-screen">
+    <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex flex-col min-h-screen">
+
+      <header class="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80">
+        <div class="navbar px-4 sm:px-8">
+          
+          <div class="flex-none mr-2">
+            <label for="sidebar-toggle" class="btn btn-ghost btn-circle">
+              <i class="bi bi-list text-2xl text-primary"></i>
+            </label>
+          </div>
+
+          <div class="flex-1 flex items-center gap-3">
+            <a href="{% url 'roles:redireccion_dashboard' %}" class="flex items-center gap-3 group">
+              <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo Gestión Cuentas"
+                   class="h-10 w-10 object-contain rounded-md shadow-sm transition-transform group-hover:scale-105">
+              <div class="leading-tight">
+                <span class="block font-bold text-lg text-primary">FlowWeb</span>
+                <span class="block text-xs opacity-70">Gestión de Cuentas</span>
+              </div>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        {% if user.rol == 'admin' %}
-                            <!-- Enlaces para administrador -->
-                            <li class="nav-item"><a class="nav-link" href="{% url 'registro_cuentas:lista_cuentas' %}">Lista de Cuentas</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'registro_cuentas:gestionar_cuenta' %}">Registrar Cuenta</a></li>
-                        {% endif %}
-                    {% else %}
-                        <!-- Enlace para usuarios no autenticados -->
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login:home' %}">Iniciar Sesión</a></li>
-                    {% endif %}
-                </ul>
+          </div>
+
+          <div class="flex-none flex items-center gap-3">
+            <div class="flex items-center">
+              <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
+                <input type="checkbox" id="theme-toggle" />
+                <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
+                <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
+              </label>
             </div>
+          </div>
         </div>
-    </nav>
+      </header>
 
-    <!-- Contenido dinámico -->
-    <main class="container">
-        {% block content %}
-        <!-- Aquí va el contenido específico de cada vista -->
-        {% endblock %}
-    </main>
+      <main class="flex-1 w-full">
+        <div class="container mx-auto px-4 py-8">
+          <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+      </main>
 
-    <!-- Footer -->
-    <footer>
-        <p class="mb-0">Sistema de Gestión de Cuentas &copy; {{ current_year }}</p>
-    </footer>
+      <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center transition-colors duration-300">
+        <div class="container mx-auto px-4">
+          <p class="text-sm opacity-70">
+            FlowWeb · Gestión de Cuentas © {{ current_year|default:"2025" }}
+          </p>
+        </div>
+      </footer>
 
-    <!-- Scripts de Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+
+    <div class="drawer-side z-50">
+      <label for="sidebar-toggle" class="drawer-overlay"></label>
+
+      <aside class="w-72 bg-base-100 border-r border-base-300 min-h-screen flex flex-col overflow-y-auto">
+        <div class="px-4 pt-5 pb-4 border-b border-base-300 sticky top-0 bg-base-100 z-10">
+          <div class="flex justify-between items-start mb-4">
+             <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+                  <i class="bi bi-person-badge-fill text-2xl"></i>
+                </div>
+                <div class="leading-tight">
+                  <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60">Panel</p>
+                  <p class="font-semibold text-sm">Gestión de Cuentas</p>
+                </div>
+             </div>
+
+             <label for="sidebar-toggle" class="btn btn-sm btn-circle btn-ghost lg:hidden">
+                <i class="bi bi-x-lg"></i>
+             </label>
+          </div>
+
+          {% if user.is_authenticated %}
+          <div class="flex items-center gap-3 bg-base-200/80 rounded-xl px-3 py-3">
+            <div class="w-12 h-12 rounded-full bg-primary text-base-100 flex items-center justify-center text-2xl">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="leading-snug">
+              <p class="text-sm font-semibold truncate max-w-[160px]">
+                {{ user.get_full_name|default:user.username }}
+              </p>
+              <p class="text-[0.72rem] uppercase tracking-wide text-primary font-medium">
+                {% if user.is_admin %}Administrador{% else %}Usuario{% endif %}
+              </p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <nav class="flex-1 px-3 py-4 text-sm">
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">General</p>
+          <ul class="space-y-1 mb-6">
+            <li>
+              <a href="{% url 'roles:redireccion_dashboard' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-speedometer2 text-lg opacity-80"></i>
+                <span>Dashboard Principal</span>
+              </a>
+            </li>
+          </ul>
+
+          {% if user.is_authenticated %}
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Módulos</p>
+          <ul class="space-y-1">
+            <li>
+              <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-list text-lg opacity-80"></i>
+                <span>Lista de Cuentas</span>
+              </a>
+            </li>
+
+            {% if user.is_admin %}
+            <li>
+              <a href="{% url 'registro_cuentas:gestionar_cuenta' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-person-plus text-lg opacity-80"></i>
+                <span>Nueva Cuenta</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+          {% else %}
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Acceso</p>
+          <ul class="space-y-1">
+            <li>
+              <a href="{% url 'login:home' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-box-arrow-in-right text-lg opacity-80"></i>
+                <span>Iniciar sesión</span>
+              </a>
+            </li>
+          </ul>
+          {% endif %}
+        </nav>
+
+        <div class="border-t border-base-300 px-4 py-4 text-xs mt-auto">
+          {% if user.is_authenticated %}
+          <a href="{% url 'login:logout' %}" class="btn btn-error btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar sesión</span>
+          </a>
+          {% else %}
+          <a href="{% url 'login:home' %}" class="btn btn-primary btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Iniciar sesión</span>
+          </a>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Control del tema + cierre automático del drawer en pantallas pequeñas
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    function setAppTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (themeToggle) themeToggle.checked = theme === 'dark';
+    }
+
+    // Preferencia guardada si existe, si no -> respetar prefers-color-scheme
+    let savedTheme = localStorage.getItem('theme');
+    if (!savedTheme) {
+      savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    setAppTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('change', function () {
+        setAppTheme(this.checked ? 'dark' : 'light');
+      });
+    }
+
+    // Cerrar el drawer automáticamente al seleccionar un enlace en pantallas pequeñas (<= 1023px)
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    document.querySelectorAll('.drawer-side nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (sidebarToggle && sidebarToggle.checked && window.matchMedia('(max-width: 1023px)').matches) {
+          sidebarToggle.checked = false;
+        }
+      });
+    });
+  </script>
+
 </body>
+
 </html>
