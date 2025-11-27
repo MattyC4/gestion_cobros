@@ -7,6 +7,144 @@ from boletas.models import Boleta
 import re
 from datetime import datetime
 
+from django.db.models import Sum, Count, Q
+from django.contrib.auth.decorators import login_required
+from roles.decorators import role_required
+from boletas.models import Boleta
+from usuarios.models import Usuario
+from consumos.models import Consumo
+
+
+# reportes/views.py
+import calendar
+import json
+from datetime import date, timedelta
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Avg
+from django.shortcuts import render
+from django.utils import timezone
+
+from boletas.models import Boleta
+from consumos.models import Consumo
+
+
+@login_required
+def dashboard_reportes(request):
+    today = timezone.localdate()
+
+    # Rango del mes actual (1 al último día)
+    first_day_month = today.replace(day=1)
+    last_day_month = today.replace(
+        day=calendar.monthrange(today.year, today.month)[1]
+    )
+
+    # Boletas del MES actual (todas)
+    qs_mes = Boleta.objects.filter(
+        fecha_emision__range=(first_day_month, last_day_month)
+    )
+
+    # Ingresos del mes = suma de total_a_pagar (pagadas o no)
+    ingresos_mes = (
+        qs_mes.aggregate(total=Sum("total_a_pagar")).get("total") or 0
+    )
+
+    # Cantidad de boletas del mes
+    boletas_mes = qs_mes.count()
+    boletas_pagadas_mes = qs_mes.filter(pagado=True).count()
+
+    # Deuda total histórica = suma de total_a_pagar de boletas no pagadas
+    deuda_total = (
+        Boleta.objects.filter(pagado=False)
+        .aggregate(total=Sum("total_a_pagar"))
+        .get("total") or 0
+    )
+
+    # Consumo promedio del mes (en base a consumos_consumo)
+    consumo_promedio = (
+        Consumo.objects.filter(
+            fecha_consumo__range=(first_day_month, last_day_month)
+        )
+        .aggregate(prom=Avg("cantidad_consumida"))
+        .get("prom") or 0
+    )
+
+    # Últimas boletas para la tabla (histórico)
+    ultimas_boletas = (
+        Boleta.objects.select_related("usuario")
+        .order_by("-fecha_emision", "-id")[:10]
+    )
+
+    # ========================
+    # Gráfico: ingresos 6 meses
+    # ========================
+    labels_meses = []
+    datos_ingresos = []
+
+    # Tomamos los últimos 6 meses respecto al mes actual
+    # (aprox. restando meses "a mano" con year/mes)
+    year = first_day_month.year
+    month = first_day_month.month
+
+    # Generamos 6 pares (año, mes) hacia atrás
+    meses = []
+    for _ in range(6):
+        meses.append((year, month))
+        month -= 1
+        if month == 0:
+            month = 12
+            year -= 1
+
+    # Los mostramos del más antiguo al más reciente
+    for y, m in reversed(meses):
+        first = date(y, m, 1)
+        last = date(y, m, calendar.monthrange(y, m)[1])
+
+        total_mes = (
+            Boleta.objects.filter(
+                fecha_emision__range=(first, last)
+            )
+            .aggregate(total=Sum("total_a_pagar"))
+            .get("total") or 0
+        )
+
+        labels_meses.append(f"{m:02d}/{str(y)[-2:]}")
+        datos_ingresos.append(float(total_mes))
+
+    # ========================
+    # Gráfico: estado de boletas
+    # ========================
+    total_pagadas = Boleta.objects.filter(pagado=True).count()
+    total_pendientes = Boleta.objects.filter(pagado=False).count()
+
+    # Consideramos "vencidas" como boletas no pagadas con fecha anterior al mes actual
+    vencidas = Boleta.objects.filter(
+        pagado=False,
+        fecha_emision__lt=first_day_month
+    ).count()
+
+    pendientes_no_vencidas = max(total_pendientes - vencidas, 0)
+
+    datos_estado_boletas = [
+        total_pagadas,
+        pendientes_no_vencidas,
+        vencidas,
+    ]
+
+    contexto = {
+        "ingresos_mes": ingresos_mes,
+        "deuda_total": deuda_total,
+        "boletas_mes": boletas_mes,
+        "boletas_pagadas_mes": boletas_pagadas_mes,
+        "consumo_promedio": consumo_promedio,
+        "ultimas_boletas": ultimas_boletas,
+        "labels_meses": json.dumps(labels_meses),
+        "datos_ingresos": json.dumps(datos_ingresos),
+        "datos_estado_boletas": json.dumps(datos_estado_boletas),
+    }
+
+    return render(request, "reportes/dashboard.html", contexto)
+
 
 def simular_pago(request, boleta_id):
     """

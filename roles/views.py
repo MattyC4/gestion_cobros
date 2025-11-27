@@ -81,12 +81,20 @@ def admin_dashboard(request):
     Dashboard del administrador.
     """
     total_usuarios = Usuario.objects.count()
+    
+    # Obtener consumos máximos por usuario
     consumos_maximos = (
         Consumo.objects
         .values('usuario_id')
         .annotate(max_consumo=Max('cantidad_consumida'))
     )
-    total_consumo_mes = sum(dato['max_consumo'] for dato in consumos_maximos)
+    
+    # Sumar el total en la unidad base (Litros)
+    total_litros = sum(dato['max_consumo'] for dato in consumos_maximos)
+    
+    # Convertir a Metros Cúbicos (Dividir por 1000)
+    # Si total_litros es 3.0, total_consumo_mes será 0.003
+    total_consumo_mes = total_litros / 1000 if total_litros else 0
 
     tarifa_actual = Tarifa.objects.filter(activo=True).first()
     medidores_activos = Medidor.objects.filter(estado='activo').count()
@@ -128,7 +136,7 @@ def admin_dashboard(request):
         'titulo': 'Dashboard del Administrador',
         'mensaje_bienvenida': 'Bienvenido al panel de administración.',
         'total_usuarios': total_usuarios,
-        'total_consumo_mes': total_consumo_mes,
+        'total_consumo_mes': total_consumo_mes, # Este valor ahora está en m3
         'tarifa_actual': tarifa_actual.valor if tarifa_actual else "N/A",
         'medidores_activos': medidores_activos,
         'medidores_inactivos': medidores_inactivos,

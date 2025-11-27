@@ -1,0 +1,177 @@
+{% extends "reportes/base_reportes.html" %}
+
+{% block title %}Reportes y contabilidad · Gestión APR{% endblock %}
+
+{% block extra_head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Título -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-primary">Reportes y contabilidad</h1>
+      <p class="text-sm text-base-content/70">
+        Resumen financiero basado en boletas y consumos registrados.
+      </p>
+    </div>
+  </div>
+
+  <!-- Cards de resumen -->
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="stat bg-base-200 rounded-2xl border border-base-300">
+      <div class="stat-title text-xs">Ingresos del mes (pagados)</div>
+      <div class="stat-value text-lg text-success">
+        ${{ ingresos_mes|floatformat:0 }}
+      </div>
+    </div>
+
+    <div class="stat bg-base-200 rounded-2xl border border-base-300">
+      <div class="stat-title text-xs">Deuda total (no pagado)</div>
+      <div class="stat-value text-lg text-error">
+        ${{ deuda_total|floatformat:0 }}
+      </div>
+    </div>
+
+    <div class="stat bg-base-200 rounded-2xl border border-base-300">
+      <div class="stat-title text-xs">Boletas emitidas (mes)</div>
+      <div class="stat-value text-lg">
+        {{ boletas_mes }}
+      </div>
+      <div class="stat-desc text-xs">
+        {{ boletas_pagadas_mes }} pagadas
+      </div>
+    </div>
+
+    <div class="stat bg-base-200 rounded-2xl border border-base-300">
+      <div class="stat-title text-xs">Consumo promedio (mes)</div>
+      <div class="stat-value text-lg">
+        {{ consumo_promedio|floatformat:1 }} m³
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficas -->
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="card bg-base-200 border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title text-sm mb-2 flex items-center gap-2">
+          <i class="bi bi-bar-chart-line"></i>
+          Ingresos últimos 6 meses
+        </h2>
+        <div class="h-56">
+          <canvas id="chartIngresosMes"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-200 border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title text-sm mb-2 flex items-center gap-2">
+          <i class="bi bi-pie-chart"></i>
+          Estado global de boletas
+        </h2>
+        <div class="h-56">
+          <canvas id="chartEstadoBoletas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de últimas boletas -->
+  <div class="card bg-base-200 border border-base-300">
+    <div class="card-body">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+        <h2 class="card-title text-sm flex items-center gap-2">
+          <i class="bi bi-clock-history"></i>
+          Últimas boletas emitidas
+        </h2>
+        <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-xs btn-ghost">
+          Ver historial completo
+        </a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="table table-sm text-xs">
+          <thead>
+            <tr>
+              <th>Fecha emisión</th>
+              <th>Usuario</th>
+              <th>Monto</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for boleta in ultimas_boletas %}
+            <tr>
+              <td>{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
+              <td>{{ boleta.usuario.nombre }}</td>
+              <td>${{ boleta.total_a_pagar|floatformat:0 }}</td>
+              <td>
+                {% if boleta.pagado %}
+                  <span class="badge badge-success badge-sm">Pagada</span>
+                {% else %}
+                  <span class="badge badge-ghost badge-sm">Pendiente</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-base-content/60 py-4">
+                No hay boletas recientes registradas.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const ingresosCtx = document.getElementById('chartIngresosMes');
+    if (ingresosCtx) {
+      new Chart(ingresosCtx, {
+        type: 'bar',
+        data: {
+          labels: {{ labels_meses|safe }},
+          datasets: [{
+            label: 'Ingresos ($)',
+            data: {{ datos_ingresos|safe }},
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    const estadoCtx = document.getElementById('chartEstadoBoletas');
+    if (estadoCtx) {
+      new Chart(estadoCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Pagadas', 'Pendientes', 'Vencidas'],
+          datasets: [{
+            data: {{ datos_estado_boletas|safe }},
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -105,6 +105,15 @@
       transition-property: background-color, border-color, color;
       transition-duration: 300ms;
     }
+
+    /* Quitar scroll interno del sidebar de DaisyUI */
+    .drawer-side {
+      overflow-y: visible !important;
+    }
+
+    .drawer-side > aside {
+      overflow-y: visible !important;
+    }
   </style>
 
   <script>
@@ -118,123 +127,247 @@
   {% block extra_head %}{% endblock %}
 </head>
 
-<body class="min-h-screen bg-base-200 text-base-content flex flex-col transition-colors duration-300">
+<body class="min-h-screen bg-base-200 text-base-content transition-colors duration-300">
 
-  <header
-    class="sticky top-0 z-50 flex shadow-md py-4 px-4 sm:px-10 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80 min-h-[70px] tracking-wide border-b border-base-300 transition-colors duration-300">
-    <div class="flex flex-wrap items-center justify-between gap-5 w-full">
+  <!-- LAYOUT PRINCIPAL CON SIDEBAR (DAISYUI DRAWER) -->
+  <div class="drawer lg:drawer-open min-h-screen">
+    <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
 
-      <a href="{% url 'login:home' %}" class="flex items-center gap-3 group">
-        <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo Comité APR"
-          class="h-10 w-10 object-contain rounded-md shadow-sm bg-white transition-transform group-hover:scale-105">
-        <div>
-          <span class="block font-bold text-lg text-primary">Comité APR Nahueltoro</span>
-          <span class="block text-xs opacity-70">Panel de Gestión</span>
-        </div>
-      </a>
+    <!-- CONTENIDO (HEADER + MAIN + FOOTER) -->
+    <div class="drawer-content flex flex-col min-h-screen">
 
-      <div id="collapseMenu" class="max-lg:hidden lg:!block">
-        <ul
-          class="lg:flex gap-x-6 max-lg:space-y-3 max-lg:fixed max-lg:bg-base-100 max-lg:w-1/2 max-lg:min-w-[250px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
+      <!-- HEADER LIMPIO -->
+      <header
+        class="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80">
+        <div class="navbar px-4 sm:px-8">
+          <!-- BOTÓN MENU MOBILE -->
+          <div class="flex-none lg:hidden">
+            <label for="sidebar-toggle" class="btn btn-ghost btn-circle">
+              <i class="bi bi-list text-xl"></i>
+            </label>
+          </div>
 
-          <li class="mb-6 hidden max-lg:block">
-            <a href="{% url 'login:home' %}" class="flex items-center gap-2">
-              <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo" class="h-8 w-8 bg-white rounded">
-              <span class="font-semibold text-primary">Menú</span>
+          <!-- LOGO + NOMBRE -->
+          <div class="flex-1 flex items-center gap-3">
+            <a href="{% url 'login:home' %}" class="flex items-center gap-3 group">
+              <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo Comité APR"
+                   class="h-10 w-10 object-contain rounded-md shadow-sm transition-transform group-hover:scale-105">
+              <div class="leading-tight">
+                <span class="block font-bold text-lg text-primary">FlowWeb</span>
+                <span class="block text-xs opacity-70">Comité APR Nahueltoro · Panel de Gestión</span>
+              </div>
             </a>
-          </li>
+          </div>
+
+          <!-- SOLO TOGGLE DE TEMA EN HEADER -->
+          <div class="flex-none flex items-center gap-3">
+            <div class="flex items-center">
+              <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
+                <input type="checkbox" id="theme-toggle" />
+                <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
+                <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
+              </label>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN -->
+      <main class="flex-1 w-full">
+        <div class="container mx-auto px-4 py-8">
+          <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center transition-colors duration-300">
+        <div class="container mx-auto px-4">
+          <p class="text-sm opacity-70">
+            Comité APR Nahueltoro · FlowWeb © {{ current_year|default:"2024" }}
+          </p>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="drawer-side">
+      <label for="sidebar-toggle" class="drawer-overlay"></label>
+
+      <aside class="w-72 bg-base-100 border-r border-base-300 h-screen flex flex-col">
+        <!-- CABECERA SIDEBAR + PERFIL GRANDE -->
+        <div class="px-4 pt-5 pb-4 border-b border-base-300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+              <i class="bi bi-droplet-fill text-2xl"></i>
+            </div>
+            <div class="leading-tight">
+              <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60">Panel</p>
+              <p class="font-semibold text-sm">Gestión APR Nahueltoro</p>
+            </div>
+          </div>
 
           {% if user.is_authenticated %}
-          {% if user.rol == 'admin' %}
-          <li><a href="{% url 'consumos:lista_usuarios' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Registrar Consumo</a></li>
-          <li><a href="{% url 'usuarios:lista_usuarios' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Gestionar Usuarios</a></li>
-          <li><a href="{% url 'tarifas:historial_tarifas' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Gestionar Tarifas</a></li>
-          <li><a href="{% url 'boletas:historial_recientes' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Historial Boletas</a></li>
-          <li><a href="{% url 'boletas:seleccionar_usuario' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Generar Boleta</a></li>
-
-          {% elif user.rol == 'secretaria' %}
-          <li><a href="{% url 'consumos:lista_usuarios' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Registrar Consumo</a></li>
-          <li><a href="{% url 'usuarios:lista_usuarios' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Ver / Agregar Usuarios</a></li>
-          <li><a href="{% url 'boletas:historial_recientes' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Historial Boletas</a></li>
-          <li><a href="{% url 'boletas:seleccionar_usuario' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Generar Boleta</a></li>
-
-          {% elif user.rol == 'operario' %}
-          <li><a href="{% url 'consumos:lista_usuarios' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Registrar Consumo</a></li>
-          <li><a href="{% url 'medidores:buscar_usuario_para_medidor' %}"
-              class="block font-medium text-[15px] hover:text-primary transition">Gestionar Medidores</a></li>
+          <div class="flex items-center gap-3 bg-base-200/80 rounded-xl px-3 py-3">
+            <div class="w-12 h-12 rounded-full bg-primary text-base-100 flex items-center justify-center text-2xl">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="leading-snug">
+              <p class="text-sm font-semibold truncate max-w-[160px]">
+                {{ user.get_full_name|default:user.username }}
+              </p>
+              <p class="text-[0.72rem] uppercase tracking-wide text-primary font-medium">
+                {% if user.rol == 'admin' %}Administrador
+                {% elif user.rol == 'secretaria' %}Secretaría
+                {% elif user.rol == 'operario' %}Operario
+                {% else %}Usuario{% endif %}
+              </p>
+              {% if user.email %}
+              <p class="text-[0.7rem] text-base-content/60 truncate max-w-[160px]">
+                {{ user.email }}
+              </p>
+              {% endif %}
+            </div>
+          </div>
+          {% else %}
+          <div class="bg-base-200/80 rounded-xl px-3 py-3">
+            <p class="text-sm font-semibold mb-1">Bienvenido a FlowWeb</p>
+            <p class="text-xs text-base-content/70">
+              Inicia sesión para gestionar consumos, usuarios y boletas del APR.
+            </p>
+          </div>
           {% endif %}
-          {% endif %}
-        </ul>
-      </div>
-
-      <div class="flex max-lg:ml-auto items-center gap-3">
-
-        {% if user.is_authenticated %}
-        <a href="{% url 'login:logout' %}"
-          class="px-6 py-2.5 rounded-full cursor-pointer text-error hover:text-white text-sm tracking-wider font-medium border border-error outline-0 bg-transparent hover:bg-error transition-all duration-300 hidden sm:inline-block">
-          Cerrar Sesión
-        </a>
-
-        <a href="{% url 'login:logout' %}" class="sm:hidden btn btn-ghost btn-circle text-error">
-          <i class="bi bi-box-arrow-right text-xl"></i>
-        </a>
-        {% else %}
-        <a href="{% url 'login:home' %}"
-          class="px-6 py-2.5 rounded-full cursor-pointer text-primary hover:text-white text-sm tracking-wider font-medium border border-primary outline-0 bg-transparent hover:bg-primary transition-all duration-300">
-          Iniciar Sesión
-        </a>
-        {% endif %}
-
-        <div class="flex items-center">
-          <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
-            <input type="checkbox" id="theme-toggle" />
-            <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
-            <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
-          </label>
         </div>
 
-        <button id="toggleOpen" class="lg:hidden btn btn-ghost btn-circle border border-base-300">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-              d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
+        <!-- NAVEGACIÓN -->
+        <nav class="flex-1 px-3 py-4 text-sm">
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">
+            General
+          </p>
+          <ul class="space-y-1 mb-6">
+            <li>
+              <a href="{% url 'login:home' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-speedometer2 text-lg opacity-80"></i>
+                <span>Resumen general</span>
+              </a>
+            </li>
+          </ul>
 
-  <script>
-    const toggleOpen = document.getElementById("toggleOpen");
-    const collapseMenu = document.getElementById("collapseMenu");
-    toggleOpen?.addEventListener("click", () => {
-      collapseMenu.classList.toggle("max-lg:hidden");
-    });
-  </script>
+          
 
-  <main class="container mx-auto px-4 my-8 flex-grow">
-    <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
-      {% block content %}{% endblock %}
-    </div>
-  </main>
+          {% if user.is_authenticated %}
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">
+            Módulos
+          </p>
+          <ul class="space-y-1">
+            {# Registrar consumo: admin / secretaria / operario #}
+            {% if user.rol == 'admin' or user.rol == 'secretaria' or user.rol == 'operario' %}
+            <li>
+              <a href="{% url 'consumos:lista_usuarios' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-pen text-lg opacity-80"></i>
+                <span>Registrar consumo</span>
+              </a>
+            </li>
+            {% endif %}
 
-  <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center transition-colors duration-300">
-    <div class="container mx-auto">
-      <p class="text-sm opacity-70">
-        Comité APR Nahueltoro © {{ current_year|default:"2024" }}
-      </p>
+            {# Admin + secretaria: usuarios, boletas, reportes #}
+            {% if user.rol == 'admin' or user.rol == 'secretaria' %}
+            <li>
+              <a href="{% url 'usuarios:lista_usuarios' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-people text-lg opacity-80"></i>
+                <span>Usuarios</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url 'boletas:seleccionar_usuario' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-file-earmark-plus text-lg opacity-80"></i>
+                <span>Generar boleta</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url 'boletas:historial_recientes' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-journal-text text-lg opacity-80"></i>
+                <span>Historial de boletas</span>
+              </a>
+            </li>
+
+            {# Reportes (si aún no tienes la vista, comenta este bloque) #}
+            <li>
+              <a href="{% url 'reportes:dashboard' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-graph-up-arrow text-lg opacity-80"></i>
+                <span>Reportes y contabilidad</span>
+              </a>
+            </li>
+            {% endif %}
+
+            {# Solo admin: tarifas #}
+            {% if user.rol == 'admin' %}
+            <li>
+              <a href="{% url 'tarifas:historial_tarifas' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-cash-coin text-lg opacity-80"></i>
+                <span>Gestión de tarifas</span>
+              </a>
+            </li>
+            {% endif %}
+
+            {# Solo operario: medidores #}
+            {% if user.rol == 'operario' %}
+            <li>
+              <a href="{% url 'medidores:buscar_usuario_para_medidor' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-speedometer text-lg opacity-80"></i>
+                <span>Gestionar medidores</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+
+          {% else %}
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">
+            Acceso
+          </p>
+          <ul class="space-y-1">
+            <li>
+              <a href="{% url 'login:home' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-box-arrow-in-right text-lg opacity-80"></i>
+                <span>Iniciar sesión</span>
+              </a>
+            </li>
+          </ul>
+          {% endif %}
+        </nav>
+
+        <!-- ZONA INFERIOR: BOTÓN CERRAR SESIÓN / LOGIN -->
+        <div class="border-t border-base-300 px-4 py-4 text-xs">
+          {% if user.is_authenticated %}
+          <a href="{% url 'login:logout' %}"
+             class="btn btn-error btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar sesión</span>
+          </a>
+          {% else %}
+          <a href="{% url 'login:home' %}"
+             class="btn btn-primary btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Iniciar sesión</span>
+          </a>
+          {% endif %}
+        </div>
+      </aside>
     </div>
-  </footer>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
