@@ -7,13 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Comité APR Nahueltoro{% endblock %}</title>
 
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+  <!-- Tailwind + DaisyUI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class', // Importante para control manual
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -27,7 +29,6 @@
       },
       plugins: [daisyui],
       daisyui: {
-        // Aquí definimos el tema claro (tu personalizado) y habilitamos el oscuro por defecto
         themes: [
           {
             light: {
@@ -36,7 +37,7 @@
               "accent": "#0066a1",
               "neutral": "#2a2a2a",
               "base-100": "#ffffff",
-              "base-200": "#f6f8fb",
+              "base-200": "#f6f8fb", 
               "base-300": "#e2e8f0",
               "base-content": "#1e293b",
               "info": "#0099ff",
@@ -45,12 +46,36 @@
               "error": "#ef4444",
             },
           },
-          "dark", // Habilita el tema oscuro por defecto de DaisyUI
+          "dark", 
         ],
       },
     };
   </script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+
+  <style>
+    /* Transiciones suaves */
+    body, header, footer, div, section, nav {
+      transition-property: background-color, border-color, color;
+      transition-duration: 300ms;
+    }
+
+    /* SOLUCIÓN AL FONDO NEGRO DEL MODAL */
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.5) !important;
+      backdrop-filter: blur(4px);
+    }
+    
+    /* Compatibilidad Bootstrap/Tailwind */
+    input, select, textarea, .form-control, .form-select {
+      background-color: oklch(var(--b1)) !important;
+      color: oklch(var(--bc)) !important;
+      border-color: oklch(var(--b3)) !important;
+    }
+    ::placeholder { opacity: 0.6; color: oklch(var(--bc)) !important; }
+    .table, table { --bs-table-bg: transparent !important; --bs-table-color: inherit !important; color: inherit !important; background-color: transparent !important; }
+    td, th { background-color: transparent !important; }
+  </style>
 
   <script>
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -63,173 +88,230 @@
   {% block extra_head %}{% endblock %}
 </head>
 
-<body class="min-h-screen bg-base-200 text-base-content flex flex-col transition-colors duration-300">
+<body class="min-h-screen bg-base-200 text-base-content flex flex-col font-sans transition-colors duration-300">
 
-  <header
-    class="sticky top-0 z-50 flex shadow-md py-4 px-4 sm:px-10 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80 min-h-[70px] tracking-wide transition-colors duration-300">
-    <div class="flex flex-wrap items-center justify-between gap-5 w-full">
+  <!-- DRAWER: LAYOUT PRINCIPAL -->
+  <div class="drawer min-h-screen">
+    <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
 
-      <a href="{% url 'login:home' %}" class="flex items-center gap-3">
-        <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo Comité APR Nahueltoro"
-          class="h-10 w-10 rounded-md ring-1 ring-base-300 shadow-sm ">
-        <div>
-          <span class="block font-bold text-lg text-primary">Comité APR Nahueltoro</span>
-          <span class="block text-xs opacity-70">Gestión de Agua Potable Rural</span>
+    <!-- CONTENIDO DE LA PÁGINA -->
+    <div class="drawer-content flex flex-col min-h-screen">
+
+      <!-- HEADER -->
+      <header class="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80 min-h-[70px]">
+        <div class="navbar px-4 sm:px-8 h-full">
+          
+          <!-- Botón de Menú (Icono) -->
+          <div class="flex-none mr-2">
+            <label for="sidebar-toggle" class="btn btn-ghost btn-circle">
+              <i class="bi bi-list text-2xl text-primary"></i>
+            </label>
+          </div>
+
+          <!-- LOGO (Funciona como botón para abrir menú) -->
+          <div class="flex-1 flex items-center gap-3">
+            <label for="sidebar-toggle" class="flex items-center gap-3 group cursor-pointer select-none">
+              <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo Comité APR"
+                   class="h-10 w-10 object-contain rounded-md shadow-sm transition-transform group-hover:scale-105">
+              <div class="leading-tight">
+                <span class="block font-bold text-lg text-primary">Comité APR Nahueltoro</span>
+                <span class="block text-xs opacity-70">Gestión de Agua Potable Rural</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Toggle de Tema -->
+          <div class="flex-none flex items-center gap-3">
+            <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
+              <input type="checkbox" id="theme-toggle" />
+              <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
+              <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
+            </label>
+          </div>
         </div>
-      </a>
+      </header>
 
-      <div id="collapseMenu" class="max-lg:hidden lg:!block">
-        <ul
-          class="lg:flex gap-x-6 max-lg:space-y-3 max-lg:fixed max-lg:bg-base-100 max-lg:w-1/2 max-lg:min-w-[250px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
-
-          <li class="mb-6 hidden max-lg:block">
-            <a href="{% url 'login:home' %}" class="flex items-center gap-2">
-              <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo"
-                class="h-8 w-8 rounded-md ring-1 ring-base-300 ">
-              <span class="font-semibold text-primary">Nahueltoro</span>
-            </a>
-          </li>
-
-          <li><a href="{% url 'login:home' %}"
-              class="block font-medium text-[15px] text-base-content hover:text-primary transition">Inicio</a></li>
-          <li><a href="{% url 'reportes:revisar_consumo' %}"
-              class="block font-medium text-[15px] text-base-content hover:text-primary transition">Consumo</a></li>
-          <li><a href="{% url 'login:quienes_somos' %}"
-              class="block font-medium text-[15px] text-base-content hover:text-primary transition">Acerca de</a></li>
-
-          {% if user.is_authenticated %}
-          <li><a href="{% url 'admin:index' %}"
-              class="block font-medium text-[15px] text-base-content hover:text-primary transition">Panel</a></li>
-          {% endif %}
-        </ul>
-      </div>
-
-      <div class="flex max-lg:ml-auto items-center gap-3">
-        {% if user.is_authenticated %}
-        <a class="btn btn-login text-danger border-danger" href="{% url 'login:logout' %}">
-          Cerrar Sesión
-        </a>
-
-        {% else %}
-        <a href="{% url 'login:login' %}"
-          class="px-6 py-2.5 rounded-full cursor-pointer text-primary hover:text-white text-sm tracking-wider font-medium border border-primary outline-0 bg-transparent hover:bg-primary transition-all duration-300">
-          Iniciar sesión
-        </a>
-        {% endif %}
-
-        <div class="flex items-center">
-          <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
-            <input type="checkbox" id="theme-toggle" />
-
-            <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
-
-            <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
-          </label>
+      <!-- SECCIÓN HERO (Opcional, solo si quieres mantener el título grande en el home) -->
+      {% if request.path == '/' or request.path == '/home/' %}
+      <section class="bg-base-100 border-b border-base-300/50 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-8 text-center">
+          <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-primary">
+            Gestión de Agua Potable Rural
+          </h1>
+          <p class="mt-2 md:mt-3 text-sm md:text-base text-base-content/70">
+            Transparencia, eficiencia y cercanía con la comunidad de Nahueltoro.
+          </p>
         </div>
-
-        <button id="toggleOpen"
-          class="lg:hidden cursor-pointer p-2 border border-base-300 rounded-full hover:bg-base-200 text-base-content">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd"
-              d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 5h14a1 1 0 010 2H3a1 1 0 010-2z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <script>
-    const toggleOpen = document.getElementById("toggleOpen");
-    const collapseMenu = document.getElementById("collapseMenu");
-
-    toggleOpen?.addEventListener("click", () => {
-      collapseMenu.classList.toggle("max-lg:hidden");
-    });
-  </script>
-
-  <section class="bg-base-100 transition-colors duration-300">
-    <div class="container mx-auto px-4 py-6 md:py-8 text-center">
-      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-primary">
-        Gestión de Agua Potable Rural
-      </h1>
-      <p class="mt-2 md:mt-3 text-sm md:text-base text-base-content/70">
-        Transparencia, eficiencia y cercanía con la comunidad de Nahueltoro.
-      </p>
-    </div>
-    <div class="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-  </section>
-
-  <main class="container mx-auto px-4 my-8 md:my-10 flex-grow">
-    <div
-      class="bg-base-100 rounded-2xl shadow-xl border border-base-300 p-6 sm:p-8 md:p-10 transition-colors duration-300">
-
-      {% if messages %}
-      <div class="space-y-2 mb-4">
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
-          <span>{{ message }}</span>
-        </div>
-        {% endfor %}
-      </div>
+      </section>
       {% endif %}
 
-      {% block content %}{% endblock %}
-    </div>
-  </main>
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 w-full container mx-auto px-4 my-8">
+        <!-- Contenedor Blanco -->
+        <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
+            
+            {% if messages %}
+            <div class="space-y-2 mb-6">
+                {% for message in messages %}
+                <div role="alert" class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-  <footer class="mt-auto bg-base-100 border-t border-base-300 transition-colors duration-300">
-    <div class="container mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
-
-      <div>
-        <div class="flex items-center gap-3 mb-2">
-          <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo FlowWeb"
-            class="h-8 w-8 rounded-md ring-1 ring-base-300 ">
-          <span class="font-semibold text-base tracking-tight text-base-content">FlowWeb</span>
+            {% block content %}{% endblock %}
         </div>
-        <p class="text-base-content/70">
-          Plataforma para la gestión transparente y eficiente del agua potable rural.
-        </p>
-      </div>
+      </main>
 
-      <div>
-        <h3 class="font-semibold mb-3 text-base-content">Navegación</h3>
-        <ul class="space-y-2">
-          <li><a class="link link-hover text-base-content/80" href="{% url 'login:home' %}">Inicio</a></li>
-          <li><a class="link link-hover text-base-content/80" href="{% url 'reportes:revisar_consumo' %}">Revisar
-              consumo</a></li>
-          <li><a class="link link-hover text-base-content/80" href="{% url 'login:quienes_somos' %}">Acerca de
-              FlowWeb</a></li>
-        </ul>
-      </div>
+      <!-- FOOTER -->
+      <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center">
+        <div class="container mx-auto px-4">
+          <p class="text-sm opacity-70">
+            Comité APR Nahueltoro · FlowWeb © {{ now|date:"Y" }}
+          </p>
+        </div>
+      </footer>
 
-      <div>
-        <h3 class="font-semibold mb-3 text-base-content">Soporte</h3>
-        <ul class="space-y-2">
-          <li><a class="link link-hover text-base-content/80" href="mailto:soporte@flowweb.cl">soporte@flowweb.cl</a>
-          </li>
-          <li><a class="link link-hover text-base-content/80" href="mailto:contacto@flowweb.cl">contacto@flowweb.cl</a>
-          </li>
-          <li><a class="link link-hover text-base-content/80" href="#">Guía rápida</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="font-semibold mb-3 text-base-content">Legal</h3>
-        <ul class="space-y-2">
-          <li><a class="link link-hover text-base-content/80" href="#">Privacidad</a></li>
-          <li><a class="link link-hover text-base-content/80" href="#">Términos</a></li>
-        </ul>
-      </div>
     </div>
 
-    <div class="bg-neutral text-neutral-content">
-      <div class="container mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-        <span>© {{ now|date:"Y" }} FlowWeb — Todos los derechos reservados</span>
-        <span class="opacity-80">Versión 1.0 · Hecho para comunidades APR</span>
-      </div>
+    <!-- SIDEBAR (MENÚ LATERAL COMPLETO) -->
+    <div class="drawer-side z-50">
+      <label for="sidebar-toggle" class="drawer-overlay"></label>
+
+      <aside class="w-72 bg-base-100 border-r border-base-300 h-screen flex flex-col overflow-y-auto">
+        <!-- Cabecera del Sidebar -->
+        <div class="px-4 pt-5 pb-4 border-b border-base-300 sticky top-0 bg-base-100 z-10">
+          <div class="flex justify-between items-start mb-4">
+             <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+                  <i class="bi bi-droplet-fill text-2xl"></i>
+                </div>
+                <div class="leading-tight">
+                  <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60">Panel</p>
+                  <p class="font-semibold text-sm">Gestión APR</p>
+                </div>
+             </div>
+             <label for="sidebar-toggle" class="btn btn-sm btn-circle btn-ghost">
+                <i class="bi bi-x-lg"></i>
+             </label>
+          </div>
+
+          <!-- Perfil de Usuario -->
+          {% if user.is_authenticated %}
+          <div class="flex items-center gap-3 bg-base-200/80 rounded-xl px-3 py-3">
+            <div class="w-12 h-12 rounded-full bg-primary text-base-100 flex items-center justify-center text-2xl">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="leading-snug">
+              <p class="text-sm font-semibold truncate max-w-[160px]">
+                {{ user.get_full_name|default:user.username }}
+              </p>
+              <p class="text-[0.72rem] uppercase tracking-wide text-primary font-medium">
+                {% if user.rol == 'admin' %}Administrador
+                {% elif user.rol == 'secretaria' %}Secretaría
+                {% elif user.rol == 'operario' %}Operario
+                {% else %}Usuario{% endif %}
+              </p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Links de Navegación -->
+        <nav class="flex-1 px-3 py-4 text-sm">
+          
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">General</p>
+          <ul class="space-y-1 mb-6">
+            <li>
+              <a href="{% url 'login:home' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-house-door text-lg opacity-80"></i>
+                <span>Inicio</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'reportes:revisar_consumo' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-search text-lg opacity-80"></i>
+                <span>Revisar Consumo</span>
+              </a>
+            </li>
+            <li>
+                <a href="{% url 'login:quienes_somos' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                  <i class="bi bi-info-circle text-lg opacity-80"></i>
+                  <span>Acerca de</span>
+                </a>
+            </li>
+          </ul>
+
+          {% if user.is_authenticated %}
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Gestión</p>
+          <ul class="space-y-1">
+            
+            {# Enlace a Dashboard General #}
+            <li>
+                <a href="{% url 'roles:redireccion_dashboard' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                  <i class="bi bi-speedometer2 text-lg opacity-80"></i>
+                  <span>Panel Principal</span>
+                </a>
+            </li>
+
+            {# Módulos Específicos según Rol #}
+            {% if user.rol == 'admin' or user.rol == 'secretaria' %}
+            <li>
+              <a href="{% url 'usuarios:lista_usuarios' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-people text-lg opacity-80"></i>
+                <span>Usuarios</span>
+              </a>
+            </li>
+            <li>
+                <a href="{% url 'boletas:historial_recientes' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                  <i class="bi bi-receipt text-lg opacity-80"></i>
+                  <span>Boletas</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if user.rol == 'admin' %}
+            <li>
+                <a href="{% url 'tarifas:historial_tarifas' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                  <i class="bi bi-cash-coin text-lg opacity-80"></i>
+                  <span>Tarifas</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if user.rol == 'admin' or user.rol == 'secretaria' or user.rol == 'operario' %}
+            <li>
+                <a href="{% url 'consumos:lista_usuarios' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                  <i class="bi bi-droplet text-lg opacity-80"></i>
+                  <span>Consumos</span>
+                </a>
+            </li>
+            {% endif %}
+
+          </ul>
+          {% endif %}
+
+        </nav>
+
+        <!-- Botones inferiores -->
+        <div class="border-t border-base-300 px-4 py-4 text-xs mt-auto">
+          {% if user.is_authenticated %}
+          <a href="{% url 'login:logout' %}" class="btn btn-error btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar sesión</span>
+          </a>
+          {% else %}
+          <a href="{% url 'login:login' %}" class="btn btn-primary btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Iniciar sesión</span>
+          </a>
+          {% endif %}
+        </div>
+      </aside>
     </div>
-  </footer>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -237,24 +319,19 @@
     const themeToggle = document.getElementById('theme-toggle');
     const html = document.documentElement;
 
-    // Función para establecer el tema
     function setAppTheme(theme) {
       html.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
-
-      // Ajustar el checkbox visualmente
       if (themeToggle) {
         themeToggle.checked = theme === 'dark';
       }
     }
 
-    // Leer preferencia inicial
     const savedTheme = localStorage.getItem('theme') || 'light';
     setAppTheme(savedTheme);
 
-    // Event listener para el botón
     if (themeToggle) {
-      themeToggle.addEventListener('change', function () {
+      themeToggle.addEventListener('change', function() {
         const newTheme = this.checked ? 'dark' : 'light';
         setAppTheme(newTheme);
       });
@@ -264,5 +341,4 @@
   {% block extra_js %}{% endblock %}
 
 </body>
-
 </html>

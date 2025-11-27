@@ -1,170 +1,318 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Gestión de Boletas{% endblock %}</title>
-  {% load static %}
-  
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>{% block title %}Gestión de Tarifas | Comité APR{% endblock %}</title>
+
+  <!-- Bootstrap CSS (Mantener por compatibilidad interna) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Tailwind + DaisyUI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            nahueltoro: {
+              light: '#e6f0ff',
+              DEFAULT: '#0077cc',
+              dark: '#005fa3',
+            }
+          }
+        }
+      },
+      plugins: [daisyui],
+      daisyui: {
+        themes: [
+          {
+            light: {
+              "primary": "#0077cc",
+              "secondary": "#00bcd4",
+              "accent": "#0066a1",
+              "neutral": "#2a2a2a",
+              "base-100": "#ffffff",
+              "base-200": "#f8fafc",
+              "base-300": "#e2e8f0",
+              "base-content": "#1e293b",
+              "info": "#0099ff",
+              "success": "#22c55e",
+              "warning": "#facc15",
+              "error": "#ef4444",
+            },
+          },
+          "dark",
+        ],
+      },
+    };
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
 
   <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      margin: 0;
-      background: #f8fafc;
-      color: #333;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    /* Transiciones suaves */
+    body, header, footer, div, section, nav {
+      transition-property: background-color, border-color, color;
+      transition-duration: 300ms;
     }
 
-    /* HEADER (idéntico al de usuarios) */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 1030;
-      background-color: #ffffff !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    /* ========================================================= */
+    /* SOLUCIÓN AL FONDO NEGRO DEL MODAL (CRÍTICO) */
+    /* ========================================================= */
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.5) !important;
+      backdrop-filter: blur(4px);
     }
+    
+    /* Correcciones para Inputs y Tablas en Modo Oscuro */
+    [data-theme="dark"] input, 
+    [data-theme="dark"] select, 
+    [data-theme="dark"] textarea, 
+    [data-theme="dark"] .form-control, 
+    [data-theme="dark"] .form-select {
+      background-color: #1d232a !important; 
+      color: #a6adbb !important; 
+      border-color: #384152 !important;
+    }
+    
+    [data-theme="dark"] ::placeholder { opacity: 0.6; color: #a6adbb !important; }
 
-    .navbar-brand {
-      font-weight: 700;
-      color: #0d6efd !important;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .navbar-brand img {
-      height: 45px;
-      object-fit: contain;
-    }
-
-    .navbar-nav .nav-link {
-      color: #374151 !important;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .navbar-nav .nav-link:hover {
-      color: #0d6efd !important;
-    }
-
-    .btn-login {
-      border: 1.5px solid #0d6efd;
-      color: #0d6efd;
-      background: transparent;
-      border-radius: 50px;
-      padding: 6px 18px;
-      font-weight: 600;
-      transition: all 0.25s ease;
-    }
-
-    .btn-login:hover {
-      background-color: #0d6efd;
-      color: white;
-    }
-
-    /* MAIN */
-    main {
-      flex: 1;
-      background-color: white;
-      margin: 40px auto;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-      max-width: 1200px;
-    }
-
-    /* FOOTER */
-    footer {
-      padding: 12px 0;
-      background-color: #f1f5f9;
-      color: #64748b;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-
-    footer p {
-      margin: 0;
-    }
+    /* Quitar fondo blanco forzado de tablas bootstrap */
+    .table, table { --bs-table-bg: transparent !important; --bs-table-color: inherit !important; color: inherit !important; background-color: transparent !important; }
+    td, th { background-color: transparent !important; }
   </style>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
 
-  <!-- 🔹 HEADER — IGUAL AL DE GESTIÓN DE USUARIOS -->
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-light">
-      <div class="container">
+<body class="min-h-screen bg-base-200 text-base-content flex flex-col font-sans transition-colors duration-300">
 
-        <!-- Logo + texto -->
-        <a class="navbar-brand" href="{% url 'roles:redireccion_dashboard' %}">
-          <img src="{% static 'img/logo.png' %}" alt="Logo Comité APR">
-          Comité APR Nahueltoro
-        </a>
+  <!-- DRAWER: LAYOUT PRINCIPAL -->
+  <div class="drawer min-h-screen">
+    <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
 
-        <!-- Botón responsive -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- CONTENIDO DE LA PÁGINA -->
+    <div class="drawer-content flex flex-col min-h-screen">
 
-        <!-- Menú centrado -->
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-          <ul class="navbar-nav text-center">
+      <!-- HEADER -->
+      <header class="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80">
+        <div class="navbar px-4 sm:px-8">
+          
+          <!-- Botón de Menú (Icono) -->
+          <div class="flex-none mr-2">
+            <label for="sidebar-toggle" class="btn btn-ghost btn-circle">
+              <i class="bi bi-list text-2xl text-primary"></i>
+            </label>
+          </div>
 
-            <li class="nav-item mx-3">
-              <a class="nav-link" href="{% url 'boletas:historial_recientes' %}">
-                Boletas Recientes
-              </a>
-            </li>
+          <!-- LOGO (Funciona como botón para abrir menú) -->
+          <div class="flex-1 flex items-center gap-3">
+            <label for="sidebar-toggle" class="flex items-center gap-3 group cursor-pointer select-none">
+              <img src="{% static 'img/FlowWeb_Logo.png' %}" alt="Logo Comité APR"
+                   class="h-10 w-10 object-contain rounded-md shadow-sm transition-transform group-hover:scale-105">
+              <div class="leading-tight">
+                <span class="block font-bold text-lg text-primary">Comité APR Nahueltoro</span>
+                <span class="block text-xs opacity-70">Gestión de Tarifas</span>
+              </div>
+            </label>
+          </div>
 
-            <li class="nav-item mx-3">
-              <a class="nav-link" href="{% url 'boletas:buscar_usuario' %}">
-                Buscar Usuario
-              </a>
-            </li>
-
-            <li class="nav-item mx-3">
-              <a class="nav-link" href="{% url 'boletas:seleccionar_usuario' %}">
-                Generar Boleta
-              </a>
-            </li>
-
-          </ul>
+          <!-- Toggle de Tema -->
+          <div class="flex-none flex items-center gap-3">
+            <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-300">
+              <input type="checkbox" id="theme-toggle" />
+              <i class="bi bi-sun-fill text-xl swap-on fill-current text-warning"></i>
+              <i class="bi bi-moon-fill text-xl swap-off fill-current text-primary"></i>
+            </label>
+          </div>
         </div>
+      </header>
 
-        <!-- Botón de sesión -->
-        <div class="d-flex ms-3">
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 w-full">
+        <div class="container mx-auto px-4 py-8">
+            
+            <!-- Título de sección -->
+            <div class="mb-6">
+                 <h2 class="text-2xl font-bold text-primary">Configuración de Tarifas</h2>
+                 <p class="text-sm text-base-content/70">Administra los precios y cargos fijos del servicio.</p>
+            </div>
+
+            <!-- Contenedor Blanco -->
+            <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
+                
+                <!-- Mensajes de Django -->
+                {% if messages %}
+                <div class="space-y-2 mb-6">
+                    {% for message in messages %}
+                    <div role="alert" class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center">
+        <div class="container mx-auto px-4">
+          <p class="text-sm opacity-70">
+            Comité APR Nahueltoro · FlowWeb © {{ current_year|default:"2024" }}
+          </p>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- SIDEBAR (MENÚ LATERAL) -->
+    <div class="drawer-side z-50">
+      <label for="sidebar-toggle" class="drawer-overlay"></label>
+
+      <aside class="w-72 bg-base-100 border-r border-base-300 h-screen flex flex-col overflow-y-auto">
+        <!-- Cabecera del Sidebar -->
+        <div class="px-4 pt-5 pb-4 border-b border-base-300 sticky top-0 bg-base-100 z-10">
+          <div class="flex justify-between items-start mb-4">
+             <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+                  <i class="bi bi-droplet-fill text-2xl"></i>
+                </div>
+                <div class="leading-tight">
+                  <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60">Panel</p>
+                  <p class="font-semibold text-sm">Gestión APR</p>
+                </div>
+             </div>
+             <label for="sidebar-toggle" class="btn btn-sm btn-circle btn-ghost">
+                <i class="bi bi-x-lg"></i>
+             </label>
+          </div>
+
+          <!-- Perfil de Usuario -->
           {% if user.is_authenticated %}
-            <a class="btn btn-login text-danger border-danger" href="{% url 'login:logout' %}">
-              Cerrar Sesión
-            </a>
-          {% else %}
-            <a class="btn btn-login" href="{% url 'login:home' %}">
-              Iniciar Sesión
-            </a>
+          <div class="flex items-center gap-3 bg-base-200/80 rounded-xl px-3 py-3">
+            <div class="w-12 h-12 rounded-full bg-primary text-base-100 flex items-center justify-center text-2xl">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="leading-snug">
+              <p class="text-sm font-semibold truncate max-w-[160px]">
+                {{ user.get_full_name|default:user.username }}
+              </p>
+              <p class="text-[0.72rem] uppercase tracking-wide text-primary font-medium">
+                {% if user.rol == 'admin' %}Administrador
+                {% elif user.rol == 'secretaria' %}Secretaría
+                {% elif user.rol == 'operario' %}Operario
+                {% else %}Usuario{% endif %}
+              </p>
+            </div>
+          </div>
           {% endif %}
         </div>
 
-      </div>
-    </nav>
-  </header>
+        <!-- Links de Navegación -->
+        <nav class="flex-1 px-3 py-4 text-sm">
+          
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">General</p>
+          <ul class="space-y-1 mb-6">
+            <li>
+              <a href="{% url 'roles:redireccion_dashboard' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-speedometer2 text-lg opacity-80"></i>
+                <span>Menu Principal</span>
+              </a>
+            </li>
+          </ul>
 
-  <!-- 🔹 CONTENIDO -->
-  <main class="container mt-4">
-    {% block content %}{% endblock %}
-  </main>
+          {% if user.is_authenticated %}
+          
+          {# Solo Admin tiene acceso a Tarifas #}
+          {% if user.rol == 'admin' %}
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Tarifas</p>
+          <ul class="space-y-1 mb-6">
+            <li>
+              <a href="{% url 'tarifas:historial_tarifas' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-cash-coin text-lg opacity-80"></i>
+                <span>Historial de Tarifas</span>
+              </a>
+            </li>
+            {# Si tienes vista de crear tarifa, agrégala aquí #}
+            {# <li><a href="{% url 'tarifas:crear_tarifa' %}" ...>Crear Tarifa</a></li> #}
+          </ul>
+          {% endif %}
 
-  <!-- 🔹 FOOTER -->
-  <footer>
-    <p>Comité APR Nahueltoro © {{ current_year }}</p>
-  </footer>
+          <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Otros Módulos</p>
+          <ul class="space-y-1">
+            {% if user.rol == 'admin' or user.rol == 'secretaria' or user.rol == 'operario' %}
+            <li>
+              <a href="{% url 'consumos:lista_usuarios' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-droplet text-lg opacity-80"></i>
+                <span>Consumos</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+          {% endif %}
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </nav>
+
+        <!-- Botones inferiores -->
+        <div class="border-t border-base-300 px-4 py-4 text-xs mt-auto">
+          {% if user.is_authenticated %}
+          <a href="{% url 'login:logout' %}" class="btn btn-error btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar sesión</span>
+          </a>
+          {% else %}
+          <a href="{% url 'login:login' %}" class="btn btn-primary btn-sm w-full flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Iniciar sesión</span>
+          </a>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    function setAppTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (themeToggle) {
+        themeToggle.checked = theme === 'dark';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setAppTheme(savedTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('change', function() {
+        const newTheme = this.checked ? 'dark' : 'light';
+        setAppTheme(newTheme);
+      });
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
 
 </body>
 </html>

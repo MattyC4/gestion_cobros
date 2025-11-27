@@ -1,57 +1,94 @@
 {% extends "roles/base_roles.html" %}
 
-{% block title %}Panel del Operario{% endblock %}
+{% block title %}Panel de Operaciones{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="mb-4 text-center">Panel de Gestión - Operario</h2>
-        <p class="text-center text-muted">
-            Bienvenido al panel de gestión del operario. Desde aquí puedes gestionar los consumos de los usuarios y administrar los medidores para mantener el sistema actualizado.
-        </p>
+<div class="flex flex-col gap-8">
 
-        <!-- Datos Relevantes -->
-        <div class="row text-center mb-4">
-            <div class="col-md-6">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Usuarios Totales</h5>
-                    <p class="display-6 text-primary">{{ total_usuarios }}</p>
-                </div>
+    <!-- Encabezado de Bienvenida -->
+    <div class="text-center md:text-left">
+        <h2 class="text-3xl font-bold text-primary">Panel de Operaciones</h2>
+        <p class="text-base-content/70 mt-1">
+            Bienvenido al área técnica. Gestiona lecturas y medidores desde aquí.
+        </p>
+    </div>
+
+    <!-- SECCIÓN DE ESTADÍSTICAS (DaisyUI Stats) -->
+    <!-- Se adapta: Vertical en móvil, horizontal en PC -->
+    <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-base-100 border border-base-200 w-full">
+        
+        <!-- Usuarios Totales -->
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="bi bi-people-fill text-3xl"></i>
             </div>
-            <div class="col-md-6">
-                <div class="card bg-light shadow-sm p-3 h-100">
-                    <h5 class="card-title">Medidores Activos</h5>
-                    <p class="display-6 text-warning">{{ medidores_activos }}</p>
-                </div>
-            </div>
+            <div class="stat-title">Usuarios Totales</div>
+            <div class="stat-value text-primary">{{ total_usuarios }}</div>
+            <div class="stat-desc">Clientes en el sistema</div>
         </div>
 
-        <hr class="my-4">
+        <!-- Medidores Activos -->
+        <div class="stat">
+            <div class="stat-figure text-warning">
+                <i class="bi bi-speedometer text-3xl"></i>
+            </div>
+            <div class="stat-title">Medidores Activos</div>
+            <div class="stat-value text-warning">{{ medidores_activos }}</div>
+            <div class="stat-desc">Operativos actualmente</div>
+        </div>
+        
+    </div>
 
-        <!-- Gestión de Funcionalidades -->
-        <div class="row mt-4">
-            <!-- Gestión de Consumos -->
-            <div class="col-md-6 mb-4">
-                <div class="card border-primary h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-primary">Registrar Consumos</h5>
-                        <p>Registra y actualiza los consumos de agua de los usuarios.</p>
-                        <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-primary btn-sm">Registrar Consumo</a>
+    <!-- SECCIÓN DE ACCESOS RÁPIDOS -->
+    <div>
+        <h3 class="font-bold text-lg text-base-content mb-4 flex items-center gap-2">
+            <i class="bi bi-tools text-primary"></i> Herramientas de Campo
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Tarjeta Registrar Consumo -->
+            <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <i class="bi bi-droplet-half text-2xl"></i>
+                        </div>
+                        <h2 class="card-title text-base-content">Registrar Consumos</h2>
+                    </div>
+                    <p class="text-base-content/70 text-sm mb-4">
+                        Ingresa las lecturas mensuales de agua para mantener el cobro al día.
+                    </p>
+                    <div class="card-actions justify-end">
+                        <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-primary btn-sm text-white">
+                            Ir a Lecturas <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Gestión de Medidores -->
-            <div class="col-md-6 mb-4">
-                <div class="card border-info h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-info">Gestión de Medidores</h5>
-                        <p>Asigna y gestiona los medidores para los usuarios registrados.</p>
-                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm">Gestionar Medidores</a>
+            <!-- Tarjeta Gestión Medidores -->
+            <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="w-12 h-12 rounded-full bg-info/10 flex items-center justify-center text-info">
+                            <i class="bi bi-speedometer2 text-2xl"></i>
+                        </div>
+                        <h2 class="card-title text-base-content">Gestión de Medidores</h2>
+                    </div>
+                    <p class="text-base-content/70 text-sm mb-4">
+                        Asigna nuevos medidores a usuarios, revisa estados o realiza cambios técnicos.
+                    </p>
+                    <div class="card-actions justify-end">
+                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm text-white">
+                            Gestionar <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+
 </div>
 {% endblock %}
