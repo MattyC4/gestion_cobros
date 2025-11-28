@@ -4,215 +4,280 @@
 
 {% block content %}
 
-<!-- Header con Gradient (sin icono sobrante) -->
-<div class="mb-8">
-    <div class="gradient-header rounded-2xl shadow-lg p-8 text-base-content">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold mb-1">Gestión de Cuentas</h1>
-                <p class="text-base-content/75">Administra todas las cuentas de usuarios del sistema</p>
+<!-- Mensajes/Alertas Flotantes -->
+{% if messages %}
+<div class="toast toast-top toast-end z-50 p-4 gap-2">
+    {% for message in messages %}
+        {% if "registro_cuentas" in message.tags %}
+        <div class="alert alert-{% if 'error' in message.tags %}error{% else %}success{% endif %} shadow-xl border border-white/10 bg-opacity-90 backdrop-blur-sm flex items-center gap-3 animate-fade-in-up max-w-md text-white">
+            <div class="p-1 rounded-full bg-white/20">
+                <i class="bi {% if 'error' in message.tags %}bi-x-lg{% else %}bi-check-lg{% endif %} text-lg font-bold"></i>
             </div>
-            <!-- botón superior eliminado (se coloca en la cabecera del card) -->
-        </div>
-    </div>
-</div>
-
-<!-- Card Principal -->
-<div class="card border border-base-300 shadow-lg">
-    <!-- Header del Card -->
-    <div class="card-header bg-base-200 border-b-4 border-primary text-base-content p-6 rounded-t-2xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-            <div>
-                <h5 class="text-lg font-bold flex items-center gap-2">
-                    Cuentas registradas
-                </h5>
+            <div class="flex-1">
+                <span class="font-medium text-sm">{{ message }}</span>
             </div>
-            <div class="flex justify-end items-center space-x-3">
-                <!-- Botón AGREGAR a la izquierda de la búsqueda -->
-                <a href="{% url 'registro_cuentas:gestionar_cuenta' %}" class="btn btn-outline">
-                    <i class="bi bi-plus-circle"></i> Agregar nueva cuenta
-                </a>
-
-                <!-- Buscador principal (único) -->
-                <form method="get" action="{% url 'registro_cuentas:lista_cuentas' %}" class="flex" role="search">
-                    <div class="relative w-full md:w-72">
-                        <span class="absolute inset-y-0 left-3 flex items-center text-base-content/60 pointer-events-none">
-                            <i class="bi bi-search text-lg"></i>
-                        </span>
-                        <input name="q" value="{{ query|default:'' }}" type="search"
-                               class="input input-bordered w-full pl-10 pr-3 h-10"
-                               placeholder="Buscar por nombre o email..." />
-                    </div>
-                    <button type="submit" class="btn btn-outline ml-2">Buscar</button>
-                </form>
-            </div>
-         </div>
-     </div>
-
-    <div class="card-body p-6 bg-base-100">
-        <!-- Mensajes de Error/Éxito -->
-        {% if messages %}
-        <div class="mb-6">
-            {% for message in messages %}
-                {% if "registro_cuentas" in message.tags %}
-                <div class="alert alert-{% if 'error' in message.tags %}error{% else %}success{% endif %} shadow-lg" role="alert">
-                    {{ message }}
-                </div>
-                {% endif %}
-            {% endfor %}
+            <button onclick="this.closest('.alert').remove()" class="btn btn-circle btn-xs btn-ghost text-white/70 hover:text-white hover:bg-white/20">
+                <i class="bi bi-x text-lg"></i>
+            </button>
         </div>
         {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 
-        <!-- Tabla de cuentas -->
-        {% if cuentas %}
-        <div class="overflow-x-auto bg-base-100 rounded-lg shadow-sm">
-            <table class="table table-zebra w-full bg-transparent">
-                <thead class="bg-base-200">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th class="text-right">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cuenta in cuentas %}
-                    <tr>
-                        <td>
-                            <div class="flex items-center gap-3">
-                                <!-- Avatar con inicial grande -->
-                                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-lg font-semibold">
-                                    {{ cuenta.nombre|default:cuenta.username|slice:":1"|upper }}
-                                </div>
-                                <div>
-                                    <div class="font-medium text-base">{{ cuenta.nombre }}</div>
-                                    <div class="text-xs text-base-content/60">{{ cuenta.username }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="align-middle">{{ cuenta.email }}</td>
-                        <td class="align-middle">{{ cuenta.get_rol_display }}</td>
-                        <td class="text-right align-middle">
-                            <div class="inline-flex items-center gap-2">
-                                <a href="{% url 'registro_cuentas:gestionar_cuenta' cuenta.id %}" class="btn btn-sm btn-ghost gap-2" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <!-- Botón eliminar (form POST) -->
-                                <form action="{% url 'registro_cuentas:eliminar_cuenta' cuenta.id %}" method="post" class="inline-block m-0 p-0">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-error" onclick="return confirm('Eliminar cuenta {{ cuenta.nombre }}?')" title="Eliminar">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div> <!-- cierre overflow-x-auto / tabla -->
-        
-        <!-- Paginación -->
-        {% if is_paginated %}
-        <div class="flex items-center justify-between mt-4">
-            <div class="text-sm text-base-content/60">
-                Mostrando {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ page_obj.paginator.count }}
+<div class="min-h-screen bg-base-200 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="bg-base-100 rounded-2xl shadow-lg p-8 text-base-content border border-base-300">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-1">Gestión de Cuentas</h1>
+                        <p class="text-base-content/75">Administra todas las cuentas de usuarios del sistema</p>
+                    </div>
+                </div>
             </div>
-            <nav class="btn-group">
-                {% if page_obj.has_previous %}
-                <a href="{% if query %}?q={{ query }}&page={{ page_obj.previous_page_number }}{% else %}?page={{ page_obj.previous_page_number }}{% endif %}" class="btn btn-outline">« Anterior</a>
-                {% else %}
-                <button class="btn btn-outline" disabled>« Anterior</button>
+        </div>
+
+        <!-- Tarjetas de Resumen -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Cuentas -->
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-primary">
+                        <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Total Cuentas</div>
+                    <div class="stat-value text-primary mt-1">{{ total_cuentas|default:"0" }}</div>
+                    <div class="stat-desc mt-1">Registros totales</div>
+                </div>
+            </div>
+            
+            <!-- Administradores -->
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-secondary">
+                        <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Administradores</div>
+                    <div class="stat-value text-secondary mt-1">{{ total_admins|default:"0" }}</div>
+                    <div class="stat-desc mt-1">Permisos completos</div>
+                </div>
+            </div>
+            
+            <!-- Operarios -->
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-accent">
+                        <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-gear-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Operarios</div>
+                    <div class="stat-value text-accent mt-1">{{ total_operarios|default:"0" }}</div>
+                    <div class="stat-desc mt-1">Gestión técnica</div>
+                </div>
+            </div>
+
+            <!-- Secretarias -->
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-info">
+                        <div class="w-14 h-14 rounded-2xl bg-info/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Secretarias</div>
+                    <div class="stat-value text-info mt-1">{{ total_secretarias|default:"0" }}</div>
+                    <div class="stat-desc mt-1">Atención al cliente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Principal de la Tabla -->
+        <div class="card border border-base-300 shadow-lg bg-base-100">
+            <!-- Header del Card -->
+            <div class="card-header bg-base-200 border-b-4 border-primary text-base-content p-6 rounded-t-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <h5 class="text-lg font-bold flex items-center gap-2">
+                        <i class="bi bi-list-ul text-primary"></i>
+                        Listado de Usuarios
+                    </h5>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <!-- Buscador -->
+                        <form method="get" action="{% url 'registro_cuentas:lista_cuentas' %}" class="join w-full sm:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <span class="absolute inset-y-0 left-3 flex items-center text-base-content/50 pointer-events-none">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input name="q" value="{{ query|default:'' }}" type="text" 
+                                       class="input input-bordered w-full pl-10 join-item focus:outline-none focus:border-primary" 
+                                       placeholder="Buscar usuario..." />
+                            </div>
+                            <button type="submit" class="btn btn-primary join-item">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+
+                        <!-- Botón Agregar -->
+                        <a href="{% url 'registro_cuentas:gestionar_cuenta' %}" class="btn btn-outline btn-primary gap-2 whitespace-nowrap">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="hidden sm:inline">Nuevo Usuario</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                {% if cuentas %}
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead class="bg-base-200 text-base-content uppercase text-xs font-bold tracking-wider">
+                            <tr>
+                                <th class="py-4 pl-6">Usuario</th>
+                                <th>Información de Contacto</th>
+                                <th>Rol Asignado</th>
+                                <!-- Padding right aumentado para que el título no se corte -->
+                                <th class="text-right pr-10">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cuenta in cuentas %}
+                            <tr class="hover:bg-base-200/50 transition-colors border-b border-base-200 last:border-b-0">
+                                <td class="pl-6">
+                                    <div class="flex items-center gap-4">
+                                        <!-- Avatar con fondo sólido neutro para mejor visibilidad -->
+                                        <div class="avatar placeholder">
+                                            <div class="bg-neutral text-neutral-content rounded-full w-10 shadow-sm">
+                                                <span class="text-lg font-bold">{{ cuenta.nombre|default:cuenta.username|slice:":1"|upper }}</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-base">{{ cuenta.username }}</div>
+                                            <div class="text-xs opacity-60">ID: #{{ cuenta.id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex flex-col">
+                                        <span class="font-medium">{{ cuenta.nombre }}</span>
+                                        <span class="text-xs opacity-70 flex items-center gap-1">
+                                            <i class="bi bi-envelope"></i> {{ cuenta.email }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if cuenta.rol == 'administrador' %}
+                                        <div class="badge badge-primary badge-outline gap-1 font-bold p-3">
+                                            <i class="bi bi-shield-lock-fill"></i> {{ cuenta.get_rol_display }}
+                                        </div>
+                                    {% elif cuenta.rol == 'operario' %}
+                                        <div class="badge badge-secondary badge-outline gap-1 font-bold p-3">
+                                            <i class="bi bi-tools"></i> {{ cuenta.get_rol_display }}
+                                        </div>
+                                    {% else %}
+                                        <div class="badge badge-accent badge-outline gap-1 font-bold p-3">
+                                            <i class="bi bi-person-badge"></i> {{ cuenta.get_rol_display }}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right pr-6">
+                                    <!-- Botones visibles: Usamos outline en lugar de ghost para que se vea el borde -->
+                                    <div class="join">
+                                        <!-- Botón Editar -->
+                                        <a href="{% url 'registro_cuentas:gestionar_cuenta' cuenta.id %}" 
+                                           class="btn btn-sm join-item btn-outline btn-info tooltip tooltip-left" 
+                                           data-tip="Editar">
+                                            <i class="bi bi-pencil-square text-lg"></i>
+                                        </a>
+                                        
+                                        <!-- Botón Eliminar -->
+                                        <a href="{% url 'registro_cuentas:eliminar_cuenta' cuenta.id %}" 
+                                           class="btn btn-sm join-item btn-outline btn-error tooltip tooltip-left" 
+                                           data-tip="Eliminar">
+                                            <i class="bi bi-trash text-lg"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginación -->
+                {% if is_paginated %}
+                <div class="p-4 border-t border-base-200 flex justify-center">
+                    <div class="join">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="join-item btn btn-sm">«</a>
+                        {% else %}
+                            <button class="join-item btn btn-sm btn-disabled">«</button>
+                        {% endif %}
+
+                        <button class="join-item btn btn-sm no-animation">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</button>
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="join-item btn btn-sm">»</a>
+                        {% else %}
+                            <button class="join-item btn btn-sm btn-disabled">»</button>
+                        {% endif %}
+                    </div>
+                </div>
                 {% endif %}
 
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <span class="btn btn-primary">{{ num }}</span>
-                    {% elif num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-                        <a href="{% if query %}?q={{ query }}&page={{ num }}{% else %}?page={{ num }}{% endif %}" class="btn btn-outline">{{ num }}</a>
+                {% else %}
+                <!-- Estado Vacío -->
+                <div class="text-center py-16 px-6">
+                    <div class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-search text-4xl opacity-40"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">No se encontraron usuarios</h3>
+                    <p class="text-base-content/60 max-w-xs mx-auto mt-2">
+                        {% if query %}
+                            No hay resultados para tu búsqueda "{{ query }}".
+                        {% else %}
+                            Aún no hay usuarios registrados en el sistema.
+                        {% endif %}
+                    </p>
+                    {% if query %}
+                        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-outline btn-sm mt-4">Limpiar búsqueda</a>
                     {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                <a href="{% if query %}?q={{ query }}&page={{ page_obj.next_page_number }}{% else %}?page={{ page_obj.next_page_number }}{% endif %}" class="btn btn-outline">Siguiente »</a>
-                {% else %}
-                <button class="btn btn-outline" disabled>Siguiente »</button>
+                </div>
                 {% endif %}
-            </nav>
+            </div>
         </div>
-        {% endif %}
         
-        <!-- Estadísticas -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-base-300">
-            <div class="text-center p-6 bg-base-200/50 rounded-xl">
-                <div class="flex items-center justify-center mb-3">
-                    <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mr-2 text-2xl">
-                        <i class="bi bi-people-fill"></i>
-                    </div>
-                </div>
-                <h4 class="text-3xl font-bold text-primary">{{ cuentas|length }}</h4>
-                <p class="text-base-content/60 mt-2 text-sm">Total de Cuentas</p>
-            </div>
-            <div class="text-center p-6 bg-base-200/50 rounded-xl">
-                <div class="flex items-center justify-center mb-3">
-                    <div class="w-12 h-12 rounded-lg bg-error/10 flex items-center justify-center text-error mr-2 text-2xl">
-                        <i class="bi bi-exclamation-circle-fill"></i>
-                    </div>
-                </div>
-                <h4 class="text-3xl font-bold text-error">0</h4>
-                <p class="text-base-content/60 mt-2 text-sm">Errores</p>
-            </div>
-            <div class="text-center p-6 bg-base-200/50 rounded-xl">
-                <div class="flex items-center justify-center mb-3">
-                    <div class="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center text-success mr-2 text-2xl">
-                        <i class="bi bi-check-circle-fill"></i>
-                    </div>
-                </div>
-                <h4 class="text-3xl font-bold text-success">0</h4>
-                <p class="text-base-content/60 mt-2 text-sm">Activas</p>
-            </div>
-            <div class="text-center p-6 bg-base-200/50 rounded-xl">
-                <div class="flex items-center justify-center mb-3">
-                    <div class="w-12 h-12 rounded-lg bg-info/10 flex items-center justify-center text-info mr-2 text-2xl">
-                        <i class="bi bi-info-circle-fill"></i>
-                    </div>
-                </div>
-                <h4 class="text-3xl font-bold text-info">0</h4>
-                <p class="text-base-content/60 mt-2 text-sm">Otra</p>
-            </div>
+        <!-- Botón Volver -->
+        <div class="mt-8">
+            <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost text-base-content/70 hover:text-primary gap-2 pl-0">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
         </div>
-        {% else %}
-        <!-- Mensaje cuando no hay cuentas -->
-        <div class="text-center py-12">
-            <i class="bi bi-inbox text-6xl opacity-30"></i>
-            <h4 class="text-xl font-semibold mt-4 mb-2">No se encontraron cuentas</h4>
-            <p class="text-base-content/60 mb-6">
-                {% if query %}
-                No hay resultados para "{{ query }}"
-                {% else %}
-                Comienza agregando una nueva cuenta al sistema
-                {% endif %}
-            </p>
-            <div class="flex gap-2 justify-center flex-wrap">
-                {% if query %}
-                <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-outline gap-2">
-                    Limpiar búsqueda
-                </a>
-                {% endif %}
-                <a href="{% url 'registro_cuentas:gestionar_cuenta' %}" class="btn btn-primary gap-2">
-                    <i class="bi bi-plus-circle"></i> Crear Cuenta
-                </a>
-            </div>
-        </div>
-        {% endif %}
+
     </div>
 </div>
 
-<!-- Botón Volver -->
-<div class="mt-6">
-    <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-outline gap-2">
-        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-    </a>
-</div>
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 20px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.4s ease-out forwards;
+    }
+</style>
 
 {% endblock %}

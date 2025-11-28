@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+<<<<<<< Updated upstream
 <div class="max-w-2xl mx-auto">
 
     <!-- Encabezado -->
@@ -62,10 +63,32 @@
                                 <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
                             {% endfor %}
                         </ul>
+=======
+<div class="min-h-screen bg-base-200 py-8">
+    <div class="container mx-auto px-4">
+        
+        <!-- Header alineado con lista_cuentas -->
+        <div class="mb-8">
+            <div class="bg-base-100 rounded-2xl shadow-lg p-8 text-base-content border border-base-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-1">
+                            {% if cuenta %}Editar Cuenta{% else %}Crear Nueva Cuenta{% endif %}
+                        </h1>
+                        <p class="text-base-content/75">
+                            {% if cuenta %}
+                            Actualiza los datos de la cuenta seleccionada.
+                            {% else %}
+                            Complete el formulario para registrar un nuevo usuario.
+                            {% endif %}
+                        </p>
+>>>>>>> Stashed changes
                     </div>
+                    <!-- Se eliminó el recuadro del icono vacío que estaba aquí -->
                 </div>
                 {% endif %}
 
+<<<<<<< Updated upstream
                 <!-- Sección: Datos de Acceso -->
                 <div class="divider text-primary font-semibold text-sm uppercase tracking-wider mb-6">Datos de Acceso</div>
 
@@ -134,9 +157,109 @@
                             </span>
                         </label>
                         {{ form.confirm_password }}
+=======
+        <!-- Card del Formulario -->
+        <div class="card border border-base-300 shadow-lg bg-base-100">
+            <!-- Header del Card -->
+            <div class="card-header bg-base-200 border-b-4 border-primary text-base-content p-6 rounded-t-2xl">
+                <h5 class="text-lg font-bold flex items-center gap-2">
+                    <i class="bi bi-person-vcard text-primary"></i>
+                    Información de la Cuenta
+                </h5>
+            </div>
+
+            <div class="card-body p-6 md:p-8">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Mensajes de Error/Éxito -->
+                    {% if messages %}
+                    <div class="mb-6">
+                        {% for message in messages %}
+                            {% if "registro_cuentas" in message.tags %}
+                            <div role="alert" class="alert alert-{% if 'error' in message.tags %}error{% else %}success{% endif %} shadow-md mb-2">
+                                <i class="bi {% if 'error' in message.tags %}bi-exclamation-circle{% else %}bi-check-circle{% endif %}"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Campos del Formulario -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Username -->
+                        <div class="form-control w-full">
+                            <label for="id_username" class="label">
+                                <span class="label-text font-bold text-base-content">
+                                    <i class="bi bi-person text-primary mr-1"></i> Nombre de Usuario
+                                </span>
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.help_text %}
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/70">{{ form.username.help_text|safe }}</span>
+                            </label>
+                            {% endif %}
+                            {% if form.username.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.username.errors.0 }}</span>
+                            </label>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-control w-full">
+                            <label for="id_email" class="label">
+                                <span class="label-text font-bold text-base-content">
+                                    <i class="bi bi-envelope text-primary mr-1"></i> Correo Electrónico
+                                </span>
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.help_text %}
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/70">{{ form.email.help_text|safe }}</span>
+                            </label>
+                            {% endif %}
+                            {% if form.email.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.email.errors.0 }}</span>
+                            </label>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Rol -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="form-control w-full">
+                            <label for="id_rol" class="label">
+                                <span class="label-text font-bold text-base-content">
+                                    <i class="bi bi-shield-lock text-primary mr-1"></i> Rol
+                                </span>
+                            </label>
+                            {{ form.rol }}
+                            {% if form.rol.help_text %}
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/70">{{ form.rol.help_text|safe }}</span>
+                            </label>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="divider"></div> 
+
+                    <!-- Sección de Contraseña -->
+                    <div class="alert bg-info/10 border-info/20 text-base-content mb-6 shadow-sm">
+                        <i class="bi bi-lock text-info"></i>
+                        <div>
+                            <h3 class="font-bold text-sm">Seguridad</h3>
+                            <div class="text-xs opacity-80">Las contraseñas deben ser seguras y contener mayúsculas, minúsculas y números.</div>
+                        </div>
+>>>>>>> Stashed changes
                     </div>
                 </div>
 
+<<<<<<< Updated upstream
                 <!-- Botones de Acción -->
                 <div class="modal-action flex flex-col-reverse sm:flex-row justify-between items-center mt-8 pt-6 border-t border-base-200 gap-3">
                     <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-ghost w-full sm:w-auto text-base-content/70 hover:bg-base-200">
@@ -153,10 +276,65 @@
                 </div>
 
             </form>
+=======
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Password -->
+                        <div class="form-control w-full">
+                            <label for="id_password" class="label">
+                                <span class="label-text font-bold text-base-content">
+                                    <i class="bi bi-key text-primary mr-1"></i> Contraseña
+                                </span>
+                            </label>
+                            {{ form.password }}
+                            {% if form.password.help_text %}
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/70">{{ form.password.help_text|safe }}</span>
+                            </label>
+                            {% endif %}
+                            {% if form.password.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.password.errors.0 }}</span>
+                            </label>
+                            {% endif %}
+                        </div>
+
+                        <!-- Confirmar Password -->
+                        <div class="form-control w-full">
+                            <label for="id_confirm_password" class="label">
+                                <span class="label-text font-bold text-base-content">
+                                    <i class="bi bi-check-circle text-primary mr-1"></i> Confirmar Contraseña
+                                </span>
+                            </label>
+                            {{ form.confirm_password }}
+                            {% if form.confirm_password.errors %}
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ form.confirm_password.errors.0 }}</span>
+                            </label>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="flex flex-col-reverse md:flex-row justify-between items-center gap-4 mt-8 pt-4 border-t border-base-300">
+                        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-outline gap-2 w-full md:w-auto">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary w-full md:w-auto px-8 gap-2">
+                            {% if cuenta %}
+                            <i class="bi bi-save"></i> Actualizar Cuenta
+                            {% else %}
+                            <i class="bi bi-plus-circle"></i> Crear Cuenta
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+>>>>>>> Stashed changes
         </div>
     </div>
 </div>
 
+<<<<<<< Updated upstream
 <!-- SCRIPT MÁGICO PARA ESTILIZAR INPUTS DE DJANGO -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -182,4 +360,48 @@
         });
     });
 </script>
+=======
+<style>
+    /* Estilos para que los inputs de Django se parezcan a los de DaisyUI
+       y se adapten automáticamente al tema (light/dark) */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        /* Usamos variables de DaisyUI para bordes y fondo */
+        border-width: 1px;
+        border-style: solid;
+        border-color: var(--fallback-bc,oklch(var(--bc)/0.2));
+        background-color: var(--fallback-b1,oklch(var(--b1)/1));
+        color: var(--fallback-bc,oklch(var(--bc)/1));
+        border-radius: var(--rounded-btn, 0.5rem);
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+
+    /* Estados Focus */
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus,
+    textarea:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        border-color: var(--fallback-p,oklch(var(--p)/1));
+        box-shadow: 0 0 0 0 transparent; /* DaisyUI maneja focus con outline a veces, pero esto asegura limpieza */
+    }
+
+    /* Iconos dentro de las etiquetas */
+    label i {
+        opacity: 0.8;
+    }
+</style>
+>>>>>>> Stashed changes
 {% endblock %}

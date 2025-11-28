@@ -3,16 +3,60 @@
 {% block title %}Eliminar Cuenta{% endblock %}
 
 {% block content %}
-<div class="card shadow-lg p-4">
-    <h2 class="mb-4 text-center text-danger">Eliminar Cuenta</h2>
-    <p class="text-center">¿Estás seguro de que deseas eliminar la cuenta de <strong>{{ cuenta.username }}</strong>?</p>
-    <p class="text-center text-muted">
-        Esta acción es irreversible y eliminará todos los datos relacionados con esta cuenta.
-    </p>
-    <form method="post" class="d-flex justify-content-center">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger me-2">Eliminar</button>
-        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<!-- Contenedor principal: h-screen fija la altura a la pantalla, overflow-hidden quita el scroll -->
+<div class="h-screen w-full bg-base-200 flex items-center justify-center p-4 overflow-hidden fixed inset-0 z-50">
+    
+    <!-- Tarjeta centrada y compacta -->
+    <div class="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300 animate-scale-in">
+        <div class="card-body items-center text-center p-6 md:p-8">
+            
+            <!-- Icono de Advertencia (Un poco más compacto) -->
+            <div class="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mb-4 text-error animate-pulse">
+                <i class="bi bi-exclamation-triangle text-4xl"></i>
+            </div>
+
+            <h2 class="card-title text-2xl font-bold text-base-content mb-1">¿Eliminar Cuenta?</h2>
+            
+            <div class="text-base-content/80 mb-6 w-full">
+                <p class="mb-3 text-sm">Estás a punto de eliminar permanentemente a:</p>
+                
+                <!-- Datos del usuario a eliminar -->
+                <div class="bg-base-200 rounded-xl p-4 mb-4 border border-base-300">
+                    <div class="font-bold text-lg break-all text-base-content">{{ cuenta.username }}</div>
+                    {% if cuenta.email %}
+                        <div class="text-xs opacity-60 mt-1">{{ cuenta.email }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Advertencia -->
+                <div class="alert alert-warning shadow-sm text-start text-xs py-2 px-3 flex items-center gap-2">
+                    <i class="bi bi-exclamation-circle-fill text-lg"></i>
+                    <span>Esta acción es <strong>irreversible</strong>. Se perderán todos los datos.</span>
+                </div>
+            </div>
+
+            <!-- Acciones (Grid para botones del mismo ancho) -->
+            <form method="post" class="card-actions w-full grid grid-cols-2 gap-3 mt-1">
+                {% csrf_token %}
+                <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-outline border-base-300 hover:bg-base-200 hover:text-base-content w-full">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-error text-white w-full">
+                    Sí, Eliminar
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Animación suave de entrada tipo "pop-up" */
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .animate-scale-in {
+        animation: scaleIn 0.2s ease-out forwards;
+    }
+</style>
 {% endblock %}
