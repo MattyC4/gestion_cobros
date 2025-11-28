@@ -73,13 +73,13 @@
             <!-- Operarios -->
             <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
                 <div class="stat p-6">
-                    <div class="stat-figure text-accent">
-                        <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                    <div class="stat-figure text-success">
+                        <div class="w-14 h-14 rounded-2xl bg-success/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
                             <i class="bi bi-gear-fill"></i>
                         </div>
                     </div>
                     <div class="stat-title opacity-70 font-medium">Operarios</div>
-                    <div class="stat-value text-accent mt-1">{{ total_operarios|default:"0" }}</div>
+                    <div class="stat-value text-success mt-1">{{ total_operarios|default:"0" }}</div>
                     <div class="stat-desc mt-1">Gestión técnica</div>
                 </div>
             </div>
@@ -87,13 +87,13 @@
             <!-- Secretarias -->
             <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
                 <div class="stat p-6">
-                    <div class="stat-figure text-info">
-                        <div class="w-14 h-14 rounded-2xl bg-info/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                    <div class="stat-figure text-warning">
+                        <div class="w-14 h-14 rounded-2xl bg-warning/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
                             <i class="bi bi-person-badge-fill"></i>
                         </div>
                     </div>
                     <div class="stat-title opacity-70 font-medium">Secretarias</div>
-                    <div class="stat-value text-info mt-1">{{ total_secretarias|default:"0" }}</div>
+                    <div class="stat-value text-warning mt-1">{{ total_secretarias|default:"0" }}</div>
                     <div class="stat-desc mt-1">Atención al cliente</div>
                 </div>
             </div>
@@ -126,7 +126,7 @@
                         </form>
 
                         <!-- Botón Agregar -->
-                        <a href="{% url 'registro_cuentas:gestionar_cuenta' %}" class="btn btn-outline btn-primary gap-2 whitespace-nowrap">
+                        <a href="{% url 'registro_cuentas:gestionar_cuenta' %}" class="btn btn-primary gap-2 whitespace-nowrap text-white">
                             <i class="bi bi-plus-lg"></i>
                             <span class="hidden sm:inline">Nuevo Usuario</span>
                         </a>
@@ -143,8 +143,7 @@
                                 <th class="py-4 pl-6">Usuario</th>
                                 <th>Información de Contacto</th>
                                 <th>Rol Asignado</th>
-                                <!-- Padding right aumentado para que el título no se corte -->
-                                <th class="text-right pr-10">Acciones</th>
+                                <th class="text-right pr-8">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,11 +151,9 @@
                             <tr class="hover:bg-base-200/50 transition-colors border-b border-base-200 last:border-b-0">
                                 <td class="pl-6">
                                     <div class="flex items-center gap-4">
-                                        <!-- Avatar con fondo sólido neutro para mejor visibilidad -->
-                                        <div class="avatar placeholder">
-                                            <div class="bg-neutral text-neutral-content rounded-full w-10 shadow-sm">
-                                                <span class="text-lg font-bold">{{ cuenta.nombre|default:cuenta.username|slice:":1"|upper }}</span>
-                                            </div>
+                                        <!-- AVATAR CORREGIDO: Círculo perfecto manual -->
+                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-neutral text-neutral-content flex items-center justify-center shadow-sm overflow-hidden">
+                                            <span class="text-sm font-bold uppercase">{{ cuenta.nombre|default:cuenta.username|slice:":1" }}</span>
                                         </div>
                                         <div>
                                             <div class="font-bold text-base">{{ cuenta.username }}</div>
@@ -173,35 +170,42 @@
                                     </div>
                                 </td>
                                 <td>
-                                    {% if cuenta.rol == 'administrador' %}
-                                        <div class="badge badge-primary badge-outline gap-1 font-bold p-3">
-                                            <i class="bi bi-shield-lock-fill"></i> {{ cuenta.get_rol_display }}
+                                    <!-- ROLES DIFERENCIADOS -->
+                                    {% if cuenta.rol == 'administrador' or cuenta.rol == 'admin' or cuenta.is_superuser %}
+                                        <div class="badge badge-primary badge-outline gap-1 font-bold p-3 whitespace-nowrap">
+                                            <i class="bi bi-shield-lock-fill"></i> Administrador
                                         </div>
                                     {% elif cuenta.rol == 'operario' %}
-                                        <div class="badge badge-secondary badge-outline gap-1 font-bold p-3">
-                                            <i class="bi bi-tools"></i> {{ cuenta.get_rol_display }}
+                                        <!-- Operario: Success (Verde) -->
+                                        <div class="badge badge-success badge-outline gap-1 font-bold p-3 whitespace-nowrap">
+                                            <i class="bi bi-tools"></i> Operario
+                                        </div>
+                                    {% elif cuenta.rol == 'secretaria' %}
+                                        <!-- Secretaria: Warning (Naranja/Amarillo) -->
+                                        <div class="badge badge-warning badge-outline gap-1 font-bold p-3 whitespace-nowrap">
+                                            <i class="bi bi-person-badge-fill"></i> Secretaria
                                         </div>
                                     {% else %}
-                                        <div class="badge badge-accent badge-outline gap-1 font-bold p-3">
-                                            <i class="bi bi-person-badge"></i> {{ cuenta.get_rol_display }}
+                                        <div class="badge badge-ghost gap-2 py-3 font-semibold whitespace-nowrap">
+                                            <i class="bi bi-question-circle"></i> Sin Rol
                                         </div>
                                     {% endif %}
                                 </td>
                                 <td class="text-right pr-6">
-                                    <!-- Botones visibles: Usamos outline en lugar de ghost para que se vea el borde -->
-                                    <div class="join">
-                                        <!-- Botón Editar -->
+                                    <!-- BOTONES DE ACCIONES SÓLIDOS -->
+                                    <div class="flex justify-end gap-2">
+                                        <!-- Botón Editar: Azul Sólido -->
                                         <a href="{% url 'registro_cuentas:gestionar_cuenta' cuenta.id %}" 
-                                           class="btn btn-sm join-item btn-outline btn-info tooltip tooltip-left" 
-                                           data-tip="Editar">
-                                            <i class="bi bi-pencil-square text-lg"></i>
+                                           class="btn btn-sm btn-info text-white border-none shadow-md w-8 h-8 p-0 min-h-0 flex items-center justify-center" 
+                                           title="Editar">
+                                            <i class="bi bi-pencil-square text-sm"></i>
                                         </a>
                                         
-                                        <!-- Botón Eliminar -->
+                                        <!-- Botón Eliminar: Rojo Sólido -->
                                         <a href="{% url 'registro_cuentas:eliminar_cuenta' cuenta.id %}" 
-                                           class="btn btn-sm join-item btn-outline btn-error tooltip tooltip-left" 
-                                           data-tip="Eliminar">
-                                            <i class="bi bi-trash text-lg"></i>
+                                           class="btn btn-sm btn-error text-white border-none shadow-md w-8 h-8 p-0 min-h-0 flex items-center justify-center" 
+                                           title="Eliminar">
+                                            <i class="bi bi-trash text-sm"></i>
                                         </a>
                                     </div>
                                 </td>
