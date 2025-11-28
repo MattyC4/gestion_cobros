@@ -1,215 +1,185 @@
 {% extends "registro_cuentas/base_registro_cuentas.html" %}
 
-{% block title %}{% if cuenta %}Editar Cuenta{% else %}Agregar Nueva Cuenta{% endif %}{% endblock %}
+{% block title %}
+    {% if cuenta %}Editar Cuenta{% else %}Agregar Nueva Cuenta{% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="min-vh-100 bg-light py-5">
-    <div class="container">
-        <!-- Header con Gradient -->
-        <div class="mb-5">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
-                <div class="d-flex align-items-center mb-2">
-                    {% if cuenta %}
-                    <i class="fas fa-edit me-3" style="font-size: 2rem;"></i>
-                    {% else %}
-                    <i class="fas fa-user-plus me-3" style="font-size: 2rem;"></i>
-                    {% endif %}
+<div class="max-w-2xl mx-auto">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
+            {% if cuenta %}
+                <i class="bi bi-person-gear text-3xl"></i>
+            {% else %}
+                <i class="bi bi-person-plus-fill text-3xl"></i>
+            {% endif %}
+        </div>
+        <h2 class="text-3xl font-bold text-primary">
+            {% if cuenta %}Editar Cuenta{% else %}Crear Nueva Cuenta{% endif %}
+        </h2>
+        <p class="text-base-content/70 mt-2">
+            {% if cuenta %}
+                Actualiza los permisos y datos de acceso del usuario.
+            {% else %}
+                Registra un nuevo acceso al sistema de gestión.
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Tarjeta del Formulario -->
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body p-6 sm:p-8">
+            
+            <form method="post" id="form-cuenta" novalidate>
+                {% csrf_token %}
+
+                <!-- Mensajes de Error/Éxito Globales -->
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div role="alert" class="alert alert-{% if 'error' in message.tags %}error{% else %}success{% endif %} shadow-sm">
+                        {% if 'error' in message.tags %}
+                            <i class="bi bi-x-circle-fill"></i>
+                        {% else %}
+                            <i class="bi bi-check-circle-fill"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Errores del Formulario -->
+                {% if form.errors %}
+                <div role="alert" class="alert alert-error mb-6 shadow-sm">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
                     <div>
-                        <h1 class="h2 fw-bold mb-0">
-                            {% if cuenta %}Editar Cuenta{% else %}Crear Nueva Cuenta{% endif %}
-                        </h1>
-                        <p class="text-light opacity-75 mb-0 mt-1">
-                            {% if cuenta %}
-                            Actualiza la información de la cuenta seleccionada
-                            {% else %}
-                            Registra una nueva cuenta en el sistema
-                            {% endif %}
-                        </p>
+                        <h3 class="font-bold">Por favor corrige los siguientes errores:</h3>
+                        <ul class="list-disc list-inside text-sm mt-1">
+                            {% for field, errors in form.errors.items %}
+                                <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
-            </div>
-        </div>
+                {% endif %}
 
-        <!-- Card Principal -->
-        <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
-            <!-- Header del Card -->
-            <div class="card-header bg-white border-bottom-2 border-primary p-4">
-                <h5 class="card-title mb-0 text-primary fw-bold">
-                    <i class="fas fa-form me-2"></i>
-                    Información de la Cuenta
-                </h5>
-            </div>
+                <!-- Sección: Datos de Acceso -->
+                <div class="divider text-primary font-semibold text-sm uppercase tracking-wider mb-6">Datos de Acceso</div>
 
-            <div class="card-body p-5">
-                <form method="post" novalidate>
-                    {% csrf_token %}
-
-                    <!-- Mensajes de Error/Éxito -->
-                    {% if messages %}
-                    <div class="mb-4">
-                        {% for message in messages %}
-                            {% if "registro_cuentas" in message.tags %}
-                            <div class="alert alert-{% if 'error' in message.tags %}danger{% else %}success{% endif %} alert-dismissible fade show d-flex align-items-start" role="alert">
-                                <i class="{% if 'error' in message.tags %}fas fa-exclamation-circle{% else %}fas fa-check-circle{% endif %} me-3 mt-1"></i>
-                                <div>
-                                    <strong>{% if 'error' in message.tags %}Error{% else %}Éxito{% endif %}</strong>
-                                    <p class="mb-0 mt-1">{{ message }}</p>
-                                </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    <!-- Campos del Formulario con Separadores -->
-                    <div class="row">
-                        <!-- Username -->
-                        <div class="col-md-6 mb-4">
-                            <label for="id_username" class="form-label fw-bold text-dark">
-                                <i class="fas fa-user text-primary me-2"></i>Nombre de Usuario
-                            </label>
-                            {{ form.username }}
-                            {% if form.username.help_text %}
-                            <small class="form-text text-muted d-block mt-2">
-                                <i class="fas fa-info-circle me-1"></i>{{ form.username.help_text|safe }}
-                            </small>
-                            {% endif %}
-                        </div>
-
-                        <!-- Email -->
-                        <div class="col-md-6 mb-4">
-                            <label for="id_email" class="form-label fw-bold text-dark">
-                                <i class="fas fa-envelope text-primary me-2"></i>Correo Electrónico
-                            </label>
-                            {{ form.email }}
-                            {% if form.email.help_text %}
-                            <small class="form-text text-muted d-block mt-2">
-                                <i class="fas fa-info-circle me-1"></i>{{ form.email.help_text|safe }}
-                            </small>
-                            {% endif %}
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+                    <!-- Username -->
+                    <div class="form-control w-full">
+                        <label for="id_username" class="label">
+                            <span class="label-text font-semibold flex items-center gap-2">
+                                <i class="bi bi-person text-primary"></i> Usuario
+                            </span>
+                        </label>
+                        {{ form.username }}
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/60">{{ form.username.help_text|safe }}</span>
+                        </label>
                     </div>
 
-                    <!-- Rol -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="id_rol" class="form-label fw-bold text-dark">
-                                <i class="fas fa-shield-alt text-primary me-2"></i>Rol
-                            </label>
-                            {{ form.rol }}
-                            {% if form.rol.help_text %}
-                            <small class="form-text text-muted d-block mt-2">
-                                <i class="fas fa-info-circle me-1"></i>{{ form.rol.help_text|safe }}
-                            </small>
-                            {% endif %}
-                        </div>
+                    <!-- Email -->
+                    <div class="form-control w-full">
+                        <label for="id_email" class="label">
+                            <span class="label-text font-semibold flex items-center gap-2">
+                                <i class="bi bi-envelope text-primary"></i> Correo
+                            </span>
+                        </label>
+                        {{ form.email }}
+                    </div>
+                </div>
+
+                <!-- Rol -->
+                <div class="form-control w-full mb-6">
+                    <label for="id_rol" class="label">
+                        <span class="label-text font-semibold flex items-center gap-2">
+                            <i class="bi bi-shield-lock text-primary"></i> Rol del Sistema
+                        </span>
+                    </label>
+                    {{ form.rol }}
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Define los permisos dentro de la plataforma.</span>
+                    </label>
+                </div>
+
+                <!-- Sección: Seguridad -->
+                <div class="divider text-primary font-semibold text-sm uppercase tracking-wider mb-6">Seguridad</div>
+
+                <div class="alert alert-info bg-info/10 text-info border-0 mb-6 text-sm">
+                    <i class="bi bi-info-circle-fill text-lg"></i>
+                    <span>La contraseña debe contener mayúsculas, minúsculas y números.</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-2">
+                    <!-- Password -->
+                    <div class="form-control w-full">
+                        <label for="id_password" class="label">
+                            <span class="label-text font-semibold flex items-center gap-2">
+                                <i class="bi bi-key text-primary"></i> Contraseña
+                            </span>
+                        </label>
+                        {{ form.password }}
                     </div>
 
-                    <!-- Divider -->
-                    <hr class="my-4">
-
-                    <!-- Sección de Contraseña -->
-                    <div class="alert alert-info border-0 bg-light" role="alert">
-                        <i class="fas fa-lock text-info me-2"></i>
-                        <strong>Seguridad:</strong> Las contraseñas deben ser seguras y contener mayúsculas, minúsculas y números.
+                    <!-- Confirm Password -->
+                    <div class="form-control w-full">
+                        <label for="id_confirm_password" class="label">
+                            <span class="label-text font-semibold flex items-center gap-2">
+                                <i class="bi bi-check2-circle text-primary"></i> Confirmar
+                            </span>
+                        </label>
+                        {{ form.confirm_password }}
                     </div>
+                </div>
 
-                    <div class="row mb-4">
-                        <!-- Password -->
-                        <div class="col-md-6 mb-3">
-                            <label for="id_password" class="form-label fw-bold text-dark">
-                                <i class="fas fa-key text-primary me-2"></i>Contraseña
-                            </label>
-                            {{ form.password }}
-                            {% if form.password.help_text %}
-                            <small class="form-text text-muted d-block mt-2">
-                                <i class="fas fa-info-circle me-1"></i>{{ form.password.help_text|safe }}
-                            </small>
-                            {% endif %}
-                        </div>
+                <!-- Botones de Acción -->
+                <div class="modal-action flex flex-col-reverse sm:flex-row justify-between items-center mt-8 pt-6 border-t border-base-200 gap-3">
+                    <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-ghost w-full sm:w-auto text-base-content/70 hover:bg-base-200">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto text-white shadow-md">
+                        {% if cuenta %}
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        {% else %}
+                            <i class="bi bi-person-plus-fill"></i> Crear Cuenta
+                        {% endif %}
+                    </button>
+                </div>
 
-                        <!-- Confirmar Password -->
-                        <div class="col-md-6 mb-3">
-                            <label for="id_confirm_password" class="form-label fw-bold text-dark">
-                                <i class="fas fa-check-circle text-primary me-2"></i>Confirmar Contraseña
-                            </label>
-                            {{ form.confirm_password }}
-                        </div>
-                    </div>
-
-                    <!-- Botones -->
-                    <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                        <a href="{% url 'registro_cuentas:lista_cuentas' %}" class="btn btn-outline-secondary btn-lg">
-                            <i class="fas fa-arrow-left me-2"></i>Volver
-                        </a>
-                        <button type="submit" class="btn btn-primary btn-lg px-5">
-                            {% if cuenta %}
-                            <i class="fas fa-save me-2"></i>Actualizar Cuenta
-                            {% else %}
-                            <i class="fas fa-plus-circle me-2"></i>Crear Cuenta
-                            {% endif %}
-                        </button>
-                    </div>
-                </form>
-            </div>
+            </form>
         </div>
     </div>
 </div>
 
-<style>
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    select,
-    textarea {
-        width: 100% !important;
-        padding: 0.65rem 1rem !important;
-        border: 2px solid #e9ecef !important;
-        border-radius: 0.5rem !important;
-        font-size: 1rem !important;
-        transition: all 0.3s ease !important;
-        background-color: #f8f9fa !important;
-    }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus,
-    select:focus,
-    textarea:focus {
-        outline: none !important;
-        border-color: #0d6efd !important;
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15) !important;
-        background-color: #fff !important;
-    }
-
-    input[type="text"]:hover,
-    input[type="email"]:hover,
-    input[type="password"]:hover,
-    select:hover,
-    textarea:hover {
-        border-color: #0d6efd !important;
-    }
-
-    .bg-gradient-to-r {
-        background: linear-gradient(135deg, #0d6efd 0%, #0059d1 100%);
-    }
-
-    .border-bottom-2 {
-        border-bottom: 3px solid !important;
-    }
-
-    .card {
-        transition: all 0.3s ease;
-    }
-
-    .card:hover {
-        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .btn-lg {
-        padding: 0.75rem 1.5rem !important;
-        font-weight: 600;
-    }
-</style>
+<!-- SCRIPT MÁGICO PARA ESTILIZAR INPUTS DE DJANGO -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Busca todos los inputs, selects y textareas dentro del formulario
+        const inputs = document.querySelectorAll('#form-cuenta input, #form-cuenta select, #form-cuenta textarea');
+        
+        inputs.forEach(input => {
+            // Elimina clases viejas de bootstrap
+            input.classList.remove('form-control', 'form-select');
+            
+            // Si es un checkbox, usa el estilo 'toggle' de DaisyUI
+            if (input.type === 'checkbox') {
+                input.classList.add('toggle', 'toggle-primary');
+            } 
+            // Si es un select, usa 'select'
+            else if (input.tagName === 'SELECT') {
+                input.classList.add('select', 'select-bordered', 'w-full', 'focus:select-primary', 'bg-base-100');
+            }
+            // Para todo lo demás (text, email, password), usa 'input'
+            else {
+                input.classList.add('input', 'input-bordered', 'w-full', 'focus:input-primary', 'transition-all');
+            }
+        });
+    });
+</script>
 {% endblock %}

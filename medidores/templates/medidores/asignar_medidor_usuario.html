@@ -3,19 +3,79 @@
 {% block title %}Asignar Medidor{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Asignar Medidor a {{ usuario.nombre }}</h2>
-    <form method="post" class="card p-4 shadow-sm">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div class="d-flex justify-content-between mt-3">
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-check"></i> Asignar
-            </button>
-            <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
+<div class="max-w-2xl mx-auto">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success mb-4">
+            <i class="bi bi-speedometer text-3xl"></i>
         </div>
-    </form>
+        <h2 class="text-3xl font-bold text-base-content">Asignar Medidor</h2>
+        <p class="text-base-content/70 mt-2">
+            Vinculando equipo al cliente: <strong class="text-primary">{{ usuario.nombre }}</strong>
+        </p>
+    </div>
+
+    <!-- Tarjeta del Formulario -->
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body p-6 sm:p-8">
+            
+            <form method="post" id="form-asignar-medidor">
+                {% csrf_token %}
+
+                <!-- Renderizado de campos (El script abajo los estiliza) -->
+                <div class="space-y-4">
+                    {{ form.as_p }}
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="modal-action flex flex-col-reverse sm:flex-row justify-between items-center mt-8 pt-6 border-t border-base-200 gap-3">
+                    <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-ghost w-full sm:w-auto text-base-content/70 hover:bg-base-200">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    
+                    <button type="submit" class="btn btn-success text-white w-full sm:w-auto shadow-md">
+                        <i class="bi bi-check-lg"></i> Confirmar Asignación
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>
+
+<!-- SCRIPT PARA ESTILIZAR AUTOMÁTICAMENTE LOS INPUTS DE DJANGO -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('#form-asignar-medidor input, #form-asignar-medidor select, #form-asignar-medidor textarea');
+        
+        inputs.forEach(input => {
+            // Elimina clases viejas
+            input.classList.remove('form-control', 'form-select');
+            
+            // Aplica estilos de DaisyUI
+            if (input.type === 'checkbox') {
+                input.classList.add('toggle', 'toggle-success');
+                // Envolver checkbox en label para mejor UX
+                const parent = input.parentNode;
+                if (parent.tagName === 'P') {
+                    parent.classList.add('form-control', 'w-full');
+                }
+            } else {
+                input.classList.add('input', 'input-bordered', 'w-full', 'focus:input-success', 'transition-all', 'bg-base-100', 'mt-1');
+                
+                // Estilizar el label padre (el <p> que genera as_p)
+                const parent = input.parentNode;
+                if (parent.tagName === 'P') {
+                    parent.classList.add('form-control', 'w-full', 'mb-4');
+                    // Buscar el label dentro del p y estilizarlo
+                    const label = parent.querySelector('label');
+                    if (label) {
+                        label.classList.add('label', 'label-text', 'font-semibold');
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

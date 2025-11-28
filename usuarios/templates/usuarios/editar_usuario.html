@@ -3,64 +3,133 @@
 {% block title %}Editar Usuario{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="mb-4 text-center">Editar Usuario</h2>
-        <p class="text-muted text-center">
-            Modifica la información necesaria del usuario y guarda los cambios. Asegúrate de que los datos sean correctos antes de confirmar.
+<div class="max-w-2xl mx-auto">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning/10 text-warning mb-4">
+            <i class="bi bi-person-gear text-3xl"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-primary">Editar Usuario</h2>
+        <p class="text-base-content/70 mt-2">
+            Modifica la información del socio y guarda los cambios.
         </p>
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
+    </div>
 
-            <!-- Mostrar errores globales del formulario -->
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <h5><i class="fas fa-exclamation-circle"></i> Se encontraron errores en el formulario:</h5>
-                <ul>
-                    {% for field, errors in form.errors.items %}
-                        <li>{{ field }}: {{ errors|join:", " }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+    <!-- Tarjeta del Formulario -->
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body p-6 sm:p-8">
+            
+            <form method="post" id="form-editar-usuario" novalidate>
+                {% csrf_token %}
 
-            <!-- Campos del formulario -->
-            <div class="mb-3">
-                <label for="id_nombre" class="form-label fw-bold">Nombre Completo</label>
-                {{ form.nombre }}
-                <small class="form-text text-muted">Ejemplo: Juan Pérez</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_rut" class="form-label fw-bold">RUT</label>
-                {{ form.rut }}
-                <small class="form-text text-muted">Formato: 12.345.678-K</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_correo" class="form-label fw-bold">Correo Electrónico</label>
-                {{ form.correo }}
-                <small class="form-text text-muted">Ejemplo: usuario@dominio.com</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_direccion" class="form-label fw-bold">Dirección</label>
-                {{ form.direccion }}
-                <small class="form-text text-muted">Ejemplo: Calle Falsa 123, Santiago</small>
-            </div>
-            <div class="mb-3">
-                <label for="id_telefono" class="form-label fw-bold">Teléfono</label>
-                {{ form.telefono }}
-                <small class="form-text text-muted">Formato: +569XXXXXXXX</small>
-            </div>
+                <!-- Mensajes de Error Globales -->
+                {% if form.errors %}
+                <div role="alert" class="alert alert-error mb-6 shadow-sm">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>
+                        <h3 class="font-bold">Se encontraron errores:</h3>
+                        <ul class="text-sm list-disc list-inside mt-1">
+                            {% for field, errors in form.errors.items %}
+                                <li><strong>{{ field|capfirst }}:</strong> {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
 
-            <!-- Botones de acción -->
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-primary me-2">
-                    <i class="fas fa-save"></i> Guardar Cambios
-                </button>
-                <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-            </div>
-        </form>
+                <!-- Campo: Nombre -->
+                <div class="form-control mb-4">
+                    <label for="id_nombre" class="label">
+                        <span class="label-text font-semibold flex items-center gap-2">
+                            <i class="bi bi-person-badge text-primary"></i> Nombre Completo
+                        </span>
+                    </label>
+                    {{ form.nombre }}
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Ejemplo: Juan Pérez</span>
+                    </label>
+                </div>
+
+                <!-- Campo: RUT -->
+                <div class="form-control mb-4">
+                    <label for="id_rut" class="label">
+                        <span class="label-text font-semibold flex items-center gap-2">
+                            <i class="bi bi-credit-card-2-front text-primary"></i> RUT
+                        </span>
+                    </label>
+                    {{ form.rut }}
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">Formato: 12.345.678-K</span>
+                    </label>
+                </div>
+
+                <!-- Campo: Correo -->
+                <div class="form-control mb-4">
+                    <label for="id_correo" class="label">
+                        <span class="label-text font-semibold flex items-center gap-2">
+                            <i class="bi bi-envelope text-primary"></i> Correo Electrónico
+                        </span>
+                    </label>
+                    {{ form.correo }}
+                </div>
+
+                <!-- Fila: Dirección y Teléfono -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                    <div class="form-control">
+                        <label for="id_direccion" class="label">
+                            <span class="label-text font-semibold flex items-center gap-2">
+                                <i class="bi bi-geo-alt text-primary"></i> Dirección
+                            </span>
+                        </label>
+                        {{ form.direccion }}
+                    </div>
+
+                    <div class="form-control">
+                        <label for="id_telefono" class="label">
+                            <span class="label-text font-semibold flex items-center gap-2">
+                                <i class="bi bi-telephone text-primary"></i> Teléfono
+                            </span>
+                        </label>
+                        {{ form.telefono }}
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/60">+569XXXXXXXX</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="modal-action flex flex-col-reverse sm:flex-row justify-between items-center mt-8 pt-6 border-t border-base-200 gap-3">
+                    <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-ghost w-full sm:w-auto text-base-content/70 hover:bg-base-200">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto text-white shadow-md">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
 </div>
+
+<!-- SCRIPT PARA ESTILIZAR AUTOMÁTICAMENTE LOS INPUTS DE DJANGO -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('#form-editar-usuario input, #form-editar-usuario select, #form-editar-usuario textarea');
+        
+        inputs.forEach(input => {
+            // Elimina clases viejas
+            input.classList.remove('form-control', 'form-select');
+            
+            // Aplica estilos de DaisyUI
+            if (input.type === 'checkbox') {
+                input.classList.add('toggle', 'toggle-primary');
+            } else {
+                input.classList.add('input', 'input-bordered', 'w-full', 'focus:input-primary', 'transition-all', 'bg-base-100');
+            }
+        });
+    });
+</script>
 {% endblock %}
