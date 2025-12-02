@@ -3,19 +3,47 @@
 {% block title %}Confirmar Eliminación{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center text-danger">Confirmar Eliminación</h2>
-        <p class="text-center">
-            ¿Estás seguro de que deseas eliminar la boleta <strong>#{{ boleta.id }}</strong>?<br>
-            Esta acción no se puede deshacer.
-        </p>
-        <div class="text-center mt-4">
+<div class="max-w-lg mx-auto mt-10">
+    
+    <!-- Tarjeta Principal -->
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body p-8 text-center">
+            
+            <!-- Icono de Advertencia -->
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center text-error animate-pulse">
+                    <i class="bi bi-trash3-fill text-4xl"></i>
+                </div>
+            </div>
+
+            <!-- Título y Mensaje -->
+            <h2 class="text-2xl font-bold text-base-content mb-2">¿Eliminar Boleta?</h2>
+            
+            <div class="bg-base-200/50 rounded-lg p-4 mb-4 border border-base-200">
+                <p class="text-base-content/70 text-sm">Estás a punto de eliminar permanentemente la boleta:</p>
+                <div class="text-xl font-mono font-bold text-primary mt-1">#{{ boleta.id }}</div>
+            </div>
+
+            <p class="text-sm font-semibold text-error mb-8 flex items-center justify-center gap-2">
+                <i class="bi bi-exclamation-triangle-fill"></i> Esta acción no se puede deshacer.
+            </p>
+
+            <!-- Formulario -->
             <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Eliminar</button>
-                <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-secondary">Cancelar</a>
+                
+                <!-- Botones de Acción -->
+                <div class="flex flex-col-reverse sm:flex-row gap-3">
+                    <a href="{% url 'boletas:historial_recientes' %}" class="btn btn-outline border-base-300 text-base-content w-full sm:w-1/2 hover:bg-base-200 hover:border-base-400">
+                        <i class="bi bi-x-lg"></i> Cancelar
+                    </a>
+                    
+                    <button type="submit" class="btn btn-error text-white w-full sm:w-1/2 shadow-md">
+                        <i class="bi bi-trash-fill"></i> Sí, eliminar
+                    </button>
+                </div>
             </form>
+
         </div>
     </div>
 </div>
