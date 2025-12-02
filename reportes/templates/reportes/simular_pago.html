@@ -24,9 +24,9 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         
         <div class="md:col-span-7 order-2 md:order-1">
-            <div class="card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
+            <div class="card bg-base-100 shadow-xl border border-base-200 dark:border-base-700 overflow-hidden">
                 
-                <div class="grid grid-cols-2 bg-base-200/30">
+                <div class="grid grid-cols-2 bg-base-200/50">
                     <button type="button" onclick="switchMethod('tarjeta')" id="tab-tarjeta" class="py-4 text-center font-semibold text-primary border-b-2 border-primary hover:bg-base-200 transition-all flex items-center justify-center gap-2">
                         <i class="bi bi-credit-card-2-front text-lg"></i> Tarjeta Directa
                     </button>
@@ -43,7 +43,7 @@
                         <div id="view-tarjeta" class="transition-all duration-300 ease-in-out">
                             <div class="flex justify-between items-start mb-6">
                                 <h3 class="text-lg font-bold text-base-content">Ingresa tus datos</h3>
-                                <div class="flex gap-2 grayscale opacity-60">
+                                <div class="flex gap-2 grayscale opacity-60 dark:opacity-40">
                                     <i class="bi bi-credit-card-2-back text-2xl"></i>
                                     <i class="bi bi-bank text-2xl"></i>
                                 </div>
@@ -53,7 +53,7 @@
                                 <label class="label pt-0"><span class="label-text font-medium">Titular de la Tarjeta</span></label>
                                 <input type="text" id="tarjeta_nombre" name="tarjeta_nombre" 
                                        placeholder="Como aparece en el plástico" 
-                                       class="input input-bordered w-full focus:input-primary transition-all card-input" required />
+                                       class="input input-bordered w-full focus:input-primary transition-all card-input bg-base-100" required />
                             </div>
 
                             <div class="form-control w-full mb-4">
@@ -61,7 +61,7 @@
                                 <div class="relative">
                                     <input type="text" id="tarjeta_numero" name="tarjeta_numero" 
                                            placeholder="0000 0000 0000 0000" maxlength="19" 
-                                           class="input input-bordered w-full focus:input-primary pl-11 font-mono tracking-wide text-lg card-input" required />
+                                           class="input input-bordered w-full focus:input-primary pl-11 font-mono tracking-wide text-lg card-input bg-base-100" required />
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-base-content/40">
                                         <i class="bi bi-credit-card text-xl"></i>
                                     </div>
@@ -73,7 +73,7 @@
                                     <label class="label"><span class="label-text font-medium">Vencimiento</span></label>
                                     <input type="text" id="tarjeta_expiracion" name="tarjeta_expiracion" 
                                            placeholder="MM/AA" maxlength="5" 
-                                           class="input input-bordered w-full focus:input-primary text-center card-input" required />
+                                           class="input input-bordered w-full focus:input-primary text-center card-input bg-base-100" required />
                                 </div>
                                 <div class="form-control">
                                     <label class="label">
@@ -87,7 +87,7 @@
                                     <div class="relative">
                                         <input type="password" id="tarjeta_cvv" name="tarjeta_cvv" 
                                                placeholder="123" maxlength="3" 
-                                               class="input input-bordered w-full focus:input-primary text-center tracking-widest card-input" required />
+                                               class="input input-bordered w-full focus:input-primary text-center tracking-widest card-input bg-base-100" required />
                                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-base-content/30">
                                             <i class="bi bi-lock"></i>
                                         </div>
@@ -110,8 +110,8 @@
                             </p>
 
                             <div class="w-full max-w-[320px] mx-auto">
-                                <div class="alert bg-blue-50 text-blue-900 border-none text-xs flex justify-start items-center p-3 text-left shadow-sm">
-                                    <i class="bi bi-shield-lock-fill text-lg shrink-0 text-[#E3001B]"></i>
+                                <div class="alert bg-blue-50 text-blue-900 dark:bg-blue-900/20 dark:text-blue-100 border-none text-xs flex justify-start items-center p-3 text-left shadow-sm">
+                                    <i class="bi bi-shield-lock-fill text-lg shrink-0 text-[#E3001B] dark:text-[#ff4b5c]"></i>
                                     <div>
                                         <span class="font-bold block">Transacción Segura</span>
                                         Tus datos financieros no se guardan en nuestro sitio.
@@ -138,19 +138,19 @@
         </div>
 
         <div class="md:col-span-5 order-1 md:order-2">
-            <div class="card bg-base-100 shadow-lg border border-primary/10 sticky top-6">
+            <div class="card bg-base-100 shadow-lg border border-primary/10 dark:border-base-700 sticky top-6">
                 <div class="card-body p-6">
-                    <h3 class="font-bold text-lg text-base-content/80 mb-4 pb-2 border-b border-base-200">Resumen de Compra</h3>
+                    <h3 class="font-bold text-lg text-base-content/80 mb-4 pb-2 border-b border-base-200 dark:border-base-700">Resumen de Compra</h3>
                     
                     <div class="space-y-3">
                         <div class="flex justify-between items-center text-sm">
                             <span class="opacity-70">Nº Boleta</span>
-                            <span class="font-mono bg-base-200 px-2 py-1 rounded">#{{ boleta.id }}</span>
+                            <span class="font-mono bg-base-200 dark:bg-base-300 px-2 py-1 rounded text-base-content">#{{ boleta.id }}</span>
                         </div>
                         
                         <div class="flex justify-between items-center text-sm">
                             <span class="opacity-70">Cliente</span>
-                            <span class="font-medium text-right">{{ boleta.usuario.nombre|truncatechars:20 }}</span>
+                            <span class="font-medium text-right text-base-content">{{ boleta.usuario.nombre|truncatechars:20 }}</span>
                         </div>
                     </div>
 
@@ -162,7 +162,7 @@
                     </div>
                     
                     <div class="hidden md:block mt-6">
-                        <button type="submit" form="payment-form" id="btn-submit-desktop" class="btn btn-primary w-full shadow-lg text-lg hover:scale-[1.02] transition-transform">
+                        <button type="submit" form="payment-form" id="btn-submit-desktop" class="btn btn-primary w-full shadow-lg text-lg hover:scale-[1.02] transition-transform text-white">
                             <i class="bi bi-lock-fill"></i> Confirmar Pago
                         </button>
                         
@@ -179,12 +179,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // ... (Lógica de inputs se mantiene igual) ...
         const inputNumero = document.getElementById('tarjeta_numero');
         const inputExpiracion = document.getElementById('tarjeta_expiracion');
         const form = document.getElementById('payment-form');
         const inputMetodo = document.getElementById('input_metodo_pago');
 
-        // Formato visual tarjeta (espacios cada 4 números)
         if (inputNumero) {
             inputNumero.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
@@ -193,7 +193,6 @@
                 e.target.value = formattedValue;
             });
         }
-        // Formato fecha (MM/AA)
         if (inputExpiracion) {
             inputExpiracion.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
@@ -206,21 +205,18 @@
             });
         }
 
-        // Manejo del Envío
         if (form) {
             form.addEventListener('submit', function(e) {
                 const isWebpay = inputMetodo.value === 'webpay';
                 const inputsTarjeta = document.querySelectorAll('.card-input');
                 
                 if (isWebpay) {
-                    // Datos dummy para simulación Webpay (Backend validation bypass)
                     inputsTarjeta.forEach(input => input.disabled = false);
                     document.getElementById('tarjeta_nombre').value = "Simulación Webpay";
                     document.getElementById('tarjeta_numero').value = "4111111111111111"; 
                     document.getElementById('tarjeta_expiracion').value = "12/30"; 
                     document.getElementById('tarjeta_cvv').value = "123";
                 } else {
-                    // Limpieza de espacios en tarjeta normal antes de enviar
                     if (inputNumero && !inputNumero.disabled) {
                         inputNumero.value = inputNumero.value.replace(/\s+/g, '');
                     }
@@ -229,7 +225,7 @@
         }
     });
 
-    // --- LÓGICA DE CAMBIO VISUAL (Tabs y Botones) ---
+    // --- LÓGICA DE CAMBIO VISUAL (Con soporte DARK MODE) ---
     function switchMethod(method) {
         const viewTarjeta = document.getElementById('view-tarjeta');
         const viewWebpay = document.getElementById('view-webpay');
@@ -243,7 +239,7 @@
 
         inputMetodo.value = method;
 
-        // Clases base para los botones
+        // Estilos base para los botones
         const btnBaseClasses = "btn w-full shadow-lg text-lg hover:scale-[1.02] transition-transform border-none";
 
         if (method === 'webpay') {
@@ -252,18 +248,21 @@
             viewWebpay.classList.remove('hidden');
             viewWebpay.style.display = 'flex'; 
 
-            // Estilos Tabs (Resalta Webpay)
+            // Estilos Tabs (Webpay Activo)
+            // Se usa bg-yellow-50 en light y un amarillo muy transparente en dark para que no moleste
             tabTarjeta.className = "py-4 text-center font-semibold text-base-content/60 border-b-2 border-transparent hover:bg-base-200 transition-all flex items-center justify-center gap-2 cursor-pointer";
-            tabWebpay.className = "py-4 text-center font-bold text-[#E3001B] bg-[#FFF8E1] border-b-2 border-[#FDB913] transition-all flex items-center justify-center gap-2 cursor-pointer";
+            
+            // AQUÍ ESTÁ EL CAMBIO IMPORTANTE DE COLOR:
+            tabWebpay.className = "py-4 text-center font-bold text-[#E3001B] dark:text-[#FEBE10] bg-[#FFF8E1] dark:bg-[#FDB913]/10 border-b-2 border-[#FDB913] transition-all flex items-center justify-center gap-2 cursor-pointer";
 
-            // Desactivar inputs del formulario de tarjeta (visual)
+            // Desactivar inputs
             inputsTarjeta.forEach(input => {
                 input.removeAttribute('required');
                 input.disabled = true;
                 input.value = ""; 
             });
 
-            // Estilo Botón Transbank (Amarillo Webpay)
+            // Estilo Botón Webpay (Siempre Amarillo, con texto negro para contraste)
             const btnStyle = `background-color: #FEBE10; color: #000;`;
             const btnHtml = '<span class="font-bold mr-2">Ir a Pagar</span> <i class="bi bi-arrow-right-circle-fill"></i>';
 
@@ -281,8 +280,10 @@
             viewWebpay.style.display = 'none';
             viewTarjeta.classList.remove('hidden');
 
-            // Estilos Tabs (Resalta Tarjeta)
+            // Estilos Tabs (Tarjeta Activa)
+            // En dark mode usamos bg-base-100 para la tab activa
             tabWebpay.className = "py-4 text-center font-semibold text-base-content/60 border-b-2 border-transparent hover:bg-base-200 transition-all flex items-center justify-center gap-2 cursor-pointer";
+            
             tabTarjeta.className = "py-4 text-center font-bold text-primary bg-base-100 border-b-2 border-primary transition-all flex items-center justify-center gap-2 cursor-pointer";
 
             // Activar inputs
@@ -291,10 +292,9 @@
                 input.disabled = false;
             });
 
-            // Estilo Botón Normal (Primary / Success)
+            // Estilo Botón Normal (Usa variables CSS de DaisyUI, se adapta solo)
             const btnHtml = '<i class="bi bi-lock-fill mr-2"></i> Confirmar Pago';
             
-            // Reseteamos estilos inline y usamos clases
             btnDesktop.style.cssText = ""; 
             btnDesktop.className = "btn btn-primary text-white w-full shadow-lg text-lg hover:scale-[1.02] transition-transform";
             btnDesktop.innerHTML = btnHtml;
