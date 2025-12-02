@@ -80,8 +80,23 @@
     [data-theme="dark"] ::placeholder { opacity: 0.6; color: #a6adbb !important; }
 
     /* Quitar fondo blanco forzado de tablas bootstrap */
-    .table, table { --bs-table-bg: transparent !important; --bs-table-color: inherit !important; color: inherit !important; background-color: transparent !important; }
-    td, th { background-color: transparent !important; }
+    .table, table { 
+      --bs-table-bg: transparent !important; 
+      --bs-table-color: inherit !important; 
+      color: inherit !important; 
+      background-color: transparent !important; 
+    }
+    td, th { 
+      background-color: transparent !important; 
+    }
+
+    /* ⬇️ FIX EXTRA: forzar color de texto correcto en modo oscuro para celdas de tabla */
+    [data-theme="dark"] .table td,
+    [data-theme="dark"] .table th,
+    [data-theme="dark"] table td,
+    [data-theme="dark"] table th {
+      color: hsl(var(--bc)) !important;  /* usa base-content de DaisyUI */
+    }
   </style>
 
   <script>
@@ -135,10 +150,6 @@
       <main class="flex-1 w-full">
         <div class="container mx-auto px-4 py-8">
             
-            <div class="mb-6">
-                 <h2 class="text-2xl font-bold text-primary">Gestión de Usuarios</h2>
-                 <p class="text-sm text-base-content/70">Administra cuentas, roles y permisos</p>
-            </div>
 
             <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 p-6 md:p-8 transition-colors duration-300">
                 
@@ -223,7 +234,7 @@
           {% if user.is_authenticated %}
           
           {# Sección Usuarios (Visible para Admin/Secretaria) #}
-          {% if user.rol == 'admin' or user.rol == 'secretaria' %}
+          {% if user.rol == 'admin' or user.rol == 'secretaria' %} 
           <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Usuarios</p>
           <ul class="space-y-1 mb-6">
             <li>

@@ -1,117 +1,336 @@
 {% extends "usuarios/base_usuarios.html" %}
 
-{% block title %}Lista de Usuarios{% endblock %}
+{% block title %}Lista de Usuarios APR{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
 
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div>
-            <h2 class="text-3xl font-bold text-primary">Gestión de Usuarios</h2>
-            <p class="text-base-content/70 text-sm mt-1">Administra la información de los socios del APR.</p>
+{# Mensajes/Alertas Flotantes #}
+{% if messages %}
+<div class="toast toast-top toast-end z-50 p-4 gap-2">
+    {% for message in messages %}
+        <div class="alert alert-{% if 'error' in message.tags %}error{% else %}success{% endif %} shadow-xl border border-white/10 bg-opacity-90 backdrop-blur-sm flex items-center gap-3 animate-fade-in-up max-w-md text-white">
+            <div class="p-1 rounded-full bg-white/20">
+                <i class="bi {% if 'error' in message.tags %}bi-x-lg{% else %}bi-check-lg{% endif %} text-lg font-bold"></i>
+            </div>
+            <div class="flex-1">
+                <span class="font-medium text-sm">{{ message }}</span>
+            </div>
+            <button onclick="this.closest('.alert').remove()" class="btn btn-circle btn-xs btn-ghost text-white/70 hover:text-white hover:bg-white/20">
+                <i class="bi bi-x text-lg"></i>
+            </button>
         </div>
-        <a href="{% url 'usuarios:agregar_usuario' %}" class="btn btn-primary text-white shadow-md hover:scale-105 transition-transform">
-            <i class="bi bi-person-plus-fill text-lg"></i> Agregar Usuario
-        </a>
-    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    <div class="collapse collapse-arrow bg-base-100 border border-info/20 shadow-sm rounded-xl">
-        <input type="checkbox" /> 
-        <div class="collapse-title text-base font-medium flex items-center gap-2 text-info">
-            <i class="bi bi-info-circle-fill"></i> ¿Qué puedes hacer aquí?
+<div class="min-h-screen bg-base-200 py-8">
+    <div class="container mx-auto px-4">
+
+        {# Header principal #}
+        <div class="mb-8">
+            <div class="bg-base-100 rounded-2xl shadow-lg p-8 text-base-content border border-base-300">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-1">Gestión de Socios APR</h1>
+                        <p class="text-base-content/75 text-sm">
+                            Administra el registro de personas asociadas al APR: datos de contacto, dirección y RUT.
+                        </p>
+                        {% if q %}
+                        <p class="text-xs text-base-content/60 mt-2">
+                            Resultados para: <span class="font-semibold">"{{ q }}"</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="collapse-content text-sm text-base-content/80">
-            <p class="mb-2">En esta sección puedes gestionar a los socios registrados:</p>
-            <ul class="list-disc list-inside space-y-1 ml-2">
-                <li>Revisar datos de contacto (correo, teléfono).</li>
-                <li>Actualizar información personal.</li>
-                <li>Gestionar altas y bajas del sistema.</li>
-            </ul>
-        </div>
-    </div>
 
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
-        <table class="table table-zebra w-full text-left">
-            <thead>
-                <tr class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                    <th class="py-4 pl-6">Nombre</th>
-                    <th>RUT</th>
-                    <th>Contacto</th>
-                    <th class="text-center min-w-[120px]">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr class="hover transition-colors group">
-                    
-                    <td class="pl-6">
-                        <div class="font-bold text-base-content">{{ usuario.nombre }}</div>
-                        <div class="text-xs text-base-content/60 sm:hidden">{{ usuario.rut }}</div>
-                    </td>
-
-                    <td class="font-mono text-sm text-base-content/80">
-                        {{ usuario.rut }}
-                    </td>
-
-                    <td>
-                        <div class="flex flex-col text-sm">
-                            <span class="flex items-center gap-2 text-base-content/80">
-                                <i class="bi bi-envelope text-xs opacity-70"></i> {{ usuario.correo }}
-                            </span>
-                            {% if usuario.telefono %}
-                            <span class="flex items-center gap-2 text-base-content/60 text-xs mt-1">
-                                <i class="bi bi-telephone text-xs opacity-70"></i> {{ usuario.telefono }}
-                            </span>
-                            {% endif %}
+        {# Tarjetas de resumen (simple, usando datos disponibles) #}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-primary">
+                        <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-people-fill"></i>
                         </div>
-                    </td>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Total de socios</div>
+                    <div class="stat-value text-primary mt-1">
+                        {{ total_usuarios|default:"0" }}
+                    </div>
+                    <div class="stat-desc mt-1">Personas registradas en el sistema</div>
+                </div>
+            </div>
 
-                    <td class="text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            
-                            <a href="{% url 'usuarios:editar_usuario' usuario.id %}" 
-                               class="btn btn-sm btn-warning text-white shadow-sm"
-                               title="Editar Usuario">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-secondary">
+                        <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-person-lines-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Socios en esta página</div>
+                    <div class="stat-value text-secondary mt-1">
+                        {{ usuarios|length }}
+                    </div>
+                    <div class="stat-desc mt-1">
+                        Página {{ usuarios.number }} de {{ usuarios.paginator.num_pages }}
+                    </div>
+                </div>
+            </div>
 
-                            {% if request.user.rol == 'admin' %}
-                            <button 
-                               onclick="abrirModalEliminarUsuario(
-                                   '{% url 'usuarios:eliminar_usuario' usuario.id %}', 
-                                   '{{ usuario.nombre }}', 
-                                   '{{ usuario.rut }}'
-                               )"
-                               class="btn btn-sm btn-error text-white shadow-sm"
-                               title="Eliminar Usuario">
-                                <i class="bi bi-trash3-fill"></i>
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-success">
+                        <div class="w-14 h-14 rounded-2xl bg-success/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Contactabilidad</div>
+                    <div class="stat-value text-success mt-1 text-sm">
+                        <span class="text-lg font-bold">Correo</span>
+                    </div>
+                    <div class="stat-desc mt-1">Todos los socios tienen correo registrado</div>
+                </div>
+            </div>
+
+            <div class="stats shadow bg-base-100 border border-base-300 overflow-hidden">
+                <div class="stat p-6">
+                    <div class="stat-figure text-info">
+                        <div class="w-14 h-14 rounded-2xl bg-info/10 flex items-center justify-center text-2xl transition-transform hover:scale-110">
+                            <i class="bi bi-droplet-half"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title opacity-70 font-medium">Uso sugerido</div>
+                    <div class="stat-value text-info mt-1 text-sm">
+                        <span class="text-lg font-bold">Socios APR</span>
+                    </div>
+                    <div class="stat-desc mt-1">Base para medidores, consumos y boletas</div>
+                </div>
+            </div>
+        </div>
+
+        {# Card principal de la tabla de usuarios #}
+        <div class="card border border-base-300 shadow-lg bg-base-100">
+
+            {# Header del card: título, buscador y botón agregar socio #}
+            <div class="card-header bg-base-200 border-b-4 border-primary text-base-content p-6 rounded-t-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <h5 class="text-lg font-bold flex items-center gap-2">
+                        <i class="bi bi-list-ul text-primary"></i>
+                        Listado de socios APR
+                    </h5>
+
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        {# Buscador #}
+                        <form method="get" action="{% url 'usuarios:lista_usuarios' %}" class="join w-full sm:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <span class="absolute inset-y-0 left-3 flex items-center text-base-content/50 pointer-events-none">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input
+                                    name="q"
+                                    value="{{ q|default:'' }}"
+                                    type="text"
+                                    class="input input-bordered w-full pl-10 join-item focus:outline-none focus:border-primary"
+                                    placeholder="Buscar por nombre, RUT o correo..."
+                                />
+                            </div>
+                            <button type="submit" class="btn btn-primary join-item">
+                                <i class="bi bi-search"></i>
                             </button>
+                        </form>
+
+                        {# Botón Agregar socio #}
+                        <a href="{% url 'usuarios:agregar_usuario' %}"
+                           class="btn btn-primary gap-2 whitespace-nowrap text-white">
+                            <i class="bi bi-person-plus-fill"></i>
+                            <span class="hidden sm:inline">Nuevo socio</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                {% if usuarios %}
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead class="bg-base-200 text-base-content uppercase text-xs font-bold tracking-wider">
+                            <tr>
+                                <th class="py-4 pl-6">Socio</th>
+                                <th>RUT</th>
+                                <th>Información de contacto</th>
+                                <th>Dirección</th>
+                                <th class="text-right pr-8">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios %}
+                            <tr class="hover:bg-base-200/50 transition-colors border-b border-base-200 last:border-b-0">
+                                <td class="pl-6">
+                                    <div class="flex items-center gap-4">
+                                        {# Avatar simple con inicial #}
+                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-neutral text-neutral-content flex items-center justify-center shadow-sm overflow-hidden">
+                                            <span class="text-sm font-bold uppercase">
+                                                {{ usuario.nombre|slice:":1" }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-base">{{ usuario.nombre }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="font-mono text-sm text-base-content/80">
+                                    {{ usuario.rut }}
+                                </td>
+
+                                <td>
+                                    <div class="flex flex-col text-sm">
+                                        <span class="flex items-center gap-2 text-base-content/80">
+                                            <i class="bi bi-envelope text-xs opacity-70"></i> {{ usuario.correo }}
+                                        </span>
+                                        {% if usuario.telefono %}
+                                        <span class="flex items-center gap-2 text-base-content/60 text-xs mt-1">
+                                            <i class="bi bi-telephone text-xs opacity-70"></i> {{ usuario.telefono }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <td class="text-sm text-base-content/80">
+                                    {{ usuario.direccion }}
+                                </td>
+
+                                <td class="text-right pr-6">
+                                    <div class="flex justify-end gap-2">
+                                        <a href="{% url 'usuarios:editar_usuario' usuario.id %}" 
+                                           class="btn btn-sm btn-info text-white border-none shadow-md w-8 h-8 p-0 min-h-0 flex items-center justify-center"
+                                           title="Editar socio">
+                                            <i class="bi bi-pencil-square text-sm"></i>
+                                        </a>
+
+                                        {% if request.user.rol == 'admin' %}
+                                        <button 
+                                           onclick="abrirModalEliminarUsuario(
+                                               '{% url 'usuarios:eliminar_usuario' usuario.id %}', 
+                                               '{{ usuario.nombre }}', 
+                                               '{{ usuario.rut }}'
+                                           )"
+                                           class="btn btn-sm btn-error text-white border-none shadow-md w-8 h-8 p-0 min-h-0 flex items-center justify-center"
+                                           title="Eliminar socio">
+                                            <i class="bi bi-trash text-sm"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Paginación #}
+                {% if is_paginated %}
+                <div class="p-4 border-t border-base-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+                    <div class="text-base-content/60">
+                        Mostrando
+                        <span class="font-semibold">
+                            {{ usuarios.start_index }}–{{ usuarios.end_index }}
+                        </span>
+                        de
+                        <span class="font-semibold">
+                            {{ total_usuarios }}
+                        </span>
+                        socios
+                    </div>
+
+                    <div class="join">
+                        {% if usuarios.has_previous %}
+                            <a href="?{% if q %}q={{ q }}&{% endif %}page={{ usuarios.previous_page_number }}"
+                               class="btn btn-sm join-item">
+                                «
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm join-item btn-disabled">«</button>
+                        {% endif %}
+
+                        {% for num in usuarios.paginator.page_range %}
+                            {% if num == usuarios.number %}
+                                <button class="btn btn-sm join-item btn-primary">
+                                    {{ num }}
+                                </button>
+                            {% elif num > usuarios.number|add:'-3' and num < usuarios.number|add:'3' %}
+                                <a href="?{% if q %}q={{ q }}&{% endif %}page={{ num }}"
+                                   class="btn btn-sm join-item">
+                                    {{ num }}
+                                </a>
                             {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center py-12">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
-                            <i class="bi bi-people text-4xl mb-3"></i>
-                            <p class="font-medium">No se encontraron usuarios registrados.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                        {% endfor %}
 
-    <div class="flex justify-start mt-2">
-        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
-            <i class="bi bi-arrow-left"></i> Volver al Dashboard
-        </a>
-    </div>
+                        {% if usuarios.has_next %}
+                            <a href="?{% if q %}q={{ q }}&{% endif %}page={{ usuarios.next_page_number }}"
+                               class="btn btn-sm join-item">
+                                »
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm join-item btn-disabled">»</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
 
+                {% else %}
+                {# Estado vacío #}
+                <div class="text-center py-16 px-6">
+                    <div class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-people text-4xl opacity-40"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">No se encontraron socios</h3>
+                    <p class="text-base-content/60 max-w-xs mx-auto mt-2">
+                        {% if q %}
+                            No hay resultados para tu búsqueda "{{ q }}".
+                        {% else %}
+                            Aún no hay personas registradas como socios del APR.
+                        {% endif %}
+                    </p>
+                    {% if q %}
+                        <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-outline btn-sm mt-4">
+                            Limpiar búsqueda
+                        </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Botón volver #}
+        <div class="mt-8">
+            <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost text-base-content/70 hover:text-primary gap-2 pl-0">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
+    </div>
 </div>
 
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 20px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.4s ease-out forwards;
+    }
+</style>
+
+{# Modal eliminar usuario (igual que ya tenías) #}
 <dialog id="modal_eliminar_usuario" class="modal modal-bottom sm:modal-middle">
   <div class="modal-box bg-base-100 p-8 shadow-2xl">
     
@@ -120,11 +339,11 @@
             <i class="bi bi-person-x-fill text-4xl"></i>
         </div>
 
-        <h3 class="font-bold text-2xl text-base-content">¿Eliminar Usuario?</h3>
+        <h3 class="font-bold text-2xl text-base-content">¿Eliminar socio?</h3>
         
         <p class="py-4 text-base-content/70">
             Estás a punto de eliminar a: <br>
-            <strong id="modal_nombre" class="text-base-content text-lg block mt-1">Nombre Usuario</strong>
+            <strong id="modal_nombre" class="text-base-content text-lg block mt-1">Nombre socio</strong>
             <span id="modal_rut" class="text-sm font-mono opacity-80">RUT</span>
         </p>
 
@@ -141,7 +360,7 @@
         <form id="form_eliminar_usuario" method="post" class="flex-1">
             {% csrf_token %}
             <button type="submit" class="btn btn-error text-white w-full shadow-md shadow-error/30">
-                <i class="bi bi-trash3-fill"></i> Sí, eliminar usuario
+                <i class="bi bi-trash3-fill"></i> Sí, eliminar socio
             </button>
         </form>
     </div>
@@ -159,12 +378,10 @@
         const spanNombre = document.getElementById('modal_nombre');
         const spanRut = document.getElementById('modal_rut');
 
-        // Asignamos los datos dinámicos
         form.action = urlEliminar;
         spanNombre.innerText = nombre;
         spanRut.innerText = rut;
 
-        // Abrimos el modal
         modal.showModal();
     }
 </script>
