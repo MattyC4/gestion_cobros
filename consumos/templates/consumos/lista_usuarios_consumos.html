@@ -1,25 +1,27 @@
 {% extends "consumos/base_consumos.html" %}
 
-{% block title %}Lista de Usuarios con Consumos{% endblock %}
+{% block title %}Usuarios con Consumos{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
+<div class="min-h-[60vh] flex flex-col gap-6">
 
+    <!-- Header + botón IoT -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
+        <div class="w-full md:w-auto">
             <h2 class="text-2xl font-bold text-primary">Usuarios con Consumos</h2>
             <p class="text-base-content/70 text-sm mt-1">
-                Visualiza el historial y sincroniza datos de medidores inteligentes.
+                Visualiza el historial de consumos y sincroniza datos desde los medidores inteligentes.
             </p>
         </div>
         
-        <a href="{% url 'consumos:sincronizar_iot' %}" 
+        <a href="{% url 'consumos:sincronizar_lecturas_iot' %}" 
            class="btn btn-success text-white shadow-sm group w-full md:w-auto">
             <i class="bi bi-arrow-repeat text-lg group-hover:animate-spin"></i> 
             Sincronizar Lecturas IoT
         </a>
     </div>
 
+    <!-- Buscador -->
     <form method="get" class="w-full">
         <div class="join w-full max-w-md">
             <input 
@@ -27,59 +29,145 @@
                 name="search" 
                 class="input input-bordered join-item w-full focus:input-primary" 
                 placeholder="Buscar por nombre o RUT..." 
-                value="{{ query|default:'' }}">
+                value="{{ search|default:'' }}">
             <button type="submit" class="btn btn-primary join-item text-white">
                 <i class="bi bi-search"></i> Buscar
             </button>
         </div>
+        {% if search %}
+        <p class="text-xs text-base-content/60 mt-1">
+            Filtro aplicado: <span class="font-mono">"{{ search }}"</span>
+        </p>
+        {% endif %}
     </form>
 
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
-        <table class="table table-zebra w-full text-center">
-            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="py-4 text-left pl-6">Nombre</th>
-                    <th>RUT</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr class="hover transition-colors">
-                    <td class="text-left pl-6 font-medium text-base-content">
-                        {{ usuario.nombre }}
-                    </td>
-                    <td class="font-mono text-base-content/80">
-                        {{ usuario.rut }}
-                    </td>
-                    <td>
-                        <a href="{% url 'consumos:historial_consumos' usuario.id %}" 
-                           class="btn btn-sm btn-info text-white shadow-sm hover:shadow-md transition-all gap-2">
-                            <i class="bi bi-clock-history"></i>
-                            <span class="hidden sm:inline">Ver Historial</span>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center py-12">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
-                            <i class="bi bi-cloud-slash text-4xl mb-3"></i>
-                            <p class="font-medium">No se encontraron usuarios con consumos.</p>
-                            <p class="text-xs mt-1">Si es la primera vez, prueba el botón "Sincronizar Lecturas IoT".</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Tarjeta de resumen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="stats shadow bg-base-100 border border-base-300 text-base-content">
+            <div class="stat p-4">
+                <div class="stat-figure text-info">
+                    <div class="w-10 h-10 rounded-2xl bg-info/10 flex items-center justify-center text-xl">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                </div>
+                <div class="stat-title text-xs uppercase tracking-wide text-base-content/70">
+                    Usuarios con consumos
+                </div>
+                <div class="stat-value text-info text-2xl">
+                    {{ total_usuarios|default:usuarios|length }}
+                </div>
+                <div class="stat-desc text-xs mt-1 text-base-content/60">
+                    Solo socios que ya tienen consumos registrados.
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="flex justify-start mt-2">
+    <!-- Tabla SIN clase .table (para evitar conflicto de estilos) -->
+    <div class="card bg-base-100 rounded-xl border border-base-200 shadow-sm mt-2 text-base-content">
+        <div class="card-body p-0">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-sm">
+                    <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
+                        <tr>
+                            <th class="py-4 pl-6 text-left">Nombre</th>
+                            <th class="text-left">RUT</th>
+                            <th class="text-center min-w-[160px]">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr class="border-b border-base-200 last:border-b-0 hover:bg-base-200/60 transition-colors">
+                            <td class="pl-6 py-3 font-medium">
+                                {{ usuario.nombre }}
+                            </td>
+                            <td class="py-3 font-mono text-base-content/80">
+                                {{ usuario.rut }}
+                            </td>
+                            <td class="py-3 text-center">
+                                <a href="{% url 'consumos:historial_consumos' usuario.id %}" 
+                                   class="btn btn-sm btn-info text-white shadow-sm hover:shadow-md transition-all gap-2">
+                                    <i class="bi bi-clock-history"></i>
+                                    <span class="hidden sm:inline">Ver historial</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-12">
+                                <div class="flex flex-col items-center justify-center text-base-content/60">
+                                    <i class="bi bi-cloud-slash text-4xl mb-3"></i>
+                                    <p class="font-medium">
+                                        No se encontraron usuarios con consumos registrados.
+                                    </p>
+                                    <p class="text-xs mt-1">
+                                        Si es la primera vez, prueba el botón <strong>"Sincronizar Lecturas IoT"</strong>.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <div class="p-4 border-t border-base-200 flex justify-center">
+                <div class="join">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" 
+                           class="join-item btn btn-sm">
+                            «
+                        </a>
+                    {% else %}
+                        <button class="join-item btn btn-sm btn-disabled">«</button>
+                    {% endif %}
+
+                    <button class="join-item btn btn-sm no-animation">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </button>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" 
+                           class="join-item btn btn-sm">
+                            »
+                        </a>
+                    {% else %}
+                        <button class="join-item btn btn-sm btn-disabled">»</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botón Volver -->
+    <div class="flex justify-start mt-4">
         <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
             <i class="bi bi-arrow-left"></i> Volver al Dashboard
         </a>
     </div>
 
 </div>
+
+<!-- Auto-sync IoT cada 60s (si la pestaña está visible) -->
+<script>
+    const IOT_SYNC_MS = 60000;
+
+    async function syncIoT() {
+        if (document.hidden) return;
+
+        try {
+            await fetch("{% url 'consumos:sincronizar_lecturas_iot' %}", {
+                credentials: "same-origin"
+            });
+        } catch (err) {
+            console.error("IoT sync error:", err);
+        }
+    }
+
+    setInterval(syncIoT, IOT_SYNC_MS);
+</script>
+
 {% endblock %}

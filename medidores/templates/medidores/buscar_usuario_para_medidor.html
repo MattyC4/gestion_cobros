@@ -1,133 +1,254 @@
 {% extends "medidores/base_medidores.html" %}
 
-{% block title %}Buscar Usuario{% endblock %}
+{% block title %}Buscar Usuario | Medidores{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
 
-    <!-- Encabezado y Búsqueda -->
-    <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
-        <div class="w-full md:w-auto">
-            <h2 class="text-3xl font-bold text-info">Buscar Usuario</h2>
-            <p class="text-base-content/70 text-sm mt-1">Encuentra usuarios para asignar o gestionar medidores.</p>
+<div class="min-h-screen bg-base-200 py-4">
+    <div class="container mx-auto px-2 sm:px-4">
+
+        <!-- Encabezado y Búsqueda -->
+        <div class="mb-6">
+            <div class="bg-base-100 rounded-2xl shadow-lg p-6 border border-base-300">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-info flex items-center gap-2">
+                            <i class="bi bi-search text-base-content"></i>
+                            Buscar usuario
+                        </h2>
+                        <p class="text-base-content/70 text-sm mt-1">
+                            Encuentra usuarios para asignar nuevos medidores o gestionar los existentes.
+                        </p>
+                    </div>
+
+                    <!-- Formulario de Búsqueda -->
+                    <form method="get" class="w-full md:w-auto">
+                        <div class="join w-full shadow-sm">
+                            <div class="relative w-full md:w-72">
+                                <span class="absolute inset-y-0 left-3 flex items-center text-base-content/50 pointer-events-none">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    name="q"
+                                    class="input input-bordered join-item w-full pl-10 focus:input-info"
+                                    placeholder="Buscar por nombre..."
+                                    value="{{ query|default:'' }}"
+                                >
+                            </div>
+                            <button type="submit" class="btn btn-info join-item text-white">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if query %}
+                <p class="text-xs text-base-content/60 mt-2">
+                    Resultados para: <span class="font-semibold">"{{ query }}"</span>
+                </p>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- Formulario de Búsqueda -->
-        <form method="get" class="w-full md:w-auto">
-            <div class="join w-full shadow-sm">
-                <input 
-                    type="text" 
-                    name="q" 
-                    class="input input-bordered join-item w-full md:w-72 focus:input-info" 
-                    placeholder="Buscar por nombre..." 
-                    value="{{ query|default:'' }}">
-                <button type="submit" class="btn btn-info join-item text-white">
-                    <i class="bi bi-search"></i>
-                </button>
+        <!-- Tabla de Resultados -->
+        {% if usuarios %}
+        <div class="bg-base-100 rounded-2xl border border-base-300 shadow-lg">
+            <div class="px-4 py-3 border-b border-base-200 flex items-center justify-between">
+                <h3 class="text-sm font-semibold flex items-center gap-2 text-base-content">
+                    <i class="bi bi-people"></i>
+                    Usuarios encontrados
+                </h3>
+                <span class="text-xs text-base-content/60">
+                    Total: 
+                    <span class="font-semibold">
+                        {{ usuarios.paginator.count }}
+                    </span>
+                </span>
             </div>
-        </form>
-    </div>
 
-    <!-- Tabla de Resultados -->
-    {% if usuarios %}
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
-        <table class="table table-zebra w-full text-center">
-            <!-- Encabezado -->
-            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="py-4 text-left pl-6">Nombre</th>
-                    <th>RUT</th>
-                    <th>Correo</th>
-                    <th>Estado de Medidor</th>
-                    <th class="min-w-[150px]">Acciones</th>
-                </tr>
-            </thead>
-            <!-- Cuerpo -->
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr class="hover transition-colors group">
-                    
-                    <!-- Nombre -->
-                    <td class="text-left pl-6 font-semibold text-base-content">
-                        {{ usuario.nombre }}
-                    </td>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <!-- Encabezado -->
+                    <thead class="bg-base-200 text-base-content uppercase text-xs font-bold tracking-wider">
+                        <tr>
+                            <th class="py-3 pl-6 pr-4">Nombre</th>
+                            <th class="py-3 px-4">RUT</th>
+                            <th class="py-3 px-4">Correo</th>
+                            <th class="py-3 px-4 text-center">Estado de medidor</th>
+                            <th class="py-3 pr-6 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <!-- Cuerpo -->
+                    <tbody class="divide-y divide-base-200">
+                        {% for usuario in usuarios %}
+                        <tr class="hover:bg-base-200/40 transition-colors">
+                            
+                            <!-- Nombre -->
+                            <td class="pl-6 pr-4 py-3 align-top">
+                                <div class="flex flex-col">
+                                    <span class="font-semibold text-base-content">
+                                        {{ usuario.nombre }}
+                                    </span>
+                                    <span class="text-xs text-base-content/60">
+                                        ID interno: {{ usuario.id }}
+                                    </span>
+                                </div>
+                            </td>
 
-                    <!-- RUT -->
-                    <td class="font-mono text-sm text-base-content/80">
-                        {{ usuario.rut }}
-                    </td>
+                            <!-- RUT -->
+                            <td class="px-4 py-3 align-top">
+                                <span class="font-mono text-sm text-base-content/80">
+                                    {{ usuario.rut }}
+                                </span>
+                            </td>
 
-                    <!-- Correo -->
-                    <td class="text-sm text-base-content/70">
-                        {{ usuario.correo }}
-                    </td>
+                            <!-- Correo -->
+                            <td class="px-4 py-3 align-top">
+                                <span class="text-sm text-base-content/70">
+                                    {{ usuario.correo }}
+                                </span>
+                            </td>
 
-                    <!-- Estado Medidor -->
-                    <td>
-                        {% if usuario.medidores.exists %}
-                            {% for medidor in usuario.medidores.all %}
-                                {% if medidor.estado == 'activo' %}
-                                    <div class="badge badge-success text-white gap-1 text-xs">
-                                        <i class="bi bi-check-circle-fill"></i> {{ medidor.get_estado_display }}
+                            <!-- Estado Medidor -->
+                            <td class="px-4 py-3 align-top text-center">
+                                {% if usuario.medidores.exists %}
+                                    <div class="flex flex-col items-center gap-1">
+                                        {% for medidor in usuario.medidores.all %}
+                                            {% if medidor.estado == 'activo' %}
+                                                <div class="badge badge-success text-xs gap-1 text-white">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                    {{ medidor.get_estado_display }}
+                                                </div>
+                                            {% elif medidor.estado == 'mantenimiento' %}
+                                                <div class="badge badge-warning text-xs gap-1">
+                                                    <i class="bi bi-tools"></i>
+                                                    {{ medidor.get_estado_display }}
+                                                </div>
+                                            {% elif medidor.estado == 'danado' %}
+                                                <div class="badge badge-error text-xs gap-1 text-white">
+                                                    <i class="bi bi-exclamation-octagon"></i>
+                                                    {{ medidor.get_estado_display }}
+                                                </div>
+                                            {% else %}
+                                                <div class="badge badge-ghost text-xs gap-1">
+                                                    <i class="bi bi-dash-circle"></i>
+                                                    {{ medidor.get_estado_display }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
                                 {% else %}
-                                    <div class="badge badge-neutral text-white gap-1 text-xs">
-                                        <i class="bi bi-dash-circle"></i> {{ medidor.get_estado_display }}
+                                    <div class="badge badge-warning gap-1 text-xs font-medium">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        Sin medidor
                                     </div>
                                 {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <div class="badge badge-warning gap-1 text-xs font-medium">
-                                <i class="bi bi-exclamation-triangle"></i> Sin medidor
-                            </div>
+                            </td>
+
+                            <!-- Acciones -->
+                            <td class="pr-6 py-3 align-top">
+                                <div class="flex items-center justify-center gap-2">
+                                    {% if usuario.medidores.exists %}
+                                        {% for medidor in usuario.medidores.all %}
+                                        <a href="{% url 'medidores:confirmar_cambio_estado' medidor.id %}" 
+                                           class="btn btn-sm btn-warning text-white shadow-sm flex items-center gap-1"
+                                           title="Cambiar estado del medidor">
+                                            <i class="bi bi-tools"></i>
+                                            <span class="hidden sm:inline">Estado</span>
+                                        </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <a href="{% url 'medidores:asignar_medidor_usuario' usuario.id %}" 
+                                           class="btn btn-sm btn-primary text-white shadow-sm flex items-center gap-1"
+                                           title="Asignar medidor">
+                                            <i class="bi bi-plus-circle"></i>
+                                            <span class="hidden sm:inline">Asignar</span>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <div class="p-4 border-t border-base-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+                <div class="text-base-content/60">
+                    Mostrando
+                    <span class="font-semibold">
+                        {{ usuarios.start_index }}–{{ usuarios.end_index }}
+                    </span>
+                    de
+                    <span class="font-semibold">
+                        {{ usuarios.paginator.count }}
+                    </span>
+                    usuarios
+                </div>
+
+                <div class="join">
+                    {% if usuarios.has_previous %}
+                        <a href="?page={{ usuarios.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm join-item">
+                            «
+                        </a>
+                    {% else %}
+                        <button class="btn btn-sm join-item btn-disabled">«</button>
+                    {% endif %}
+
+                    {% for num in usuarios.paginator.page_range %}
+                        {% if num == usuarios.number %}
+                            <button class="btn btn-sm join-item btn-primary">
+                                {{ num }}
+                            </button>
+                        {% elif num > usuarios.number|add:'-3' and num < usuarios.number|add:'3' %}
+                            <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm join-item">
+                                {{ num }}
+                            </a>
                         {% endif %}
-                    </td>
+                    {% endfor %}
 
-                    <!-- Acciones -->
-                    <td>
-                        <div class="flex items-center justify-center gap-2">
-                            {% if usuario.medidores.exists %}
-                                {% for medidor in usuario.medidores.all %}
-                                <a href="{% url 'medidores:confirmar_cambio_estado' medidor.id %}" 
-                                   class="btn btn-sm btn-warning text-white shadow-sm" title="Cambiar Estado">
-                                    <i class="bi bi-tools"></i> Estado
-                                </a>
-                                {% endfor %}
-                            {% else %}
-                                <a href="{% url 'medidores:asignar_medidor_usuario' usuario.id %}" 
-                                   class="btn btn-sm btn-primary text-white shadow-sm" title="Asignar Medidor">
-                                    <i class="bi bi-plus-circle"></i> Asignar
-                                </a>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <!-- Estado Vacío -->
-    <div class="text-center py-12 bg-base-100 rounded-xl border border-base-200">
-        <div class="flex flex-col items-center justify-center text-base-content/50">
-            <i class="bi bi-person-exclamation text-4xl mb-3"></i>
-            <p class="font-medium">
-                {% if query %}
-                    No hay usuarios que coincidan con "{{ query }}".
-                {% else %}
-                    No hay usuarios disponibles. Intenta buscar por nombre.
-                {% endif %}
-            </p>
+                    {% if usuarios.has_next %}
+                        <a href="?page={{ usuarios.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm join-item">
+                            »
+                        </a>
+                    {% else %}
+                        <button class="btn btn-sm join-item btn-disabled">»</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
         </div>
-    </div>
-    {% endif %}
 
-    <!-- Botón Volver -->
-    <div class="flex justify-start mt-2">
-        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
-            <i class="bi bi-arrow-left"></i> Volver al Dashboard
-        </a>
-    </div>
+        {% else %}
+        <!-- Estado Vacío -->
+        <div class="text-center py-12 bg-base-100 rounded-2xl border border-base-300 shadow-lg">
+            <div class="flex flex-col items-center justify-center text-base-content/60">
+                <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center mb-3">
+                    <i class="bi bi-person-exclamation text-3xl opacity-70"></i>
+                </div>
+                <p class="font-medium">
+                    {% if query %}
+                        No hay usuarios que coincidan con <span class="font-semibold">"{{ query }}"</span>.
+                    {% else %}
+                        No hay usuarios disponibles. Intenta buscar por nombre.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endif %}
 
+        <!-- Botón Volver -->
+        <div class="mt-6">
+            <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:text-primary hover:bg-base-200 pl-0">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
+    </div>
 </div>
+
 {% endblock %}

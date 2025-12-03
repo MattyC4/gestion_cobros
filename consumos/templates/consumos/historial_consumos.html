@@ -4,73 +4,152 @@
 {% block title %}Historial de Consumos{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
+<div class="min-h-[60vh] flex flex-col gap-6">
 
+    <!-- Header -->
     <div class="text-center md:text-left">
         <h2 class="text-2xl font-bold text-primary">Historial de Consumos</h2>
         <p class="text-base-content/70 mt-1">
-            Visualizando registros del cliente: <strong class="text-base-content">{{ usuario.nombre }}</strong>
+            Visualizando registros del cliente:
+            <strong class="text-base-content">{{ usuario.nombre }}</strong>
         </p>
     </div>
 
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
-        <table class="table table-zebra w-full text-center">
-            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="py-4">Fecha</th>
-                    <th>Consumo</th>
-                    <th>Tarifa</th>
-                    <th>Medidor</th>
-                    <th class="min-w-[120px]">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for consumo in consumos %}
-                <tr class="hover transition-colors">
-                    <td class="text-base-content/80">{{ consumo.fecha_consumo|date:"d/m/Y" }}</td>
+    <!-- Tarjetas de resumen (solo si hay consumos) -->
+    {% if consumos %}
+    {% with ultimo=consumos.0 %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Última lectura -->
+        <div class="stats shadow bg-base-100 border border-base-300 text-base-content">
+            <div class="stat p-4">
+                <div class="stat-figure text-info">
+                    <div class="w-10 h-10 rounded-2xl bg-info/10 flex items-center justify-center text-xl">
+                        <i class="bi bi-droplet-half"></i>
+                    </div>
+                </div>
+                <div class="stat-title text-xs uppercase tracking-wide text-base-content/70">
+                    Última lectura
+                </div>
+                <div class="stat-value text-info text-2xl">
+                    {{ ultimo.cantidad_consumida }} m³
+                </div>
+                <div class="stat-desc text-xs mt-1 text-base-content/60">
+                    {{ ultimo.fecha_consumo|date:"d/m/Y" }}
+                </div>
+            </div>
+        </div>
 
-                    <td>
-                        <div class="badge badge-ghost font-bold text-primary whitespace-nowrap">
-                            {{ consumo.cantidad_consumida }} m³
-                        </div>
-                    </td>
+        <!-- Total registros -->
+        <div class="stats shadow bg-base-100 border border-base-300 text-base-content">
+            <div class="stat p-4">
+                <div class="stat-figure text-primary">
+                    <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-xl">
+                        <i class="bi bi-list-check"></i>
+                    </div>
+                </div>
+                <div class="stat-title text-xs uppercase tracking-wide text-base-content/70">
+                    Registros de consumo
+                </div>
+                <div class="stat-value text-primary text-2xl">
+                    {{ consumos|length }}
+                </div>
+                <div class="stat-desc text-xs mt-1 text-base-content/60">
+                    Histórico completo en el sistema.
+                </div>
+            </div>
+        </div>
 
-                    <td class="font-medium whitespace-nowrap">
-                        {{ consumo.tarifa_aplicada.valor|formato_moneda }}
-                    </td>
+        <!-- Tarifa aplicada (último registro) -->
+        <div class="stats shadow bg-base-100 border border-base-300 text-base-content">
+            <div class="stat p-4">
+                <div class="stat-figure text-success">
+                    <div class="w-10 h-10 rounded-2xl bg-success/10 flex items-center justify-center text-xl">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                </div>
+                <div class="stat-title text-xs uppercase tracking-wide text-base-content/70">
+                    Tarifa última lectura
+                </div>
+                <div class="stat-value text-success text-xl">
+                    {{ ultimo.tarifa_aplicada.valor|formato_moneda }}
+                </div>
+                <div class="stat-desc text-xs mt-1 text-base-content/60">
+                    Medidor: {{ ultimo.medidor.codigo_serial }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endif %}
 
-                    <td class="font-mono text-xs text-base-content/70">
-                        {{ consumo.medidor.codigo_serial }}
-                    </td>
+    <!-- Tabla de consumos (SIN .table .table-zebra) -->
+    <div class="card bg-base-100 rounded-xl border border-base-200 shadow-sm mt-2 text-base-content">
+        <div class="card-body p-0">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-sm">
+                    <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
+                        <tr>
+                            <th class="py-4 text-left pl-6">Fecha</th>
+                            <th class="text-left">Consumo</th>
+                            <th class="text-left">Tarifa</th>
+                            <th class="text-left">Medidor</th>
+                            <th class="text-center min-w-[120px]">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consumo in consumos %}
+                        <tr class="border-b border-base-200 last:border-b-0 hover:bg-base-200/60 transition-colors">
+                            <td class="py-3 pl-6 text-base-content/80">
+                                {{ consumo.fecha_consumo|date:"d/m/Y" }}
+                            </td>
 
-                    <td>
-                        <button onclick="abrirModalEliminar(
-                               '{% url 'consumos:eliminar_consumo' consumo.id %}', 
-                               '{{ consumo.fecha_consumo|date:'d/m/Y' }}', 
-                               '{{ consumo.cantidad_consumida }}'
-                           )" class="btn btn-sm btn-error text-white inline-flex items-center gap-2">
-                            <i class="bi bi-trash3-fill"></i>
-                            <span>Eliminar</span>
-                        </button>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center py-12">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
-                            <i class="bi bi-clipboard-x text-4xl mb-3"></i>
-                            <p class="font-medium">No hay consumos registrados.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            <td class="py-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-semibold whitespace-nowrap">
+                                    {{ consumo.cantidad_consumida }} m³
+                                </span>
+                            </td>
+
+                            <td class="py-3 font-medium whitespace-nowrap">
+                                {{ consumo.tarifa_aplicada.valor|formato_moneda }}
+                            </td>
+
+                            <td class="py-3 font-mono text-xs text-base-content/70 whitespace-nowrap">
+                                {{ consumo.medidor.codigo_serial }}
+                            </td>
+
+                            <td class="py-3 text-center">
+                                <button
+                                    onclick="abrirModalEliminar(
+                                        '{% url 'consumos:eliminar_consumo' consumo.id %}',
+                                        '{{ consumo.fecha_consumo|date:'d/m/Y' }}',
+                                        '{{ consumo.cantidad_consumida }}'
+                                    )"
+                                    class="btn btn-sm btn-error text-white inline-flex items-center gap-2">
+                                    <i class="bi bi-trash3-fill"></i>
+                                    <span>Eliminar</span>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-12">
+                                <div class="flex flex-col items-center justify-center text-base-content/60">
+                                    <i class="bi bi-clipboard-x text-4xl mb-3"></i>
+                                    <p class="font-medium">No hay consumos registrados.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <div class="flex justify-start mt-2">
+    <!-- Botón Volver -->
+    <div class="flex justify-start mt-4">
         <a href="{% url 'consumos:lista_usuarios_consumos' %}"
-            class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
+           class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
             <i class="bi bi-arrow-left"></i> Volver al listado
         </a>
     </div>
@@ -78,13 +157,9 @@
 </div>
 
 <style>
-    /* Forzamos al navegador a usar este color semitransparente para el fondo del modal (backdrop).
-       El '!important' es crucial para vencer a los estilos de Bootstrap.
-    */
     dialog::backdrop {
-        background-color: rgba(241, 236, 236, 0) !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
         backdrop-filter: blur(4px);
-        /* Añade un bonito desenfoque al fondo */
     }
 </style>
 
@@ -92,8 +167,7 @@
     <div class="modal-box bg-base-100 p-8 shadow-2xl">
 
         <div class="flex flex-col items-center text-center">
-            <div
-                class="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center mb-5 text-error animate-pulse">
+            <div class="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center mb-5 text-error animate-pulse">
                 <i class="bi bi-exclamation-triangle-fill text-4xl"></i>
             </div>
 

@@ -97,7 +97,12 @@
     [data-theme="dark"] table th {
       color: hsl(var(--bc)) !important;  /* usa base-content de DaisyUI */
     }
-  </style>
+    [data-theme="dark"] .tabla-usuarios tbody td,
+    [data-theme="dark"] .tabla-usuarios tbody td * {
+       color: #e5e7eb !important;
+       opacity: 1 !important;
+   }
+</style>
 
   <script>
     if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -172,7 +177,7 @@
       <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center">
         <div class="container mx-auto px-4">
           <p class="text-sm opacity-70">
-            Comité APR Nahueltoro · FlowWeb © {{ current_year|default:"2024" }}
+            Comité APR Nahueltoro · FlowWeb © {{ current_year|default:"2025" }}
           </p>
         </div>
       </footer>
@@ -263,7 +268,6 @@
             </li>
             {% endif %}
             
-            {# Agrega aquí enlaces a Boletas/Reportes si lo deseas #}
           </ul>
           {% endif %}
 

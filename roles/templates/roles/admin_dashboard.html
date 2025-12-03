@@ -298,4 +298,22 @@
     
     observer.observe(document.documentElement, { attributes: true });
 </script>
+<script>
+    const IOT_SYNC_MS = 60000;
+
+    async function syncIoT() {
+        if (document.hidden) return;
+
+        try {
+            await fetch("{% url 'consumos:sincronizar_lecturas_iot' %}", {
+                credentials: "same-origin"
+            });
+        } catch (err) {
+            console.error("IoT sync error:", err);
+        }
+    }
+
+    setInterval(syncIoT, IOT_SYNC_MS);
+</script>
+
 {% endblock %}

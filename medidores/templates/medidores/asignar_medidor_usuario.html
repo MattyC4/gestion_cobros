@@ -1,81 +1,161 @@
 {% extends "medidores/base_medidores.html" %}
 
-{% block title %}Asignar Medidor{% endblock %}
+{% block title %}Asignar medidor{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
 
-    <!-- Encabezado -->
-    <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success mb-4">
-            <i class="bi bi-speedometer text-3xl"></i>
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="w-full max-w-2xl">
+
+        <!-- Encabezado -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success mb-4">
+                <i class="bi bi-speedometer text-3xl"></i>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-base-content">
+                Asignar medidor
+            </h2>
+            <p class="text-base-content/70 mt-2 text-sm sm:text-base">
+                Vinculando equipo al usuario:
+                <span class="font-semibold text-primary">{{ usuario.nombre }}</span>
+            </p>
         </div>
-        <h2 class="text-3xl font-bold text-base-content">Asignar Medidor</h2>
-        <p class="text-base-content/70 mt-2">
-            Vinculando equipo al cliente: <strong class="text-primary">{{ usuario.nombre }}</strong>
-        </p>
-    </div>
 
-    <!-- Tarjeta del Formulario -->
-    <div class="card bg-base-100 shadow-xl border border-base-200">
-        <div class="card-body p-6 sm:p-8">
-            
-            <form method="post" id="form-asignar-medidor">
-                {% csrf_token %}
+        <!-- Card principal -->
+        <div class="bg-base-100 rounded-2xl shadow-2xl border border-base-300 overflow-hidden">
 
-                <!-- Renderizado de campos (El script abajo los estiliza) -->
-                <div class="space-y-4">
-                    {{ form.as_p }}
+            <!-- Info del usuario -->
+            <div class="px-6 py-4 bg-base-200 border-b border-base-300">
+                <div class="flex flex-col sm:flex-row justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/60">
+                            Usuario seleccionado
+                        </p>
+                        <p class="text-sm sm:text-base font-semibold text-base-content">
+                            {{ usuario.nombre }}
+                        </p>
+                        <p class="text-xs font-mono text-base-content/60">
+                            {{ usuario.rut }}
+                        </p>
+                    </div>
+                    <div class="text-sm text-base-content/70">
+                        {% if usuario.correo %}
+                        <p class="flex items-center gap-1">
+                            <i class="bi bi-envelope text-xs"></i>
+                            {{ usuario.correo }}
+                        </p>
+                        {% endif %}
+                        {% if usuario.telefono %}
+                        <p class="flex items-center gap-1 mt-1">
+                            <i class="bi bi-telephone text-xs"></i>
+                            {{ usuario.telefono }}
+                        </p>
+                        {% endif %}
+                    </div>
                 </div>
+            </div>
 
-                <!-- Botones de Acción -->
-                <div class="modal-action flex flex-col-reverse sm:flex-row justify-between items-center mt-8 pt-6 border-t border-base-200 gap-3">
-                    <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-ghost w-full sm:w-auto text-base-content/70 hover:bg-base-200">
-                        <i class="bi bi-arrow-left"></i> Volver
-                    </a>
-                    
-                    <button type="submit" class="btn btn-success text-white w-full sm:w-auto shadow-md">
-                        <i class="bi bi-check-lg"></i> Confirmar Asignación
-                    </button>
+            <!-- Formulario -->
+            <div class="px-6 py-6 sm:p-8">
+
+                {% if form.non_field_errors %}
+                <div class="mb-4">
+                    <div class="alert alert-error text-sm">
+                        <i class="bi bi-exclamation-triangle-fill mr-2"></i>
+                        {{ form.non_field_errors }}
+                    </div>
                 </div>
+                {% endif %}
 
-            </form>
+                <form method="post" id="form-asignar-medidor" novalidate>
+                    {% csrf_token %}
+
+                    <div class="space-y-4">
+                        {# Render de campos del form, que luego estilizamos con JS #}
+                        {{ form.as_p }}
+                    </div>
+
+                    <!-- Nota informativa -->
+                    <div class="mt-5 mb-4 flex items-start gap-3 bg-info/10 border border-info/30 text-info rounded-xl px-4 py-3 text-xs sm:text-sm">
+                        <i class="bi bi-info-circle-fill mt-0.5 text-lg"></i>
+                        <p>
+                            Recuerda que cada usuario solo puede tener un
+                            <span class="font-semibold">medidor activo</span>.
+                            Si este equipo reemplaza a otro, asegúrate de actualizar el estado del medidor anterior.
+                        </p>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="flex flex-col-reverse sm:flex-row justify-between items-center mt-6 pt-4 border-t border-base-200 gap-3">
+                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}"
+                           class="btn btn-ghost w-full sm:w-auto text-base-content/70 hover:bg-base-200 gap-2">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver a búsqueda
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-success text-white w-full sm:w-auto shadow-md gap-2">
+                            <i class="bi bi-check-lg"></i>
+                            Confirmar asignación
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+
     </div>
 </div>
 
-<!-- SCRIPT PARA ESTILIZAR AUTOMÁTICAMENTE LOS INPUTS DE DJANGO -->
+<!-- Script para estilizar inputs generados por {{ form.as_p }} -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const inputs = document.querySelectorAll('#form-asignar-medidor input, #form-asignar-medidor select, #form-asignar-medidor textarea');
-        
-        inputs.forEach(input => {
-            // Elimina clases viejas
-            input.classList.remove('form-control', 'form-select');
-            
-            // Aplica estilos de DaisyUI
-            if (input.type === 'checkbox') {
-                input.classList.add('toggle', 'toggle-success');
-                // Envolver checkbox en label para mejor UX
-                const parent = input.parentNode;
-                if (parent.tagName === 'P') {
-                    parent.classList.add('form-control', 'w-full');
-                }
-            } else {
-                input.classList.add('input', 'input-bordered', 'w-full', 'focus:input-success', 'transition-all', 'bg-base-100', 'mt-1');
-                
-                // Estilizar el label padre (el <p> que genera as_p)
-                const parent = input.parentNode;
-                if (parent.tagName === 'P') {
-                    parent.classList.add('form-control', 'w-full', 'mb-4');
-                    // Buscar el label dentro del p y estilizarlo
-                    const label = parent.querySelector('label');
-                    if (label) {
-                        label.classList.add('label', 'label-text', 'font-semibold');
-                    }
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById('form-asignar-medidor');
+    if (!form) return;
+
+    const inputs = form.querySelectorAll('input, select, textarea');
+
+    inputs.forEach(input => {
+        // Limpiar clases viejas de Bootstrap si las hubiera
+        input.classList.remove('form-control', 'form-select');
+
+        const parent = input.parentNode;
+
+        // Checkbox (por si acaso llegas a tener alguno en este form)
+        if (input.type === 'checkbox') {
+            input.classList.add('toggle', 'toggle-success');
+            if (parent && parent.tagName === 'P') {
+                parent.classList.add('form-control', 'w-full', 'mb-4', 'flex', 'items-center', 'gap-2');
+                const label = parent.querySelector('label');
+                if (label) {
+                    label.classList.add('label-text', 'font-semibold');
                 }
             }
-        });
+        } else {
+            // Inputs de texto / select / textarea
+            input.classList.add(
+                'input', 'input-bordered', 'w-full',
+                'focus:input-success',
+                'bg-base-100',
+                'mt-1', 'text-sm'
+            );
+
+            if (parent && parent.tagName === 'P') {
+                parent.classList.add('form-control', 'w-full', 'mb-4');
+
+                const label = parent.querySelector('label');
+                if (label) {
+                    label.classList.add('label', 'label-text', 'font-semibold', 'mb-1');
+                }
+
+                // Estilizar mensajes de error si los hubiese
+                const errorList = parent.querySelector('ul.errorlist');
+                if (errorList) {
+                    errorList.classList.add('mt-1', 'text-xs', 'text-error', 'space-y-1', 'list-disc', 'list-inside');
+                }
+            }
+        }
     });
+});
 </script>
+
 {% endblock %}

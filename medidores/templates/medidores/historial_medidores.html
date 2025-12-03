@@ -1,170 +1,317 @@
 {% extends "medidores/base_medidores.html" %}
 
-{% block title %}Historial de Medidores{% endblock %}
+{% block title %}Historial de Medidores | Comité APR{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
 
-    <!-- Encabezado y Botón Principal -->
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-            <h2 class="text-3xl font-bold text-info">Historial de Medidores</h2>
-            <p class="text-base-content/70 text-sm mt-1">Registro completo de equipos y sus estados operativos.</p>
+<div class="min-h-screen bg-base-200 py-4">
+    <div class="container mx-auto px-2 sm:px-4">
+
+        <!-- Header -->
+        <div class="mb-6">
+            <div class="bg-base-100 rounded-2xl shadow-lg p-6 border border-base-300">
+                <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-primary flex items-center gap-2">
+                            <i class="bi bi-hdd-network text-base-content"></i>
+                            Historial de medidores
+                        </h1>
+                        <p class="text-sm text-base-content/70 mt-1">
+                            Revisa el estado de los medidores registrados, su asignación y fecha de instalación.
+                        </p>
+                        {% if query %}
+                        <p class="text-xs text-base-content/60 mt-2">
+                            Resultados para: <span class="font-semibold">"{{ query }}"</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-success text-white shadow-md gap-2">
-            <i class="bi bi-plus-lg"></i> Asignar Nuevo
-        </a>
-    </div>
 
-    <!-- Tabla de Medidores -->
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm pb-10">
-        <table class="table table-zebra w-full text-center">
-            <!-- Encabezado -->
-            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="py-4">Código Serial</th>
-                    <th class="text-left pl-6">Usuario Asignado</th>
-                    <th>Fecha Registro</th>
-                    <th>Estado</th>
-                    <th class="min-w-[180px]">Acciones</th>
-                </tr>
-            </thead>
-            <!-- Cuerpo -->
-            <tbody>
-                {% for medidor in medidores %}
-                <tr class="hover transition-colors group">
-                    
-                    <!-- Serial -->
-                    <td class="font-mono font-bold text-info text-lg">
-                        {{ medidor.codigo_serial }}
-                    </td>
+        <!-- Tarjetas de resumen -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Total -->
+            <div class="stats shadow bg-base-100 border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-figure text-primary">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <i class="bi bi-hdd-network"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title text-xs opacity-70">Total medidores</div>
+                    <div class="stat-value text-lg sm:text-2xl text-primary">
+                        {{ total_medidores|default:"0" }}
+                    </div>
+                    <div class="stat-desc text-xs mt-1">Registrados en el sistema</div>
+                </div>
+            </div>
 
-                    <!-- Usuario -->
-                    <td class="text-left pl-6">
-                        {% if medidor.usuario %}
-                            <div class="font-semibold text-base-content">{{ medidor.usuario.nombre }}</div>
-                            <div class="text-xs text-base-content/60 font-mono">RUT: {{ medidor.usuario.rut }}</div>
-                        {% else %}
-                            <div class="badge badge-ghost text-xs opacity-50">Sin asignar</div>
-                        {% endif %}
-                    </td>
+            <!-- Activos -->
+            <div class="stats shadow bg-base-100 border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-figure text-success">
+                        <div class="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+                            <i class="bi bi-check2-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title text-xs opacity-70">Medidores activos</div>
+                    <div class="stat-value text-lg sm:text-2xl text-success">
+                        {{ medidores_activos|default:"0" }}
+                    </div>
+                    <div class="stat-desc text-xs mt-1">En operación</div>
+                </div>
+            </div>
 
-                    <!-- Fecha -->
-                    <td class="text-sm text-base-content/80">
-                        {{ medidor.fecha_registro|date:"d/m/Y" }}
-                    </td>
+            <!-- Inactivos / Mantención -->
+            <div class="stats shadow bg-base-100 border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-figure text-warning">
+                        <div class="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title text-xs opacity-70">Inactivos / Mantención</div>
+                    <div class="stat-value text-lg sm:text-xl text-warning">
+                        {{ medidores_inactivos|default:"0" }} / {{ medidores_mantencion|default:"0" }}
+                    </div>
+                    <div class="stat-desc text-xs mt-1">Fuera de servicio o revisión</div>
+                </div>
+            </div>
 
-                    <!-- Estado con Badges de Colores -->
-                    <td>
-                        {% if medidor.estado == 'activo' %}
-                            <div class="badge badge-success text-white gap-1 text-xs font-semibold">
-                                <i class="bi bi-check-circle-fill"></i> Activo
-                            </div>
-                        {% elif medidor.estado == 'inactivo' %}
-                            <div class="badge badge-neutral text-white gap-1 text-xs">
-                                <i class="bi bi-dash-circle"></i> Inactivo
-                            </div>
-                        {% elif medidor.estado == 'mantenimiento' %}
-                            <div class="badge badge-warning text-white gap-1 text-xs">
-                                <i class="bi bi-tools"></i> Mantención
-                            </div>
-                        {% elif medidor.estado == 'danado' %}
-                            <div class="badge badge-error text-white gap-1 text-xs">
-                                <i class="bi bi-exclamation-triangle-fill"></i> Dañado
-                            </div>
-                        {% else %}
-                            <div class="badge badge-ghost text-xs">{{ medidor.get_estado_display }}</div>
-                        {% endif %}
-                    </td>
+            <!-- Dañados / Asignación -->
+            <div class="stats shadow bg-base-100 border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-figure text-error">
+                        <div class="w-10 h-10 rounded-xl bg-error/10 flex items-center justify-center">
+                            <i class="bi bi-exclamation-octagon"></i>
+                        </div>
+                    </div>
+                    <div class="stat-title text-xs opacity-70">Dañados / Asignación</div>
+                    <div class="stat-value text-lg sm:text-xl text-error">
+                        {{ medidores_danados|default:"0" }}
+                    </div>
+                    <div class="stat-desc text-xs mt-1">
+                        {{ medidores_asignados|default:"0" }} asignados · {{ medidores_sin_asignar|default:"0" }} sin asignar
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Acciones -->
-                    <td>
-                        <div class="flex items-center justify-center gap-2">
-                            
-                            <!-- Cambiar Estado -->
-                            <a href="{% url 'medidores:confirmar_cambio_estado' medidor.id %}" 
-                               class="btn btn-sm btn-info text-white shadow-sm" title="Cambiar Estado">
-                                <i class="bi bi-arrow-repeat"></i>
+        <!-- Card principal tabla -->
+        <div class="card border border-base-300 shadow-lg bg-base-100">
+            <!-- Header card -->
+            <div class="card-header bg-base-200 border-b-4 border-primary p-4 sm:p-5 rounded-t-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                    <i class="bi bi-list-ul text-primary"></i>
+                    Listado de medidores
+                </h2>
+
+                <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <!-- Buscador -->
+                    <form method="get" action="{% url 'medidores:historial_medidores' %}" class="join w-full sm:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <span class="absolute inset-y-0 left-3 flex items-center text-base-content/50 pointer-events-none">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input
+                                type="text"
+                                name="q"
+                                value="{{ query|default:'' }}"
+                                class="input input-bordered w-full pl-10 join-item focus:outline-none focus:border-primary"
+                                placeholder="Buscar por serie, socio o RUT..."
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-primary join-item">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="card-body p-0">
+                {% if medidores %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-base-200 text-base-content uppercase text-xs font-bold tracking-wider">
+                            <tr>
+                                <th class="py-3 pl-6 pr-4">Medidor</th>
+                                <th class="py-3 px-4">Socio</th>
+                                <th class="py-3 px-4">Estado</th>
+                                <th class="py-3 px-4">Fecha instalación</th>
+                                <th class="py-3 pr-6 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-base-200">
+                            {% for medidor in medidores %}
+                            <tr class="hover:bg-base-200/40 transition-colors">
+                                <!-- Medidor -->
+                                <td class="pl-6 pr-4 py-3 align-top">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono text-sm font-semibold text-base-content">
+                                            {{ medidor.codigo_serial }}
+                                        </span>
+                                        <span class="text-xs text-base-content/60">
+                                            ID interno: {{ medidor.id }}
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- Socio -->
+                                <td class="px-4 py-3 align-top">
+                                    {% if medidor.usuario %}
+                                    <div class="flex flex-col text-sm">
+                                        <span class="font-medium text-base-content">
+                                            {{ medidor.usuario.nombre }}
+                                        </span>
+                                        <span class="text-xs text-base-content/60 font-mono">
+                                            {{ medidor.usuario.rut }}
+                                        </span>
+                                    </div>
+                                    {% else %}
+                                    <span class="badge badge-ghost text-xs">Sin asignar</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Estado -->
+                                <td class="px-4 py-3 align-top">
+                                    {% if medidor.estado == 'activo' %}
+                                        <span class="badge badge-success gap-1 text-xs">
+                                            <i class="bi bi-check-circle"></i>
+                                            {{ medidor.get_estado_display }}
+                                        </span>
+                                    {% elif medidor.estado == 'inactivo' %}
+                                        <span class="badge badge-ghost gap-1 text-xs">
+                                            <i class="bi bi-stop-circle"></i>
+                                            {{ medidor.get_estado_display }}
+                                        </span>
+                                    {% elif medidor.estado == 'mantenimiento' %}
+                                        <span class="badge badge-warning gap-1 text-xs">
+                                            <i class="bi bi-tools"></i>
+                                            {{ medidor.get_estado_display }}
+                                        </span>
+                                    {% elif medidor.estado == 'danado' %}
+                                        <span class="badge badge-error gap-1 text-xs">
+                                            <i class="bi bi-exclamation-octagon"></i>
+                                            {{ medidor.get_estado_display }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-ghost gap-1 text-xs">
+                                            {{ medidor.get_estado_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Fecha instalación -->
+                                <td class="px-4 py-3 align-top text-base-content/80">
+                                    {% if medidor.fecha_instalacion %}
+                                        {{ medidor.fecha_instalacion|date:"d/m/Y" }}
+                                    {% else %}
+                                        <span class="text-xs text-base-content/50 italic">Sin registro</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Acciones -->
+                                <td class="pr-6 py-3 align-top text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <!-- Cambiar estado -->
+                                        <a href="{% url 'medidores:confirmar_cambio_estado' medidor.id %}"
+                                           class="btn btn-sm btn-info text-white border-none shadow-md w-8 h-8 p-0 min-h-0 flex items-center justify-center"
+                                           title="Cambiar estado">
+                                            <i class="bi bi-arrow-repeat text-sm"></i>
+                                        </a>
+
+                                        <!-- Eliminar (solo admin) -->
+                                        {% if request.user.rol == 'admin' %}
+                                        <a href="{% url 'medidores:eliminar_medidor' medidor.id %}"
+                                           class="btn btn-sm btn-error text-white border-none shadow-md w-8 h-8 p-0 min-h-0 flex items-center justify-center"
+                                           title="Eliminar medidor">
+                                            <i class="bi bi-trash text-sm"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                <div class="p-4 border-t border-base-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+                    <div class="text-base-content/60">
+                        Mostrando
+                        <span class="font-semibold">
+                            {{ medidores.start_index }}–{{ medidores.end_index }}
+                        </span>
+                        de
+                        <span class="font-semibold">
+                            {{ medidores.paginator.count }}
+                        </span>
+                        medidores
+                    </div>
+
+                    <div class="join">
+                        {% if medidores.has_previous %}
+                            <a href="?page={{ medidores.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm join-item">
+                                «
                             </a>
+                        {% else %}
+                            <button class="btn btn-sm join-item btn-disabled">«</button>
+                        {% endif %}
 
-                            <!-- Eliminar (Abre Modal) -->
-                            <button onclick="abrirModalEliminar('{% url 'medidores:eliminar_medidor' medidor.id %}', '{{ medidor.codigo_serial }}')" 
-                               class="btn btn-sm btn-error text-white shadow-sm" title="Eliminar">
-                                <i class="bi bi-trash3-fill"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center py-12">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
-                            <i class="bi bi-speedometer2 text-4xl mb-3"></i>
-                            <p class="font-medium">No hay medidores registrados en el sistema.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                        {% for num in medidores.paginator.page_range %}
+                            {% if num == medidores.number %}
+                                <button class="btn btn-sm join-item btn-primary">
+                                    {{ num }}
+                                </button>
+                            {% elif num > medidores.number|add:'-3' and num < medidores.number|add:'3' %}
+                                <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm join-item">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
 
-    <!-- Botón Volver -->
-    <div class="flex justify-start mt-2">
-        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
-            <i class="bi bi-arrow-left"></i> Volver al Dashboard
-        </a>
-    </div>
+                        {% if medidores.has_next %}
+                            <a href="?page={{ medidores.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn btn-sm join-item">
+                                »
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm join-item btn-disabled">»</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
 
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL DE ELIMINACIÓN -->
-<!-- ========================================== -->
-<style>
-    /* Asegura transparencia del fondo */
-    dialog::backdrop {
-        background-color: rgba(0, 0, 0, 0.5) !important;
-        backdrop-filter: blur(2px);
-    }
-</style>
-
-<dialog id="modal_eliminar" class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box bg-base-100">
-    <div class="flex flex-col items-center text-center">
-        <div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error animate-pulse">
-            <i class="bi bi-trash3-fill text-3xl"></i>
+                {% else %}
+                <!-- Estado vacío -->
+                <div class="text-center py-16 px-6">
+                    <div class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-hdd-network text-4xl opacity-40"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">No se encontraron medidores</h3>
+                    <p class="text-base-content/60 max-w-xs mx-auto mt-2">
+                        {% if query %}
+                            No hay resultados para "{{ query }}".
+                        {% else %}
+                            Aún no hay medidores registrados en el sistema.
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
         </div>
-        <h3 class="font-bold text-lg text-base-content">¿Eliminar Medidor?</h3>
-        <p class="py-4 text-base-content/70">
-            Estás a punto de eliminar el medidor con serial: <strong class="text-base-content text-lg" id="txt_medidor_serial"></strong>.
-            <br><span class="text-error text-xs font-bold uppercase mt-2 block">Esta acción no se puede deshacer.</span>
-        </p>
-    </div>
-    
-    <div class="modal-action flex flex-col-reverse sm:flex-row gap-2">
-      <form method="dialog" class="flex-1">
-        <button class="btn btn-ghost w-full">Cancelar</button>
-      </form>
-      
-      <!-- Formulario POST para eliminar -->
-      <form id="form_eliminar" method="post" class="flex-1">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-error text-white w-full shadow-md">Sí, eliminar</button>
-      </form>
-    </div>
-  </div>
-  <form method="dialog" class="modal-backdrop"><button>close</button></form>
-</dialog>
 
-<!-- Script para el Modal -->
-<script>
-    function abrirModalEliminar(url, serial) {
-        document.getElementById('txt_medidor_serial').innerText = serial;
-        document.getElementById('form_eliminar').action = url;
-        document.getElementById('modal_eliminar').showModal();
-    }
-</script>
+        <!-- Volver -->
+        <div class="mt-6">
+            <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost text-base-content/70 hover:text-primary gap-2 pl-0">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
 
 {% endblock %}

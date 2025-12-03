@@ -3,41 +3,67 @@
 {% block title %}Eliminar Consumo{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-4 md:mt-10">
-    
-    <div class="card bg-base-100 shadow-xl border border-base-200">
-        <div class="card-body items-center text-center p-8">
-            
-            <div class="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error animate-pulse">
-                <i class="bi bi-exclamation-triangle-fill text-4xl"></i>
+<div class="min-h-[60vh] flex items-center justify-center">
+
+    <div class="max-w-md w-full px-4">
+
+        <!-- Tarjeta -->
+        <div class="card bg-base-100 shadow-xl border border-base-300 text-base-content">
+            <div class="card-body items-center text-center p-8">
+
+                <!-- Icono -->
+                <div class="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center mb-5 text-error animate-pulse">
+                    <i class="bi bi-exclamation-triangle-fill text-4xl"></i>
+                </div>
+
+                <!-- Título -->
+                <h2 class="text-2xl font-bold mb-2">
+                    ¿Eliminar registro de consumo?
+                </h2>
+
+                <!-- Descripción -->
+                <p class="text-base-content/70 leading-relaxed">
+                    Estás a punto de eliminar el consumo registrado el día
+                    <br>
+                    <strong class="text-base-content text-lg">
+                        {{ consumo.fecha_consumo|date:"d/m/Y" }}
+                    </strong>
+                    por un total de
+                    <strong class="text-base-content text-lg">
+                        {{ consumo.cantidad_consumida }} m³
+                    </strong>.
+                </p>
+
+                <p class="text-error text-sm font-semibold mt-3">
+                    Esta acción no se puede deshacer.
+                </p>
+
+                <!-- Acciones -->
+                <form method="post" class="mt-8 w-full flex flex-col-reverse sm:flex-row gap-3">
+                    {% csrf_token %}
+
+                    <a href="{% url 'consumos:historial_consumos' consumo.usuario.id %}"
+                       class="btn btn-ghost w-full sm:w-1/2 hover:bg-base-200">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-error text-white w-full sm:w-1/2 shadow-md shadow-error/30">
+                        <i class="bi bi-trash3-fill"></i> Sí, eliminar
+                    </button>
+                </form>
+
             </div>
-
-            <h2 class="card-title text-2xl font-bold text-base-content mb-1">¿Eliminar registro?</h2>
-            
-            <p class="text-base-content/70">
-                Estás a punto de eliminar el consumo del día <br>
-                <strong class="text-base-content text-lg">{{ consumo.fecha_consumo|date:"d/m/Y" }}</strong> 
-                de <strong class="text-base-content text-lg">{{ consumo.cantidad_consumida }} m³</strong>.
-            </p>
-
-            <p class="text-error text-sm font-semibold mt-2">
-                Esta acción no se puede deshacer.
-            </p>
-
-            <form method="post" class="card-actions mt-8 w-full flex flex-col-reverse sm:flex-row gap-3">
-                {% csrf_token %}
-                
-                <a href="{% url 'consumos:historial_consumos' consumo.usuario.id %}" 
-                   class="btn btn-ghost hover:bg-base-200 flex-1">
-                    <i class="bi bi-arrow-left"></i> Cancelar
-                </a>
-                
-                <button type="submit" class="btn btn-error text-white flex-1 shadow-md shadow-error/30">
-                    <i class="bi bi-trash3-fill"></i> Sí, eliminar
-                </button>
-            </form>
-
         </div>
+
+        <!-- Volver -->
+        <div class="text-center mt-4">
+            <a href="{% url 'consumos:lista_usuarios_consumos' %}"
+               class="text-sm text-base-content/60 hover:underline">
+                Volver al listado de consumos
+            </a>
+        </div>
+
     </div>
 </div>
 {% endblock %}

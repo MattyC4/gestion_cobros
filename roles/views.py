@@ -94,7 +94,7 @@ def admin_dashboard(request):
     
     # Convertir a Metros Cúbicos (Dividir por 1000)
     # Si total_litros es 3.0, total_consumo_mes será 0.003
-    total_consumo_mes = total_litros / 1000 if total_litros else 0
+    total_consumo_mes = total_litros 
 
     tarifa_actual = Tarifa.objects.filter(activo=True).first()
     medidores_activos = Medidor.objects.filter(estado='activo').count()

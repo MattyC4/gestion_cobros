@@ -7,21 +7,38 @@
 <div class="flex flex-col gap-6">
 
     <!-- Encabezado -->
-    <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h2 class="text-3xl font-bold text-primary">Historial de Tarifas</h2>
-            <p class="text-base-content/70 text-sm mt-1">Registro de precios y vigencias del servicio de agua potable.</p>
+            <p class="text-base-content/70 text-sm mt-1">
+                Revisa los valores históricos y la vigencia de las tarifas aplicadas al servicio de agua potable.
+            </p>
         </div>
-        
+
         <!-- Botón para abrir el Modal de Nueva Tarifa -->
-        <button onclick="document.getElementById('modal_crear_tarifa').showModal()" class="btn btn-primary text-white shadow-md gap-2">
-            <i class="bi bi-plus-lg"></i> Nueva Tarifa
-        </button> 
+        <button onclick="document.getElementById('modal_crear_tarifa').showModal()"
+                class="btn btn-primary text-white shadow-md gap-2">
+            <i class="bi bi-plus-lg"></i>
+            Nueva Tarifa
+        </button>
+    </div>
+
+    <!-- Bloque informativo opcional -->
+    <div class="bg-base-100 rounded-xl border border-base-200 shadow-sm p-4 flex flex-col md:flex-row gap-3 items-start md:items-center">
+        <div class="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">
+            <i class="bi bi-info-circle-fill text-xl"></i>
+        </div>
+        <div class="text-sm text-base-content/80">
+            <p>
+                Solo puede existir una tarifa <span class="font-semibold">activa</span> a la vez. 
+                Las tarifas anteriores se mantienen como <span class="font-semibold">históricas</span> para trazabilidad y cálculos de consumos pasados.
+            </p>
+        </div>
     </div>
 
     <!-- Tabla de Tarifas -->
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm pb-6">
-        <table class="table table-zebra w-full text-center">
+    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm pb-4">
+        <table class="table w-full text-center">
             <!-- Encabezado -->
             <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
                 <tr>
@@ -32,10 +49,12 @@
                     <th>Estado</th>
                 </tr>
             </thead>
+
             <!-- Cuerpo -->
             <tbody>
                 {% for tarifa in tarifas %}
-                <tr class="hover transition-colors group">
+                <tr class="hover transition-colors group
+                           {% if tarifa.activo %}bg-success/5 border-l-4 border-success/70{% endif %}">
                     
                     <!-- Valor -->
                     <td class="font-bold text-base text-primary">
@@ -63,7 +82,9 @@
                                 {{ tarifa.fecha_fin_vigencia|date:"d/m/Y" }}
                             </div>
                         {% else %}
-                            <span class="text-xs text-success font-semibold">Vigente</span>
+                            <span class="text-xs text-success font-semibold">
+                                Vigente
+                            </span>
                         {% endif %}
                     </td>
 
@@ -71,11 +92,13 @@
                     <td>
                         {% if tarifa.activo %}
                             <div class="badge badge-success gap-1 text-white font-semibold text-xs shadow-sm">
-                                <i class="bi bi-check-circle-fill"></i> Activa
+                                <i class="bi bi-check-circle-fill"></i>
+                                Activa
                             </div>
                         {% else %}
                             <div class="badge badge-ghost gap-1 text-base-content/60 font-medium text-xs">
-                                <i class="bi bi-archive-fill"></i> Histórica
+                                <i class="bi bi-archive-fill"></i>
+                                Histórica
                             </div>
                         {% endif %}
                     </td>
@@ -87,6 +110,9 @@
                         <div class="flex flex-col items-center justify-center text-base-content/50">
                             <i class="bi bi-cash-coin text-4xl mb-3"></i>
                             <p class="font-medium">No hay tarifas registradas en el sistema.</p>
+                            <p class="text-xs mt-1">
+                                Puedes crear la primera tarifa haciendo clic en <span class="font-semibold">“Nueva Tarifa”</span>.
+                            </p>
                         </div>
                     </td>
                 </tr>
@@ -97,8 +123,10 @@
 
     <!-- Botón Volver -->
     <div class="flex justify-start mt-2">
-        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
-            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+        <a href="{% url 'roles:redireccion_dashboard' %}"
+           class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
+            <i class="bi bi-arrow-left"></i>
+            Volver al Dashboard
         </a>
     </div>
 
@@ -109,26 +137,34 @@
 <!-- ========================================== -->
 <dialog id="modal_crear_tarifa" class="modal modal-bottom sm:modal-middle">
   <div class="modal-box bg-base-100">
-    
+
     <!-- Título del Modal -->
     <h3 class="font-bold text-lg flex items-center gap-2 text-primary">
-        <i class="bi bi-cash-stack"></i> Agregar Nueva Tarifa
+        <i class="bi bi-cash-stack"></i>
+        Agregar Nueva Tarifa
     </h3>
-    <p class="py-2 text-sm text-base-content/70">Define el nuevo valor base para el cobro de agua.</p>
+    <p class="py-2 text-sm text-base-content/70">
+        Define el nuevo valor base que se aplicará a las boletas desde la fecha indicada.
+    </p>
 
     <!-- Formulario -->
-    <!-- Asegúrate de que la URL 'tarifas:agregar_tarifa' exista en tu urls.py -->
     <form action="{% url 'tarifas:agregar_tarifa' %}" method="post" class="mt-4 space-y-4">
         {% csrf_token %}
         
         <!-- Campo: Valor -->
         <div class="form-control">
             <label class="label pt-0">
-                <span class="label-text font-semibold">Valor de la Tarifa ($)</span>
+                <span class="label-text font-semibold">Valor de la tarifa ($)</span>
             </label>
             <label class="input input-bordered flex items-center gap-2 focus-within:input-primary">
                 <i class="bi bi-currency-dollar text-base-content/50"></i>
-                <input type="number" name="valor" class="grow" placeholder="Ej: 5000" required />
+                <input type="number"
+                       name="valor"
+                       class="grow"
+                       min="0"
+                       step="1"
+                       placeholder="Ej: 5000"
+                       required />
             </label>
         </div>
 
@@ -137,25 +173,36 @@
             <label class="label">
                 <span class="label-text font-semibold">Descripción</span>
             </label>
-            <input type="text" name="descripcion" placeholder="Ej: Tarifa 2024" class="input input-bordered w-full focus:input-primary" />
+            <input type="text"
+                   name="descripcion"
+                   placeholder="Ej: Tarifa 2025 – Ajuste CPI"
+                   class="input input-bordered w-full focus:input-primary" />
         </div>
 
         <!-- Campo: Fecha Vigencia -->
         <div class="form-control">
             <label class="label">
-                <span class="label-text font-semibold">Fecha de Inicio</span>
+                <span class="label-text font-semibold">Fecha de inicio de vigencia</span>
             </label>
-            <input type="date" name="fecha_vigencia" id="fecha_vigencia_input" class="input input-bordered w-full focus:input-primary" required />
+            <input type="date"
+                   name="fecha_vigencia"
+                   id="fecha_vigencia_input"
+                   class="input input-bordered w-full focus:input-primary"
+                   required />
         </div>
 
         <!-- Botones -->
         <div class="modal-action">
-            <!-- Botón para cerrar (sin enviar) -->
-            <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal_crear_tarifa').close()">Cancelar</button>
+            <button type="button"
+                    class="btn btn-ghost"
+                    onclick="document.getElementById('modal_crear_tarifa').close()">
+                Cancelar
+            </button>
             
-            <!-- Botón Submit -->
-            <button type="submit" class="btn btn-primary text-white shadow-md">
-                <i class="bi bi-save"></i> Guardar Tarifa
+            <button type="submit"
+                    class="btn btn-primary text-white shadow-md">
+                <i class="bi bi-save"></i>
+                Guardar tarifa
             </button>
         </div>
     </form>
@@ -172,7 +219,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         const dateInput = document.getElementById('fecha_vigencia_input');
-        if (dateInput) {
+        if (dateInput && !dateInput.value) {
             dateInput.value = today;
         }
     });

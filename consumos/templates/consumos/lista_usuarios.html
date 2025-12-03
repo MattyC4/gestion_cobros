@@ -1,16 +1,26 @@
-{% extends "consumos/base_consumos.html" %}
+    {% extends "consumos/base_consumos.html" %}
 
-{% block title %}Lista de Usuarios con Medidores{% endblock %}
+{% block title %}Usuarios con Medidores{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
+<div class="min-h-[60vh] flex flex-col gap-6">
 
+    <!-- Header + Buscador -->
     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
+        <div class="w-full md:w-auto">
             <h2 class="text-2xl font-bold text-primary">Usuarios con Medidores</h2>
-            <p class="text-base-content/70 text-sm">Selecciona un usuario para registrar su lectura.</p>
+            <p class="text-sm text-base-content/70">
+                Selecciona un usuario para registrar su consumo manual.
+            </p>
+            <p class="text-xs text-base-content/60 mt-1">
+                Total: <span class="font-semibold">{{ total_usuarios|default:"0" }}</span> usuario(s)
+                {% if search %}
+                    &bull; filtro: <span class="font-mono">"{{ search }}"</span>
+                {% endif %}
+            </p>
         </div>
 
+        <!-- Buscador -->
         <form method="get" class="w-full md:w-auto">
             <div class="join w-full">
                 <input 
@@ -18,7 +28,7 @@
                     name="search" 
                     class="input input-bordered join-item w-full md:w-64 focus:input-primary" 
                     placeholder="Buscar por nombre..." 
-                    value="{{ query|default:'' }}">
+                    value="{{ search|default:'' }}">
                 <button type="submit" class="btn btn-primary join-item text-white">
                     <i class="bi bi-search"></i>
                 </button>
@@ -26,47 +36,108 @@
         </form>
     </div>
 
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
-        <table class="table table-zebra w-full">
-            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="py-4 pl-6">Nombre</th>
-                    <th>RUT</th>
-                    <th class="text-center">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr class="hover transition-colors">
-                    <td class="pl-6 font-medium text-base-content">
-                        {{ usuario.nombre }}
-                    </td>
-                    <td class="font-mono text-base-content/80">
-                        {{ usuario.rut }}
-                    </td>
-                    <td class="text-center">
-                        <a href="{% url 'consumos:registrar_consumo' usuario.id %}" 
-                           class="btn btn-sm btn-success text-white shadow-sm hover:shadow-md transition-all gap-2">
-                            <i class="bi bi-plus-lg font-bold"></i>
-                            <span class="hidden sm:inline">Registrar</span>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center py-10">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
-                            <i class="bi bi-person-slash text-4xl mb-2"></i>
-                            <p>No se encontraron usuarios con medidores asignados.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Tarjeta de resumen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="stats shadow bg-base-100 border border-base-300 text-base-content">
+            <div class="stat p-4">
+                <div class="stat-figure text-primary">
+                    <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-xl">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <div class="stat-title text-xs uppercase tracking-wide text-base-content/70">
+                    Usuarios con medidor
+                </div>
+                <div class="stat-value text-primary text-2xl">
+                    {{ total_usuarios|default:"0" }}
+                </div>
+                <div class="stat-desc text-xs mt-1 text-base-content/60">
+                    Solo socios con al menos un medidor asignado.
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="flex justify-start mt-2">
+    <!-- Tabla (sin clase .table para evitar conflictos de estilos) -->
+    <div class="card bg-base-100 border border-base-200 shadow-sm mt-2 text-base-content">
+        <div class="card-body p-0">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-sm">
+                    <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
+                        <tr>
+                            <th class="py-4 pl-6 text-left">Nombre</th>
+                            <th class="text-left">RUT</th>
+                            <th class="text-center min-w-[160px]">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr class="border-b border-base-200 last:border-b-0 hover:bg-base-200/60 transition-colors">
+                            <td class="pl-6 py-3 font-medium">
+                                {{ usuario.nombre }}
+                            </td>
+                            <td class="py-3 font-mono text-base-content/80">
+                                {{ usuario.rut }}
+                            </td>
+                            <td class="py-3 text-center">
+                                <a href="{% url 'consumos:registrar_consumo' usuario.id %}" 
+                                   class="btn btn-sm btn-success text-white shadow-sm hover:shadow-md transition-all gap-2">
+                                    <i class="bi bi-plus-lg font-bold"></i>
+                                    <span class="hidden sm:inline">Registrar consumo</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-10">
+                                <div class="flex flex-col items-center justify-center text-base-content/60">
+                                    <i class="bi bi-person-slash text-4xl mb-2"></i>
+                                    {% if search %}
+                                        <p>No se encontraron usuarios con medidor para la búsqueda "{{ search }}".</p>
+                                    {% else %}
+                                        <p>No se encontraron usuarios con medidores asignados.</p>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+            <div class="p-4 border-t border-base-200 flex justify-center">
+                <div class="join">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" 
+                           class="join-item btn btn-sm">
+                            «
+                        </a>
+                    {% else %}
+                        <button class="join-item btn btn-sm btn-disabled">«</button>
+                    {% endif %}
+
+                    <button class="join-item btn btn-sm no-animation">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </button>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" 
+                           class="join-item btn btn-sm">
+                            »
+                        </a>
+                    {% else %}
+                        <button class="join-item btn btn-sm btn-disabled">»</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botón Volver -->
+    <div class="flex justify-start mt-4">
         <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
             <i class="bi bi-arrow-left"></i> Volver al Dashboard
         </a>
