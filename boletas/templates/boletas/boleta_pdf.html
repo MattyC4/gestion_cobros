@@ -1,129 +1,348 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Boleta #{{ boleta.id }}</title>
-    {% load static %}
     <style>
+        /* ====== RESETEO BÁSICO ====== */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            font-size: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
             margin: 20px;
-            color: #333;
+            color: #333333;
         }
-        .container {
+
+        .boleta-container {
             width: 100%;
+            max-width: 700px;
             margin: 0 auto;
+            border: 1px solid #dddddd;
+            padding: 16px 20px;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .header img {
-            max-width: 120px;
-            margin-bottom: 10px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .header p {
-            margin: 0;
-            font-size: 16px;
-            color: #555;
-        }
-        .details, .consumption {
-            margin-bottom: 20px;
-        }
-        .details table, .consumption table {
+
+        /* ====== ENCABEZADO ====== */
+        .header-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
-        table th, table td {
-            border: 1px solid #ccc;
-            padding: 10px;
+
+        .header-left {
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .header-right {
+            text-align: right;
+            vertical-align: top;
+        }
+
+        .logo {
+            max-width: 70px;
+        }
+
+        .titulo-empresa {
+            font-size: 16px;
+            font-weight: bold;
+            color: #005f99;
+            margin: 0;
+        }
+
+        .subtitulo-empresa {
+            font-size: 11px;
+            margin: 2px 0;
+            color: #555555;
+        }
+
+        .rut-empresa {
+            font-size: 10px;
+            color: #777777;
+        }
+
+        .boleta-label {
+            font-size: 11px;
+            color: #777777;
+            text-transform: uppercase;
+        }
+
+        .boleta-numero {
+            font-size: 18px;
+            font-weight: bold;
+            color: #005f99;
+        }
+
+        .boleta-fecha {
+            font-size: 11px;
+            margin-top: 4px;
+            color: #555555;
+        }
+
+        /* ====== BLOQUES DE INFORMACIÓN ====== */
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin: 10px 0 4px 0;
+            text-transform: uppercase;
+            color: #005f99;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .info-table th,
+        .info-table td {
+            border: 1px solid #cccccc;
+            padding: 6px 8px;
+            font-size: 11px;
+        }
+
+        .info-table th {
+            background-color: #f3f6fb;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .info-table td {
+            background-color: #ffffff;
+        }
+
+        .info-label {
+            width: 30%;
+            white-space: nowrap;
+        }
+
+        /* Dos columnas para datos cliente / boleta */
+        .dos-columnas {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dos-columnas td {
+            vertical-align: top;
+            width: 50%;
+            padding: 0 2px;
+        }
+
+        /* ====== TABLA DE CONSUMO ====== */
+        .consumo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
+        }
+
+        .consumo-table th,
+        .consumo-table td {
+            border: 1px solid #cccccc;
+            padding: 6px 8px;
+            font-size: 11px;
+        }
+
+        .consumo-table th {
+            background-color: #e7effb;
             text-align: left;
         }
-        table th {
-            background-color: #f5f5f5;
+
+        .consumo-table td.monto,
+        .consumo-table td.detalle {
+            text-align: right;
         }
-        .footer {
-            text-align: center;
-            font-size: 12px;
-            color: #555;
-            margin-top: 20px;
+
+        /* ====== TOTAL ====== */
+        .total-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
         }
-        .highlight {
+
+        .total-table td {
+            padding: 6px 8px;
+            font-size: 11px;
+        }
+
+        .total-label {
+            text-align: right;
             font-weight: bold;
-            color: #000;
+            text-transform: uppercase;
         }
+
+        .total-monto {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            color: #005f99;
+            border: 1px solid #cccccc;
+        }
+
+        /* ====== ESTADO ====== */
+        .estado-box {
+            margin-top: 4px;
+            font-size: 11px;
+        }
+
+        .estado-label {
+            font-weight: bold;
+        }
+
+        .estado-pagado {
+            color: #0a7d33;
+            font-weight: bold;
+        }
+
+        .estado-pendiente {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        /* ====== FOOTER ====== */
+        .footer {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 10px;
+            color: #666666;
+        }
+
+        .footer strong {
+            color: #333333;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Encabezado -->
-        <div class="header">
-            <img src="{% static 'static/img/logo.png' %}" alt="Logo Comité APR">
-            <h1>Comité APR Nahueltoro</h1>
-            <p>Boleta de Agua Potable</p>
+    <div class="boleta-container">
+
+        <!-- ENCABEZADO -->
+        <table class="header-table">
+            <tr>
+                <td class="header-left">
+                    <img src="{% static 'img/FlowWeb_logo.png' %}" alt="Logo APR" class="logo">
+                    <div>
+                        <p class="titulo-empresa">Comité APR Nahueltoro</p>
+                        <p class="subtitulo-empresa">Servicio de Agua Potable Rural</p>
+                        <p class="rut-empresa">RUT: 65.123.456-7</p>
+                    </div>
+                </td>
+                <td class="header-right">
+                    <div class="boleta-label">Boleta de Agua Potable</div>
+                    <div class="boleta-numero">N° {{ boleta.id }}</div>
+                    <div class="boleta-fecha">
+                        Fecha de emisión: {{ boleta.fecha_emision|date:"d/m/Y" }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DATOS CLIENTE + RESUMEN BOLETA -->
+        <table class="dos-columnas">
+            <tr>
+                <td>
+                    <div class="section-title">Datos del cliente</div>
+                    <table class="info-table">
+                        <tr>
+                            <th class="info-label">Nombre</th>
+                            <td>{{ usuario.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>RUT</th>
+                            <td>{{ usuario.rut }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dirección</th>
+                            <td>{{ usuario.direccion|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Teléfono</th>
+                            <td>{{ usuario.telefono|default:"-" }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <div class="section-title">Resumen de boleta</div>
+                    <table class="info-table">
+                        <tr>
+                            <th>Consumo total</th>
+                            <td>{{ boleta.consumo_total }} m³</td>
+                        </tr>
+                        <tr>
+                            <th>Tarifa base</th>
+                            <td>${{ boleta.tarifa_base }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total a pagar</th>
+                            <td><strong>${{ boleta.total_a_pagar }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Estado</th>
+                            <td>
+                                {% if boleta.pagado %}
+                                    <span class="estado-pagado">Pagado</span>
+                                {% else %}
+                                    <span class="estado-pendiente">Pendiente</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <!-- DETALLE DE CONSUMO -->
+        <div class="section-title">Detalle de consumo</div>
+        <table class="consumo-table">
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th class="detalle">Detalle</th>
+                    <th class="monto">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Consumo de agua potable</td>
+                    <td class="detalle">{{ boleta.consumo_total }} m³</td>
+                    <td class="monto">
+                        ${{ boleta.total_a_pagar|default:0 }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cargo fijo (tarifa base)</td>
+                    <td class="detalle">Tarifa mensual</td>
+                    <td class="monto">${{ boleta.tarifa_base }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TOTAL -->
+        <table class="total-table">
+            <tr>
+                <td class="total-label">Total a pagar</td>
+                <td class="total-monto">${{ boleta.total_a_pagar }}</td>
+            </tr>
+        </table>
+
+        <!-- NOTA / ESTADO -->
+        <div class="estado-box">
+            <span class="estado-label">Estado del documento:</span>
+            {% if boleta.pagado %}
+                <span class="estado-pagado">Pagado</span>
+            {% else %}
+                <span class="estado-pendiente">Pendiente de pago</span>
+            {% endif %}
         </div>
 
-        <!-- Información del Usuario -->
-        <div class="details">
-            <h3>Detalles del Cliente</h3>
-            <table>
-                <tr>
-                    <th>Nombre</th>
-                    <td>{{ usuario.nombre }}</td>
-                </tr>
-                <tr>
-                    <th>RUT</th>
-                    <td>{{ usuario.rut }}</td>
-                </tr>
-                <tr>
-                    <th>Dirección</th>
-                    <td>{{ usuario.direccion }}</td>
-                </tr>
-                <tr>
-                    <th>Teléfono</th>
-                    <td>{{ usuario.telefono }}</td>
-                </tr>
-                <tr>
-                    <th>Fecha de Emisión</th>
-                    <td>{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Detalles de Consumo -->
-        <div class="consumption">
-            <h3>Detalles del Consumo</h3>
-            <table>
-                <tr>
-                    <th>Consumo Total</th>
-                    <td>{{ boleta.consumo_total }} m³</td>
-                </tr>
-                <tr>
-                    <th>Tarifa Base</th>
-                    <td>${{ boleta.tarifa_base }}</td>
-                </tr>
-                <tr>
-                    <th>Total a Pagar</th>
-                    <td class="highlight">${{ boleta.total_a_pagar }}</td>
-                </tr>
-                <tr>
-                    <th>Estado</th>
-                    <td class="highlight">{{ boleta.pagado|yesno:"Pagado,Pendiente" }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Pie de página -->
+        <!-- FOOTER -->
         <div class="footer">
             <p>Gracias por su preferencia. Si tiene consultas, contáctenos al <strong>(+56) 9 1234 5678</strong>.</p>
-            <p>Comité APR Nahueltoro, Región del Biobío</p>
+            <p>Comité APR Nahueltoro &middot; Región del Biobío &middot; Sistema FlowWeb</p>
         </div>
+
     </div>
 </body>
 </html>

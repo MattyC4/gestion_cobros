@@ -6,80 +6,117 @@
 {% block content %}
 <div class="flex flex-col gap-6">
 
+    <!-- Encabezado -->
     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-primary">Boletas Recientes</h2>
-            <p class="text-base-content/70 text-sm mt-1">Últimos documentos generados en el sistema.</p>
+            <h2 class="text-3xl font-bold text-primary">Boletas recientes</h2>
+            <p class="text-base-content/70 text-sm mt-1">
+                Últimos documentos emitidos en el sistema.
+            </p>
         </div>
-        <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-primary text-white shadow-md gap-2">
-            <i class="bi bi-plus-lg"></i> Nueva Boleta
+
+        <a href="{% url 'boletas:seleccionar_usuario' %}" 
+           class="btn btn-primary text-white shadow-md gap-2">
+            <i class="bi bi-receipt-cutoff"></i>
+            Nueva boleta
         </a>
     </div>
 
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm pb-10">
-        <table class="table table-zebra w-full text-center">
+    <!-- Tabla -->
+    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm pb-6">
+        <table class="table table-zebra w-full text-center text-base-content">
             <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
                 <tr>
-                    <th class="py-4">ID</th>
-                    <th class="text-left pl-6">Usuario</th>
+                    <th class="py-4">N°</th>
+                    <th class="text-left pl-6">Cliente</th>
                     <th>Consumo</th>
                     <th>Total</th>
                     <th>Estado</th>
-                    <th>Fecha</th>
-                    <th class="min-w-[200px]">Acciones</th>
+                    <th>Emisión</th>
+                    <th class="min-w-[220px]">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for boleta in boletas %}
-                <tr class="hover transition-colors group">
-                    <td class="font-mono font-bold text-primary">#{{ boleta.id }}</td>
+                <tr class="hover transition-colors">
                     
-                    <td class="text-left pl-6 font-semibold text-base-content">
-                        {{ boleta.usuario.nombre }}
+                    <!-- ID -->
+                    <td class="font-mono font-semibold text-primary">
+                        #{{ boleta.id }}
+                    </td>
+                    
+                    <!-- Usuario -->
+                    <td class="text-left pl-6">
+                        <div class="font-semibold text-base-content">
+                            {{ boleta.usuario.nombre }}
+                        </div>
                     </td>
 
+                    <!-- Consumo -->
                     <td>
-                        <div class="badge badge-ghost font-mono text-xs">{{ boleta.consumo_total }} m³</div>
+                        <div class="badge badge-outline badge-sm border-base-300 text-xs font-mono">
+                            {{ boleta.consumo_total }} m³
+                        </div>
                     </td>
 
-                    <td class="font-bold">{{ boleta.total_a_pagar|formato_moneda }}</td>
+                    <!-- Total -->
+                    <td class="font-bold text-base-content">
+                        {{ boleta.total_a_pagar|formato_moneda }}
+                    </td>
 
+                    <!-- Estado -->
                     <td>
                         {% if boleta.pagado %}
-                            <div class="badge badge-success text-white gap-1 font-semibold text-xs">
-                                <i class="bi bi-check-circle-fill"></i> Pagado
+                            <div class="badge badge-success gap-1 text-white font-semibold text-xs">
+                                <i class="bi bi-check-lg"></i>
+                                Pagado
                             </div>
                         {% else %}
-                            <div class="badge badge-error text-white gap-1 font-semibold text-xs animate-pulse">
-                                <i class="bi bi-clock-history"></i> Pendiente
+                            <div class="badge badge-warning gap-1 text-xs font-semibold text-base-content">
+                                <i class="bi bi-hourglass-split"></i>
+                                Pendiente
                             </div>
                         {% endif %}
                     </td>
 
-                    <td class="text-sm opacity-80">{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
+                    <!-- Fecha -->
+                    <td class="text-sm text-base-content/80">
+                        {{ boleta.fecha_emision|date:"d/m/Y" }}
+                    </td>
 
+                    <!-- Acciones -->
                     <td>
-                        <div class="flex items-center justify-center gap-1">
+                        <div class="flex flex-wrap items-center justify-center gap-1.5">
                             {% if not boleta.pagado %}
-                            <button onclick="abrirModalPagar('{% url 'boletas:confirmar_actualizar_estado_boleta' boleta.id %}', '{{ boleta.id }}')" 
-                               class="btn btn-sm btn-square btn-success text-white shadow-sm" title="Registrar Pago">
-                                <i class="bi bi-cash-coin"></i>
+                            <!-- Registrar pago -->
+                            <button 
+                                onclick="abrirModalPagar('{% url 'boletas:confirmar_actualizar_estado_boleta' boleta.id %}', '{{ boleta.id }}')" 
+                                class="btn btn-xs sm:btn-sm btn-ghost border border-success/40 text-success hover:bg-success/10"
+                                title="Registrar pago">
+                                <i class="bi bi-coin"></i>
                             </button>
                             {% endif %}
 
+                            <!-- Ver boleta -->
                             <a href="{% url 'boletas:imprimir_boleta' boleta.id %}" 
-                               class="btn btn-sm btn-square btn-info text-white shadow-sm" title="Ver Documento">
-                                <i class="bi bi-eye-fill"></i>
+                               class="btn btn-xs sm:btn-sm btn-ghost border border-info/40 text-info hover:bg-info/10"
+                               title="Ver boleta">
+                                <i class="bi bi-eye"></i>
                             </a>
 
+                            <!-- Descargar PDF -->
                             <a href="{% url 'boletas:descargar_pdf' boleta.id %}" 
-                               class="btn btn-sm btn-square btn-secondary text-white shadow-sm" title="Descargar PDF">
-                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                               class="btn btn-xs sm:btn-sm btn-ghost border border-base-300 text-base-content hover:bg-base-200/70"
+                               title="Descargar PDF">
+                                <i class="bi bi-file-earmark-pdf"></i>
                             </a>
 
-                            <button onclick="abrirModalEliminar('{% url 'boletas:confirmar_eliminar_boleta' boleta.id %}', '{{ boleta.id }}')" 
-                               class="btn btn-sm btn-square btn-error text-white shadow-sm" title="Eliminar">
-                                <i class="bi bi-trash3-fill"></i>
+                            <!-- Eliminar -->
+                            <button 
+                                onclick="abrirModalEliminar('{% url 'boletas:confirmar_eliminar_boleta' boleta.id %}', '{{ boleta.id }}')" 
+                                class="btn btn-xs sm:btn-sm btn-ghost border border-error/40 text-error hover:bg-error/10"
+                                title="Eliminar boleta">
+                                <i class="bi bi-trash3"></i>
                             </button>
                         </div>
                     </td>
@@ -87,9 +124,12 @@
                 {% empty %}
                 <tr>
                     <td colspan="7" class="text-center py-12">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
+                        <div class="flex flex-col items-center justify-center text-base-content/60">
                             <i class="bi bi-inbox text-4xl mb-3"></i>
                             <p class="font-medium">No hay boletas recientes.</p>
+                            <p class="text-xs mt-1">
+                                Genera una nueva boleta desde el botón <strong>“Nueva boleta”</strong>.
+                            </p>
                         </div>
                     </td>
                 </tr>
@@ -101,48 +141,69 @@
 
 <style>
     dialog::backdrop {
-        background-color: rgba(0, 0, 0, 0.5) !important;
-        backdrop-filter: blur(2px);
+        background-color: rgba(0, 0, 0, 0.45) !important;
+        backdrop-filter: blur(3px);
     }
 </style>
 
+<!-- Modal registrar pago -->
 <dialog id="modal_pagar" class="modal modal-bottom sm:modal-middle">
   <div class="modal-box bg-base-100">
     <div class="flex flex-col items-center text-center">
         <div class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-4 text-success">
-            <i class="bi bi-cash-coin text-3xl"></i>
+            <i class="bi bi-coin text-3xl"></i>
         </div>
-        <h3 class="font-bold text-lg text-base-content">Registrar Pago</h3>
+        <h3 class="font-bold text-lg text-base-content">Registrar pago</h3>
         <p class="py-4 text-base-content/70">
-            ¿Confirmas el pago de la boleta <strong class="text-primary">#<span id="txt_boleta_pago"></span></strong>?
+            ¿Confirmas el pago de la boleta 
+            <strong class="text-primary">#<span id="txt_boleta_pago"></span></strong>?
         </p>
     </div>
     <div class="modal-action flex flex-col-reverse sm:flex-row gap-2">
-      <form method="dialog" class="flex-1"><button class="btn btn-ghost w-full">Cancelar</button></form>
-      <a id="btn_confirmar_pago" href="#" class="btn btn-success text-white flex-1 shadow-md">Confirmar Pago</a>
+      <form method="dialog" class="flex-1">
+        <button class="btn btn-ghost w-full hover:bg-base-200">Cancelar</button>
+      </form>
+      <a id="btn_confirmar_pago" href="#" 
+         class="btn btn-success text-white flex-1 shadow-md shadow-success/30">
+        Confirmar pago
+      </a>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
 </dialog>
 
+<!-- Modal eliminar boleta -->
 <dialog id="modal_eliminar" class="modal modal-bottom sm:modal-middle">
   <div class="modal-box bg-base-100">
     <div class="flex flex-col items-center text-center">
-        <div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error animate-pulse">
-            <i class="bi bi-trash3-fill text-3xl"></i>
+        <div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error">
+            <i class="bi bi-exclamation-triangle text-3xl"></i>
         </div>
-        <h3 class="font-bold text-lg text-base-content">¿Eliminar Boleta?</h3>
+        <h3 class="font-bold text-lg text-base-content">¿Eliminar boleta?</h3>
         <p class="py-4 text-base-content/70">
-            Estás a punto de eliminar la boleta <strong class="text-base-content">#<span id="txt_boleta_eliminar"></span></strong>.
-            <br><span class="text-error text-xs font-bold uppercase mt-2 block">Esta acción no se puede deshacer.</span>
+            Estás a punto de eliminar la boleta 
+            <strong class="text-base-content">#<span id="txt_boleta_eliminar"></span></strong>.
+            <br>
+            <span class="text-error text-xs font-bold uppercase mt-2 block">
+                Esta acción no se puede deshacer.
+            </span>
         </p>
     </div>
     <div class="modal-action flex flex-col-reverse sm:flex-row gap-2">
-      <form method="dialog" class="flex-1"><button class="btn btn-ghost w-full">Cancelar</button></form>
-      <a id="btn_confirmar_eliminar" href="#" class="btn btn-error text-white flex-1 shadow-md">Sí, eliminar</a>
+      <form method="dialog" class="flex-1">
+        <button class="btn btn-ghost w-full hover:bg-base-200">Cancelar</button>
+      </form>
+      <a id="btn_confirmar_eliminar" href="#" 
+         class="btn btn-error text-white flex-1 shadow-md shadow-error/30">
+        Sí, eliminar
+      </a>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
 </dialog>
 
 <script>
@@ -151,6 +212,7 @@
         document.getElementById('btn_confirmar_pago').href = url;
         document.getElementById('modal_pagar').showModal();
     }
+
     function abrirModalEliminar(url, id) {
         document.getElementById('txt_boleta_eliminar').innerText = id;
         document.getElementById('btn_confirmar_eliminar').href = url;

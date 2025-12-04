@@ -24,6 +24,7 @@
 {% block content %}
 <div class="container mx-auto px-4 py-10 max-w-7xl">
 
+    <!-- Título principal -->
     <div class="text-center mb-10 animate-entry">
         <h2 class="text-3xl md:text-4xl font-extrabold text-primary mb-3">Panel de Administración General</h2>
         <p class="text-lg text-base-content/70 max-w-3xl mx-auto">
@@ -32,6 +33,7 @@
         </p>
     </div>
 
+    <!-- Aviso informativo -->
     <div class="alert alert-info shadow-md mb-10 animate-entry delay-100 flex items-start bg-info/10 border border-info/20 text-base-content">
         <i class="bi bi-info-circle-fill text-2xl text-info shrink-0"></i>
         <div class="flex-1">
@@ -43,6 +45,7 @@
         <button class="btn btn-sm btn-circle btn-ghost text-base-content/50 hover:bg-base-content/10" onclick="this.parentElement.style.display='none';">✕</button>
     </div>
 
+    <!-- Tarjetas de resumen -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10 animate-entry delay-200">
         
         <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
@@ -69,7 +72,10 @@
         <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-lg transition-all">
             <div class="card-body p-4 text-center">
                 <h5 class="text-xs font-bold uppercase text-base-content/60 tracking-wider">Consumo Histórico</h5>
-                <p class="text-2xl font-extrabold text-warning">{{ total_consumo_mes|floatformat:3 }} <span class="text-sm text-base-content/60">m³</span></p> <span class="text-sm text-base-content/60">m³</span></p>
+                <p class="text-2xl font-extrabold text-warning">
+                    {{ total_consumo_mes|floatformat:3 }} 
+                    <span class="text-sm text-base-content/60">m³</span>
+                </p>
             </div>
         </div>
 
@@ -81,6 +87,7 @@
         </div>
     </div>
 
+    <!-- Gráficos -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 animate-entry delay-300">
         
         <div class="card bg-base-100 shadow-xl border border-base-300">
@@ -104,6 +111,7 @@
         </div>
     </div>
 
+    <!-- Sección de opciones de gestión -->
     <div class="divider text-primary font-bold text-xl mb-8 animate-entry delay-400">Opciones de Gestión</div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-entry delay-400">
@@ -119,7 +127,7 @@
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duración-300">
             <div class="card-body items-center text-center">
                 <div class="p-3 bg-success/10 rounded-full text-success mb-3">
                     <i class="bi bi-people text-3xl"></i>
@@ -130,7 +138,7 @@
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duración-300">
             <div class="card-body items-center text-center">
                 <div class="p-3 bg-info/10 rounded-full text-info mb-3">
                     <i class="bi bi-speedometer text-3xl"></i>
@@ -141,7 +149,7 @@
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duración-300">
             <div class="card-body items-center text-center">
                 <div class="p-3 bg-warning/10 rounded-full text-warning mb-3">
                     <i class="bi bi-tags text-3xl"></i>
@@ -152,7 +160,7 @@
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duración-300">
             <div class="card-body items-center text-center">
                 <div class="p-3 bg-error/10 rounded-full text-error mb-3">
                     <i class="bi bi-clipboard-data text-3xl"></i>
@@ -163,7 +171,7 @@
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duración-300">
             <div class="card-body items-center text-center">
                 <div class="p-3 bg-neutral/10 rounded-full text-neutral mb-3">
                     <i class="bi bi-receipt text-3xl"></i>
@@ -185,119 +193,160 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    // ===============================================
-    // CORRECCIÓN CRÍTICA DE COLORES
-    // ===============================================
-    function getThemeColors() {
-        const theme = document.documentElement.getAttribute('data-theme');
-        
-        // Lista explícita de temas oscuros conocidos
-        const darkThemes = ['dark', 'business', 'halloween', 'forest', 'black', 'luxury', 'dracula', 'night'];
-        
-        // Solo consideramos "oscuro" si está en la lista O si el sistema lo fuerza y no hay tema definido
-        const isDark = darkThemes.includes(theme) || 
-                       (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-        // CONFIGURACIÓN DE COLORES
-        return {
-            // Si NO es oscuro, forzamos NEGRO PURO (#000000)
-            text: isDark ? '#ffffff' : '#000000', 
-            
-            // Rejillas: Gris oscuro sólido en modo claro para que se vean bien
-            grid: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.3)'
-        };
-    }
-
-    let colors = getThemeColors();
-
-    // Valores por defecto globales para Chart.js
-    Chart.defaults.color = colors.text;
-    Chart.defaults.borderColor = colors.grid;
-    Chart.defaults.font.family = "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
-    Chart.defaults.font.weight = 'bold'; // Forzamos negrita para ver mejor
-
     const graficoTarifasData = {{ grafico_tarifas_data|safe }};
     const graficoConsumoData = {{ grafico_consumo_data|safe }};
 
-    // 1. Gráfico de TARIFAS
-    const chartTarifas = new Chart(document.getElementById('graficoTarifas'), {
-        type: 'line',
-        data: graficoTarifasData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            tension: 0.3,
-            plugins: {
-                legend: {
-                    labels: { color: colors.text, font: { weight: 'bold', size: 12 } }
-                }
-            },
-            scales: {
-                x: { 
-                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
-                    grid: { color: colors.grid } 
+    // Forzamos colores de dataset aquí por si el backend no los define
+    if (graficoTarifasData.datasets && graficoTarifasData.datasets.length > 0) {
+        graficoTarifasData.datasets[0].borderColor = "#0077cc";
+        graficoTarifasData.datasets[0].backgroundColor = "rgba(0, 119, 204, 0.12)";
+        graficoTarifasData.datasets[0].tension = 0.3;
+    }
+
+    if (graficoConsumoData.datasets && graficoConsumoData.datasets.length > 0) {
+        graficoConsumoData.datasets[0].backgroundColor = "#0ea5e9";
+        graficoConsumoData.datasets[0].borderColor = "#0284c7";
+    }
+
+    // Detectar si el tema actual es oscuro o claro
+    function isDarkTheme() {
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        const darkThemes = ['dark', 'business', 'halloween', 'forest', 'black', 'luxury', 'dracula', 'night'];
+        return darkThemes.includes(theme);
+    }
+
+    function getChartColors() {
+        const dark = isDarkTheme();
+
+        return {
+            axisTextColor: dark ? '#e5e7eb' : '#1f2937',   // texto claro u oscuro
+            gridColor:     dark ? 'rgba(148, 163, 184, 0.4)' : 'rgba(148, 163, 184, 0.4)'
+        };
+    }
+
+    let { axisTextColor, gridColor } = getChartColors();
+
+    const tarifasCtx = document.getElementById('graficoTarifas');
+    const consumoCtx = document.getElementById('graficoConsumo');
+
+    let chartTarifas = null;
+    let chartConsumo = null;
+
+    if (tarifasCtx) {
+        chartTarifas = new Chart(tarifasCtx, {
+            type: 'line',
+            data: graficoTarifasData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: axisTextColor
+                        }
+                    }
                 },
-                y: { 
-                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
-                    grid: { color: colors.grid } 
+                scales: {
+                    x: {
+                        ticks: {
+                            color: axisTextColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: axisTextColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
-    // 2. Gráfico de CONSUMO
-    const chartConsumo = new Chart(document.getElementById('graficoConsumo'), {
-        type: 'bar',
-        data: graficoConsumoData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: colors.text, font: { weight: 'bold', size: 12 } }
-                }
-            },
-            scales: {
-                x: { 
-                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
-                    grid: { display: false } 
+    if (consumoCtx) {
+        chartConsumo = new Chart(consumoCtx, {
+            type: 'bar',
+            data: graficoConsumoData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: axisTextColor
+                        }
+                    }
                 },
-                y: { 
-                    beginAtZero: true, 
-                    ticks: { color: colors.text, font: { weight: 'bold' } }, 
-                    grid: { color: colors.grid } 
+                scales: {
+                    x: {
+                        ticks: {
+                            color: axisTextColor
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: axisTextColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
-    // 3. Observador para cambios en tiempo real
+    // Cuando cambie el tema (data-theme), actualizar colores de los gráficos
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.attributeName === 'data-theme') {
-                const newColors = getThemeColors();
-                
-                [chartTarifas, chartConsumo].forEach(chart => {
-                    // Actualizamos colores de Texto
-                    chart.options.plugins.legend.labels.color = newColors.text;
-                    chart.options.scales.x.ticks.color = newColors.text;
-                    chart.options.scales.y.ticks.color = newColors.text;
-                    
-                    // Actualizamos colores de Líneas
-                    chart.options.scales.y.grid.color = newColors.grid;
-                    if(chart.options.scales.x.grid.display !== false) {
-                        chart.options.scales.x.grid.color = newColors.grid;
+                const colors = getChartColors();
+                axisTextColor = colors.axisTextColor;
+                gridColor = colors.gridColor;
+
+                [chartTarifas, chartConsumo].forEach((chart) => {
+                    if (!chart) return;
+
+                    // Leyenda
+                    if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                        chart.options.plugins.legend.labels.color = axisTextColor;
                     }
-                    
+
+                    // Ejes
+                    if (chart.options.scales && chart.options.scales.x) {
+                        chart.options.scales.x.ticks.color = axisTextColor;
+                        if (chart.options.scales.x.grid && chart.options.scales.x.grid.display !== false) {
+                            chart.options.scales.x.grid.color = gridColor;
+                        }
+                    }
+
+                    if (chart.options.scales && chart.options.scales.y) {
+                        chart.options.scales.y.ticks.color = axisTextColor;
+                        chart.options.scales.y.grid.color = gridColor;
+                    }
+
                     chart.update();
                 });
             }
         });
     });
-    
+
     observer.observe(document.documentElement, { attributes: true });
 </script>
+
+
 <script>
     const IOT_SYNC_MS = 60000;
 

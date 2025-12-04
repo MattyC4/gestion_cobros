@@ -1,6 +1,6 @@
 {% extends "login/base_login.html" %}
 
-{% block title %}¿Quiénes somos? - Comité APR Nahueltoro{% endblock %}
+{% block title %}¿Quiénes somos? · FlowWeb{% endblock %}
 
 {% block extra_head %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -9,24 +9,30 @@
 {% block content %}
 <div class="container mx-auto px-4 py-12 max-w-6xl">
     
+    <!-- Encabezado -->
     <div class="text-center mb-12">
         <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">¿Quiénes somos?</h1>
         <p class="text-lg md:text-xl text-base-content/80 leading-relaxed max-w-3xl mx-auto">
-            En el <strong>Comité APR Nahueltoro</strong>, trabajamos con dedicación para garantizar el acceso al agua potable en nuestra comunidad rural. Creemos en la sostenibilidad, el compromiso social y la transparencia como pilares fundamentales de nuestro servicio.
+            <strong>FlowWeb</strong> es una plataforma digital pensada para modernizar la gestión del 
+            <strong>Comité APR Nahueltoro</strong> y, a futuro, de otros sistemas de Agua Potable Rural.
+            Nuestro foco es combinar tecnología, claridad en la información y cercanía con las personas.
         </p>
     </div>
 
     <div class="divider"></div>
 
+    <!-- Misión / Visión -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
         <div class="card bg-base-100 shadow-xl border border-base-300 h-full hover:shadow-2xl transition-shadow duration-300">
             <div class="card-body text-center items-center">
                 <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
-                    <i class="fas fa-hand-holding-water text-4xl"></i>
+                    <i class="fas fa-laptop-code text-4xl"></i>
                 </div>
-                <h3 class="card-title text-2xl text-primary mb-2">Misión</h3>
+                <h3 class="card-title text-2xl text-primary mb-2">Nuestra misión</h3>
                 <p class="text-base-content/70">
-                    Proveer agua potable de calidad, garantizar la sostenibilidad de los recursos y apoyar a nuestra comunidad en su desarrollo, asegurando la accesibilidad y la equidad en el servicio.
+                    Desarrollar una herramienta simple, confiable y transparente que permita gestionar 
+                    consumos, boletas y usuarios de manera ordenada, reduciendo errores manuales y 
+                    facilitando el trabajo diario del equipo administrativo y técnico del APR.
                 </p>
             </div>
         </div>
@@ -34,11 +40,13 @@
         <div class="card bg-base-100 shadow-xl border border-base-300 h-full hover:shadow-2xl transition-shadow duration-300">
             <div class="card-body text-center items-center">
                 <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
-                    <i class="fas fa-globe text-4xl"></i>
+                    <i class="fas fa-seedling text-4xl"></i>
                 </div>
-                <h3 class="card-title text-2xl text-primary mb-2">Visión</h3>
+                <h3 class="card-title text-2xl text-primary mb-2">Nuestra visión</h3>
                 <p class="text-base-content/70">
-                    Ser un referente en la gestión eficiente del agua potable rural, destacándonos por nuestra transparencia, compromiso social y cuidado del medio ambiente.
+                    Convertir FlowWeb en una solución de referencia para la gestión de agua potable rural,
+                    adaptable a distintos comités APR, integrando IoT, análisis de datos y una experiencia
+                    clara tanto para el equipo interno como para los socios.
                 </p>
             </div>
         </div>
@@ -46,11 +54,12 @@
 
     <div class="divider my-12"></div>
 
+    <!-- Valores -->
     <div class="text-center mb-12">
         <div class="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full text-primary mb-4">
-            <i class="fas fa-users text-3xl"></i>
+            <i class="fas fa-users-gear text-3xl"></i>
         </div>
-        <h3 class="text-3xl font-bold text-primary mb-8">Nuestros valores</h3>
+        <h3 class="text-3xl font-bold text-primary mb-8">Lo que guía nuestro trabajo</h3>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
@@ -58,7 +67,10 @@
                     <div class="text-secondary mb-4">
                         <i class="fas fa-handshake text-5xl"></i>
                     </div>
-                    <p class="font-semibold text-lg text-base-content">Compromiso</p>
+                    <p class="font-semibold text-lg text-base-content">Cercanía</p>
+                    <p class="text-xs mt-2 text-base-content/70">
+                        FlowWeb está pensado para personas reales: lenguaje claro, pantallas simples y procesos guiados.
+                    </p>
                 </div>
             </div>
             <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
@@ -67,14 +79,20 @@
                         <i class="fas fa-balance-scale text-5xl"></i>
                     </div>
                     <p class="font-semibold text-lg text-base-content">Transparencia</p>
+                    <p class="text-xs mt-2 text-base-content/70">
+                        Registrar consumos, montos y estados de boletas de forma clara para generar confianza con los socios.
+                    </p>
                 </div>
             </div>
             <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
                 <div class="card-body items-center text-center p-6">
                     <div class="text-secondary mb-4">
-                        <i class="fas fa-leaf text-5xl"></i>
+                        <i class="fas fa-microchip text-5xl"></i>
                     </div>
-                    <p class="font-semibold text-lg text-base-content">Sostenibilidad</p>
+                    <p class="font-semibold text-lg text-base-content">Innovación útil</p>
+                    <p class="text-xs mt-2 text-base-content/70">
+                        Integración con medidores, reportes y automatización pensada en resolver problemas concretos del APR.
+                    </p>
                 </div>
             </div>
             <div class="card bg-base-100 shadow-md border border-base-300 hover:-translate-y-1 transition-transform duration-300">
@@ -83,6 +101,9 @@
                         <i class="fas fa-people-carry text-5xl"></i>
                     </div>
                     <p class="font-semibold text-lg text-base-content">Responsabilidad</p>
+                    <p class="text-xs mt-2 text-base-content/70">
+                        Cuidar la información, facilitar la gestión y apoyar una administración ordenada del recurso agua.
+                    </p>
                 </div>
             </div>
         </div>
@@ -90,6 +111,7 @@
 
     <div class="divider my-12"></div>
 
+    <!-- Preguntas frecuentes -->
     <div class="max-w-3xl mx-auto">
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full text-primary mb-4">
@@ -102,30 +124,43 @@
             
             <details class="group bg-base-100 border border-base-300 shadow-sm rounded-lg overflow-hidden open:bg-base-200/30 transition-all">
                 <summary class="flex justify-between items-center font-medium cursor-pointer list-none py-4 px-5 text-base-content hover:bg-base-200/50 transition select-none text-lg">
-                    <span>¿Cómo puedo contactarlos si tengo un problema?</span>
+                    <span>¿FlowWeb reemplaza al Comité APR?</span>
                     <span class="transition-transform duration-300 group-open:rotate-45 text-primary bg-primary/10 rounded-full w-8 h-8 flex items-center justify-center">
                         <i class="fas fa-plus"></i>
                     </span>
                 </summary>
                 <div class="text-base-content/70 px-5 pb-5 text-base border-t border-base-200/50 pt-4">
-                    Puedes escribirnos a nuestro correo 
-                    <a href="mailto:soporte@aprnahueltoro.cl" class="link link-primary font-semibold inline-flex items-center gap-1">
-                        <i class="fas fa-envelope"></i> soporte@aprnahueltoro.cl
-                    </a>, 
-                    donde un miembro de nuestro equipo estará encantado de ayudarte.
+                    No. FlowWeb es una herramienta de apoyo. El Comité APR sigue tomando las decisiones
+                    y administrando el servicio; la plataforma solo facilita la gestión y la información.
                 </div>
             </details>
 
             <details class="group bg-base-100 border border-base-300 shadow-sm rounded-lg overflow-hidden open:bg-base-200/30 transition-all">
                 <summary class="flex justify-between items-center font-medium cursor-pointer list-none py-4 px-5 text-base-content hover:bg-base-200/50 transition select-none text-lg">
-                    <span>¿Dónde se encuentra el Comité APR Nahueltoro?</span>
+                    <span>¿Quién puede entrar al panel de gestión?</span>
                     <span class="transition-transform duration-300 group-open:rotate-45 text-primary bg-primary/10 rounded-full w-8 h-8 flex items-center justify-center">
                         <i class="fas fa-plus"></i>
                     </span>
                 </summary>
-                <div class="text-base-content/70 px-5 pb-5 text-base border-t border-base-200/50 pt-4 inline-flex items-center gap-2">
-                    <i class="fas fa-map-marker-alt text-primary"></i>
-                    Estamos ubicados en la comunidad de Nahueltoro, comprometidos a servir a todas las familias rurales de la región.
+                <div class="text-base-content/70 px-5 pb-5 text-base border-t border-base-200/50 pt-4">
+                    Solo el personal autorizado del comité (administrador, secretaría u operario) tiene acceso
+                    al panel interno. Los socios pueden revisar su consumo desde la opción 
+                    <span class="font-semibold">“Revisar Consumo”</span> sin necesidad de cuenta.
+                </div>
+            </details>
+
+            <details class="group bg-base-100 border border-base-300 shadow-sm rounded-lg overflow-hidden open:bg-base-200/30 transition-all">
+                <summary class="flex justify-between items-center font-medium cursor-pointer list-none py-4 px-5 text-base-content hover:bg-base-200/50 transition select-none text-lg">
+                    <span>¿Cómo puedo hacer una consulta o reportar un problema?</span>
+                    <span class="transition-transform duration-300 group-open:rotate-45 text-primary bg-primary/10 rounded-full w-8 h-8 flex items-center justify-center">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                </summary>
+                <div class="text-base-content/70 px-5 pb-5 text-base border-t border-base-200/50 pt-4">
+                    Puedes comunicarte con el comité a través del correo de contacto:
+                    <a href="mailto:soporte@aprnahueltoro.cl" class="link link-primary font-semibold inline-flex items-center gap-1">
+                        <i class="fas fa-envelope"></i> soporte@aprnahueltoro.cl
+                    </a>. El equipo del APR revisará tu consulta y dará seguimiento.
                 </div>
             </details>
 

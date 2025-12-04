@@ -3,14 +3,24 @@
 {% block title %}Seleccionar Usuario{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-6">
+<div class="min-h-[60vh] flex flex-col gap-6">
 
+    <!-- Header + Buscador -->
     <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
         <div class="w-full md:w-auto">
             <h2 class="text-3xl font-bold text-primary">Generar Boleta</h2>
-            <p class="text-base-content/70 text-sm mt-1">Selecciona un usuario para emitir el documento.</p>
+            <p class="text-base-content/70 text-sm mt-1">
+                Selecciona un usuario con consumos registrados para emitir una nueva boleta.
+            </p>
+            <p class="text-xs text-base-content/60 mt-1">
+                Total: <span class="font-semibold">{{ total_usuarios|default:"0" }}</span> usuario(s)
+                {% if search %}
+                    &bull; filtro: <span class="font-mono">"{{ search }}"</span>
+                {% endif %}
+            </p>
         </div>
 
+        <!-- Buscador -->
         <form method="get" class="w-full md:w-auto">
             <div class="join w-full shadow-sm">
                 <input 
@@ -18,7 +28,7 @@
                     name="search" 
                     class="input input-bordered join-item w-full md:w-72 focus:input-primary" 
                     placeholder="Buscar por nombre o RUT..." 
-                    value="{{ request.GET.search|default:'' }}">
+                    value="{{ search|default:'' }}">
                 <button type="submit" class="btn btn-primary join-item text-white">
                     <i class="bi bi-search"></i>
                 </button>
@@ -26,51 +36,114 @@
         </form>
     </div>
 
-    <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-200 shadow-sm">
-        <table class="table table-zebra w-full text-left">
-            <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
-                <tr>
-                    <th class="py-4 pl-6">Nombre del Cliente</th>
-                    <th>RUT</th>
-                    <th class="text-center">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr class="hover transition-colors group">
-                    <td class="pl-6">
-                        <div class="font-bold text-base-content">{{ usuario.nombre }}</div>
-                    </td>
-                    
-                    <td class="font-mono text-sm text-base-content/80">
-                        {{ usuario.rut }}
-                    </td>
-
-                    <td class="text-center">
-                        <a href="{% url 'boletas:seleccionar_consumos' usuario.id %}" 
-                           class="btn btn-sm btn-primary text-white shadow-sm hover:shadow-md transition-all gap-2">
-                            <span>Seleccionar</span>
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center py-12">
-                        <div class="flex flex-col items-center justify-center text-base-content/50">
-                            <i class="bi bi-person-exclamation text-4xl mb-3"></i>
-                            <p class="font-medium">No se encontraron usuarios con consumos.</p>
-                            <p class="text-xs mt-1">Intenta con otro término de búsqueda.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Tarjeta resumen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="stats shadow bg-base-100 border border-base-300 text-base-content">
+            <div class="stat p-4">
+                <div class="stat-figure text-primary">
+                    <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-xl">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                </div>
+                <div class="stat-title text-xs uppercase tracking-wide text-base-content/70">
+                    Usuarios con consumos
+                </div>
+                <div class="stat-value text-primary text-2xl">
+                    {{ total_usuarios|default:"0" }}
+                </div>
+                <div class="stat-desc text-xs mt-1 text-base-content/60">
+                    Solo socios con al menos un consumo registrado.
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="flex justify-start mt-2">
-        <a href="{% url 'roles:redireccion_dashboard' %}" class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
+    <!-- Tabla -->
+    <div class="card bg-base-100 border border-base-200 shadow-sm mt-2">
+        <div class="card-body p-0">
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full text-base-content">
+                    <thead class="bg-base-200 text-base-content font-bold uppercase text-xs tracking-wider">
+                        <tr>
+                            <th class="py-4 pl-6">Nombre del Cliente</th>
+                            <th>RUT</th>
+                            <th class="whitespace-nowrap">Último consumo</th>
+                            <th class="text-center min-w-[150px]">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr class="hover transition-colors">
+                            <!-- Nombre -->
+                            <td class="pl-6 align-middle">
+                                <div class="font-semibold text-base-content">
+                                    {{ usuario.nombre }}
+                                </div>
+                                <div class="text-xs text-base-content/60">
+                                    ID Interno: {{ usuario.id }}
+                                </div>
+                            </td>
+
+                            <!-- RUT -->
+                            <td class="font-mono text-sm text-base-content/80 align-middle">
+                                {{ usuario.rut }}
+                            </td>
+
+                            <!-- Último consumo -->
+                            <td class="text-sm align-middle">
+                                {% if usuario.ultimo_consumo %}
+                                    <span class="badge badge-ghost text-xs font-medium text-base-content whitespace-nowrap">
+                                        <i class="bi bi-clock-history mr-1"></i>
+                                        {{ usuario.ultimo_consumo|date:"d/m/Y" }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-warning text-xs font-medium whitespace-nowrap">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                        Sin registros
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Acción -->
+                            <td class="text-center align-middle">
+                                <a href="{% url 'boletas:seleccionar_consumos' usuario.id %}" 
+                                   class="btn btn-sm btn-primary text-white shadow-sm hover:shadow-md transition-all gap-2">
+                                    <span class="hidden sm:inline">Seleccionar</span>
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-12">
+                                <div class="flex flex-col items-center justify-center text-base-content/60">
+                                    <i class="bi bi-person-exclamation text-4xl mb-3"></i>
+                                    {% if search %}
+                                        <p class="font-medium">
+                                            No se encontraron usuarios con consumos para la búsqueda "{{ search }}".
+                                        </p>
+                                    {% else %}
+                                        <p class="font-medium">
+                                            No hay usuarios con consumos registrados aún.
+                                        </p>
+                                    {% endif %}
+                                    <p class="text-xs mt-1">
+                                        Asegúrate de registrar consumos antes de generar boletas.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Volver -->
+    <div class="flex justify-start mt-4">
+        <a href="{% url 'roles:redireccion_dashboard' %}" 
+           class="btn btn-ghost gap-2 text-base-content/70 hover:bg-base-200">
             <i class="bi bi-arrow-left"></i> Volver al Dashboard
         </a>
     </div>

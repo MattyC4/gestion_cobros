@@ -1,109 +1,158 @@
 {% extends "reportes/base_reportes.html" %}
 {% load moneda %}
 
-{% block title %}Reporte de Consumo y Boletas{% endblock %}
+{% block title %}Reporte de consumo y boletas{% endblock %}
 
 {% block content %}
 <div class="w-full max-w-6xl mx-auto">
-    
-    <div class="bg-base-100 shadow-xl rounded-2xl border border-base-300 p-6 md:p-8 transition-colors duration-300">
-        
+
+    <!-- Contenedor principal -->
+    <div class="card bg-base-100 shadow-xl rounded-2xl border border-base-300 p-6 md:p-8">
+
+        <!-- Encabezado -->
         <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-base-content">Historial de Consumo y Boletas</h2>
-            <p class="text-base-content/60">Detalle completo de su cuenta</p>
+            <h2 class="text-3xl font-bold text-base-content">
+                Historial de consumo y boletas
+            </h2>
+            <p class="text-sm text-base-content/60 mt-1">
+                Resumen detallado de tu cuenta con el Comité APR.
+            </p>
         </div>
-        
+
+        <!-- Bloque de datos del cliente -->
         <div class="bg-base-200 rounded-2xl p-6 mb-8 border border-base-300">
             <div class="flex flex-col md:flex-row items-center gap-8">
-                
+
+                <!-- Avatar / Icono -->
                 <div class="flex-shrink-0">
-                    <div class="w-28 h-28 rounded-full bg-base-100 border-4 border-base-300 flex items-center justify-center shadow-sm">
-                        <i class="fas fa-user text-5xl text-primary"></i>
+                    <div class="w-24 h-24 md:w-28 md:h-28 rounded-full bg-base-100 border-4 border-base-300 flex items-center justify-center shadow-sm">
+                        <i class="bi bi-person-fill text-4xl md:text-5xl text-primary"></i>
                     </div>
                 </div>
 
-                <div class="flex-grow md:text-left w-full">
-                    <h4 class="text-3xl font-extrabold text-primary mb-4">{{ usuario.nombre }}</h4>
-                    
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-center md:justify-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-                                <i class="fas fa-id-card text-sm"></i>
-                            </div>
-                            <span class="text-lg text-base-content/80">
-                                <strong class="font-semibold text-base-content">RUT:</strong> {{ usuario.rut }}
-                            </span>
-                        </div>
+                <!-- Info del usuario -->
+                <div class="flex-grow w-full md:text-left space-y-3">
+                    <h4 class="text-2xl md:text-3xl font-extrabold text-primary">
+                        {{ usuario.nombre }}
+                    </h4>
 
-                        <div class="flex items-center justify-center md:justify-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-                                <i class="fas fa-map-marker-alt text-sm"></i>
-                            </div>
-                            <span class="text-lg text-base-content/80">
-                                <strong class="font-semibold text-base-content">Dirección:</strong> {{ usuario.direccion }}
-                            </span>
+                    <div class="flex items-start md:items-center gap-3 flex-wrap">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="bi bi-person-vcard"></i>
                         </div>
-
-                        <div class="flex items-center justify-center md:justify-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-                                <i class="fas fa-phone text-sm"></i>
-                            </div>
-                            <span class="text-lg text-base-content/80">
-                                <strong class="font-semibold text-base-content">Teléfono:</strong> {{ usuario.telefono }}
-                            </span>
-                        </div>
+                        <span class="text-sm md:text-base text-base-content/80">
+                            <span class="font-semibold text-base-content">RUT:</span>
+                            <span class="font-mono ml-1">{{ usuario.rut }}</span>
+                        </span>
                     </div>
+
+                    {% if usuario.direccion %}
+                    <div class="flex items-start md:items-center gap-3 flex-wrap">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <span class="text-sm md:text-base text-base-content/80">
+                            <span class="font-semibold text-base-content">Dirección:</span>
+                            <span class="ml-1">{{ usuario.direccion }}</span>
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    {% if usuario.telefono %}
+                    <div class="flex items-start md:items-center gap-3 flex-wrap">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                            <i class="bi bi-telephone"></i>
+                        </div>
+                        <span class="text-sm md:text-base text-base-content/80">
+                            <span class="font-semibold text-base-content">Teléfono:</span>
+                            <span class="ml-1">{{ usuario.telefono }}</span>
+                        </span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
+
+        <!-- Stats rápidas -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-base-200 rounded-xl p-4 text-center border border-base-300">
-                <p class="text-sm text-base-content/70 font-semibold uppercase">Consumo Total</p>
-                <p class="text-2xl font-bold text-primary">{{ total_consumido }} m³</p>
+            <div class="stats shadow-sm bg-base-200 rounded-xl border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-title text-xs uppercase text-base-content/70">Consumo total registrado</div>
+                    <div class="stat-value text-2xl text-primary">
+                        {{ total_consumido }} m³
+                    </div>
+                </div>
             </div>
-            <div class="bg-base-200 rounded-xl p-4 text-center border border-base-300">
-                <p class="text-sm text-base-content/70 font-semibold uppercase">Boletas Pagadas</p>
-                <p class="text-2xl font-bold text-success">{{ boletas_pagadas }}</p>
+
+            <div class="stats shadow-sm bg-base-200 rounded-xl border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-title text-xs uppercase text-base-content/70">Boletas pagadas</div>
+                    <div class="stat-value text-2xl text-success">
+                        {{ boletas_pagadas }}
+                    </div>
+                </div>
             </div>
-            <div class="bg-base-200 rounded-xl p-4 text-center border border-base-300">
-                <p class="text-sm text-base-content/70 font-semibold uppercase">Boletas Pendientes</p>
-                <p class="text-2xl font-bold text-warning">{{ boletas_pendientes }}</p>
+
+            <div class="stats shadow-sm bg-base-200 rounded-xl border border-base-300">
+                <div class="stat p-4">
+                    <div class="stat-title text-xs uppercase text-base-content/70">Boletas pendientes</div>
+                    <div class="stat-value text-2xl text-warning">
+                        {{ boletas_pendientes }}
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="divider"></div>
+        <div class="divider my-8"></div>
 
+        <!-- Gráfico de consumo -->
         <div class="mb-10">
-            <h5 class="text-xl font-bold text-center mb-4 text-base-content">Gráfico de Consumo Histórico</h5>
-            <div class="relative w-full h-72">
+            <h5 class="text-xl font-bold text-center mb-4 text-base-content flex items-center justify-center gap-2">
+                <i class="bi bi-graph-up"></i>
+                Consumo histórico
+            </h5>
+            <div class="relative w-full h-72 bg-base-200 rounded-xl border border-base-300 p-3">
                 <canvas id="graficoConsumo"></canvas>
             </div>
-            <p class="text-sm text-center mt-2 text-base-content/60">Este gráfico muestra el consumo de agua a lo largo del tiempo.</p>
+            <p class="text-xs md:text-sm text-center mt-3 text-base-content/60">
+                El gráfico muestra la evolución de tu consumo de agua (m³) a lo largo del tiempo.
+            </p>
         </div>
 
-        <div class="divider"></div>
+        <div class="divider my-8"></div>
 
+        <!-- Tabla de consumos -->
         <div class="mb-10">
-            <h5 class="text-xl font-bold mb-4 text-base-content px-2 border-l-4 border-primary">Consumos Registrados</h5>
-            <div class="overflow-x-auto rounded-lg border border-base-300">
+            <h5 class="text-xl font-bold mb-4 text-base-content flex items-center gap-2 px-2 border-l-4 border-primary">
+                <i class="bi bi-droplet-half"></i>
+                Consumos registrados
+            </h5>
+
+            <div class="overflow-x-auto rounded-xl border border-base-300 bg-base-100">
                 <table class="table table-zebra w-full text-center">
-                    <thead class="bg-base-300 text-base-content font-bold uppercase text-xs">
+                    <thead class="bg-base-200 text-base-content font-bold uppercase text-xs">
                         <tr>
                             <th>Fecha</th>
-                            <th>Cantidad Consumida (m³)</th>
-                            <th>Tarifa Aplicada</th>
+                            <th>Consumo (m³)</th>
+                            <th>Tarifa aplicada</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for consumo in consumos %}
-                        <tr class="hover:bg-base-200/50">
+                        <tr class="hover:bg-base-200/60">
                             <td>{{ consumo.fecha_consumo|date:"d/m/Y" }}</td>
-                            <td class="font-medium">{{ consumo.cantidad_consumida }}</td>
-                            <td>${{ consumo.tarifa_aplicada.valor }}</td>
+                            <td class="font-medium">
+                                {{ consumo.cantidad_consumida }}
+                            </td>
+                            <td class="font-mono text-sm">
+                                {{ consumo.tarifa_aplicada.valor|formato_moneda }}
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3" class="text-center py-4 text-base-content/60">No se encontraron consumos registrados.</td>
+                            <td colspan="3" class="text-center py-4 text-base-content/60">
+                                No se encontraron consumos registrados.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -111,47 +160,58 @@
             </div>
         </div>
 
-        <div class="divider"></div>
+        <div class="divider my-8"></div>
 
+        <!-- Tabla de boletas -->
         <div>
-            <h5 class="text-xl font-bold mb-4 text-base-content px-2 border-l-4 border-primary">Boletas Generadas</h5>
-            <div class="overflow-x-auto rounded-lg border border-base-300">
+            <h5 class="text-xl font-bold mb-4 text-base-content flex items-center gap-2 px-2 border-l-4 border-primary">
+                <i class="bi bi-receipt-cutoff"></i>
+                Boletas generadas
+            </h5>
+
+            <div class="overflow-x-auto rounded-xl border border-base-300 bg-base-100">
                 <table class="table table-zebra w-full text-center">
-                    <thead class="bg-base-300 text-base-content font-bold uppercase text-xs">
+                    <thead class="bg-base-200 text-base-content font-bold uppercase text-xs">
                         <tr>
-                            <th>Fecha de Emisión</th>
-                            <th>Total a Pagar</th>
+                            <th>Fecha de emisión</th>
+                            <th>Total a pagar</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th class="min-w-[180px]">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for boleta in boletas %}
-                        <tr class="hover:bg-base-200/50 align-middle">
+                        <tr class="hover:bg-base-200/60 align-middle">
                             <td>{{ boleta.fecha_emision|date:"d/m/Y" }}</td>
-                            <td class="font-bold text-lg">${{ boleta.total_a_pagar }}</td>
+                            <td class="font-bold text-base md:text-lg">
+                                {{ boleta.total_a_pagar|formato_moneda }}
+                            </td>
                             <td>
                                 {% if boleta.pagado %}
-                                    <div class="badge badge-success gap-2 text-white p-3">
-                                        <i class="fas fa-check-circle"></i> Pagado
+                                    <div class="badge badge-success gap-2 text-white px-3 py-2">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Pagada
                                     </div>
                                 {% else %}
-                                    <div class="badge badge-warning gap-2 p-3">
-                                        <i class="fas fa-clock"></i> Pendiente
+                                    <div class="badge badge-warning gap-2 px-3 py-2">
+                                        <i class="bi bi-clock-history"></i>
+                                        Pendiente
                                     </div>
                                 {% endif %}
                             </td>
                             <td>
                                 <div class="flex justify-center items-center gap-2 flex-wrap">
-                                    <a href="{% url 'reportes:descargar_boleta' boleta.id %}" 
-                                       class="btn btn-sm btn-outline btn-info no-animation">
-                                        <i class="fas fa-file-download"></i> Descargar
+                                    <a href="{% url 'reportes:descargar_boleta' boleta.id %}"
+                                       class="btn btn-sm btn-outline btn-info no-animation gap-1">
+                                        <i class="bi bi-file-earmark-arrow-down"></i>
+                                        <span class="hidden sm:inline">Descargar</span>
                                     </a>
 
                                     {% if not boleta.pagado %}
-                                    <a href="{% url 'reportes:simular_pago' boleta.id %}" 
-                                       class="btn btn-sm btn-primary text-white no-animation">
-                                        <i class="fas fa-credit-card"></i> Pagar
+                                    <a href="{% url 'reportes:simular_pago' boleta.id %}"
+                                       class="btn btn-sm btn-primary text-white no-animation gap-1">
+                                        <i class="bi bi-credit-card-2-front"></i>
+                                        <span class="hidden sm:inline">Pagar</span>
                                     </a>
                                     {% endif %}
                                 </div>
@@ -159,7 +219,9 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-base-content/60">No se encontraron boletas generadas.</td>
+                            <td colspan="4" class="text-center py-4 text-base-content/60">
+                                No se encontraron boletas generadas.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -170,37 +232,65 @@
     </div>
 </div>
 
+<!-- Gráfico -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    Chart.defaults.color = '#9ca3af'; 
-    Chart.defaults.borderColor = 'rgba(156, 163, 175, 0.2)';
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('graficoConsumo');
+        if (!ctx) return;
 
-    const graficoConsumoData = {{ grafico_consumo_data|safe }};
-    const graficoConsumo = new Chart(document.getElementById('graficoConsumo'), {
-        type: 'line',
-        data: graficoConsumoData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    display: true,
-                    labels: {
-                        color: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#e2e8f0' : '#1e293b'
+        const graficoConsumoData = {{ grafico_consumo_data|safe }};
+        const prefersDark = window.matchMedia &&
+                            window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        const lineColor = prefersDark ? '#38bdf8' : '#0ea5e9';
+        const fillColor = prefersDark ? 'rgba(56,189,248,0.15)' : 'rgba(14,165,233,0.15)';
+        const axisColor = prefersDark ? '#e2e8f0' : '#1e293b';
+        const gridColor = prefersDark ? 'rgba(148,163,184,0.25)' : 'rgba(148,163,184,0.2)';
+
+        new Chart(ctx, {
+            type: 'line',
+            data: graficoConsumoData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: axisColor,
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        borderColor: lineColor,
+                        backgroundColor: fillColor,
+                        tension: 0.35,
+                        fill: true
+                    },
+                    point: {
+                        radius: 3,
+                        backgroundColor: lineColor,
+                        hitRadius: 6
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Fecha', color: axisColor },
+                        ticks: { color: axisColor },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Consumo (m³)', color: axisColor },
+                        ticks: { color: axisColor },
+                        grid: { color: gridColor }
                     }
                 }
-            },
-            scales: {
-                x: { 
-                    title: { display: true, text: 'Fecha' },
-                    grid: { color: 'rgba(156, 163, 175, 0.1)' }
-                },
-                y: { 
-                    title: { display: true, text: 'Consumo (m³)' },
-                    grid: { color: 'rgba(156, 163, 175, 0.1)' }
-                }
             }
-        }
+        });
     });
 </script>
 {% endblock %}

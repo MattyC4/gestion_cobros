@@ -53,28 +53,64 @@
 
   <style>
     /* Estilos base */
-    [data-theme="dark"] body, [data-theme="dark"] p, [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6, [data-theme="dark"] span, [data-theme="dark"] div, [data-theme="dark"] li, [data-theme="dark"] td, [data-theme="dark"] th {
+    [data-theme="dark"] body,
+    [data-theme="dark"] p,
+    [data-theme="dark"] h1,
+    [data-theme="dark"] h2,
+    [data-theme="dark"] h3,
+    [data-theme="dark"] h4,
+    [data-theme="dark"] h5,
+    [data-theme="dark"] h6,
+    [data-theme="dark"] span,
+    [data-theme="dark"] div,
+    [data-theme="dark"] li,
+    [data-theme="dark"] td,
+    [data-theme="dark"] th {
       color: inherit;
     }
 
-    input, select, textarea, .form-control, .form-select {
+    input,
+    select,
+    textarea,
+    .form-control,
+    .form-select {
       background-color: oklch(var(--b1)) !important;
       color: oklch(var(--bc)) !important;
       border-color: oklch(var(--b3)) !important;
     }
 
-    ::placeholder { opacity: 0.6; color: oklch(var(--bc)) !important; }
-    .table, table { --bs-table-bg: transparent !important; --bs-table-color: inherit !important; color: inherit !important; background-color: transparent !important; }
-    td, th { background-color: transparent !important; border-color: oklch(var(--b3)) !important; }
+    ::placeholder {
+      opacity: 0.6;
+      color: oklch(var(--bc)) !important;
+    }
 
-    body, header, footer, div, section {
+    .table,
+    table {
+      --bs-table-bg: transparent !important;
+      --bs-table-color: inherit !important;
+      color: inherit !important;
+      background-color: transparent !important;
+    }
+
+    td,
+    th {
+      background-color: transparent !important;
+      border-color: oklch(var(--b3)) !important;
+    }
+
+    body,
+    header,
+    footer,
+    div,
+    section {
       transition-property: background-color, border-color, color;
       transition-duration: 300ms;
     }
   </style>
 
   <script>
-    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (localStorage.getItem('theme') === 'dark'
+      || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.documentElement.setAttribute('data-theme', 'light');
@@ -93,7 +129,7 @@
 
       <header class="sticky top-0 z-40 border-b border-base-300 bg-base-100/95 backdrop-blur supports-[backdrop-filter]:bg-base-100/80">
         <div class="navbar px-4 sm:px-8">
-          
+
           <div class="flex-none mr-2">
             <label for="sidebar-toggle" class="btn btn-ghost btn-circle">
               <i class="bi bi-list text-2xl text-primary"></i>
@@ -134,7 +170,7 @@
       <footer class="mt-auto bg-base-100 border-t border-base-300 py-6 text-center transition-colors duration-300">
         <div class="container mx-auto px-4">
           <p class="text-sm opacity-70">
-            Comité APR Nahueltoro · FlowWeb © {{ current_year|default:"2024" }}
+            Comité APR Nahueltoro · FlowWeb © {{ current_year|default:"2025" }}
           </p>
         </div>
       </footer>
@@ -147,18 +183,18 @@
       <aside class="w-72 bg-base-100 border-r border-base-300 h-screen flex flex-col overflow-y-auto">
         <div class="px-4 pt-5 pb-4 border-b border-base-300 sticky top-0 bg-base-100 z-10">
           <div class="flex justify-between items-start mb-4">
-             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
-                  <i class="bi bi-droplet-fill text-2xl"></i>
-                </div>
-                <div class="leading-tight">
-                  <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60">Panel</p>
-                  <p class="font-semibold text-sm">Gestión APR</p>
-                </div>
-             </div>
-             <label for="sidebar-toggle" class="btn btn-sm btn-circle btn-ghost">
-                <i class="bi bi-x-lg"></i>
-             </label>
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+                <i class="bi bi-droplet-fill text-2xl"></i>
+              </div>
+              <div class="leading-tight">
+                <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60">Panel</p>
+                <p class="font-semibold text-sm">Gestión APR</p>
+              </div>
+            </div>
+            <label for="sidebar-toggle" class="btn btn-sm btn-circle btn-ghost">
+              <i class="bi bi-x-lg"></i>
+            </label>
           </div>
 
           {% if user.is_authenticated %}
@@ -182,14 +218,28 @@
         </div>
 
         <nav class="flex-1 px-3 py-4 text-sm">
+          <!-- Sección General -->
           <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">General</p>
           <ul class="space-y-1 mb-6">
+            {% if user.is_authenticated %}
+            <!-- Ahora va al dashboard según rol -->
             <li>
-              <a href="{% url 'login:home' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'roles:redireccion_dashboard' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-speedometer2 text-lg opacity-80"></i>
-                <span>Resumen general</span>
+                <span>Mi panel</span>
               </a>
             </li>
+            {% else %}
+            <!-- Para usuarios externos / no logueados sigue apuntando a la landing -->
+            <li>
+              <a href="{% url 'login:home' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+                <i class="bi bi-house text-lg opacity-80"></i>
+                <span>Inicio</span>
+              </a>
+            </li>
+            {% endif %}
           </ul>
 
           {% if user.is_authenticated %}
@@ -197,7 +247,8 @@
           <ul class="space-y-1">
             {% if user.rol == 'admin' or user.rol == 'secretaria' or user.rol == 'operario' %}
             <li>
-              <a href="{% url 'consumos:lista_usuarios' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'consumos:lista_usuarios' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-pen text-lg opacity-80"></i>
                 <span>Registrar consumo</span>
               </a>
@@ -206,25 +257,29 @@
 
             {% if user.rol == 'admin' or user.rol == 'secretaria' %}
             <li>
-              <a href="{% url 'usuarios:lista_usuarios' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'usuarios:lista_usuarios' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-people text-lg opacity-80"></i>
                 <span>Usuarios</span>
               </a>
             </li>
             <li>
-              <a href="{% url 'boletas:seleccionar_usuario' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'boletas:seleccionar_usuario' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-file-earmark-plus text-lg opacity-80"></i>
                 <span>Generar boleta</span>
               </a>
             </li>
             <li>
-              <a href="{% url 'boletas:historial_recientes' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'boletas:historial_recientes' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-journal-text text-lg opacity-80"></i>
                 <span>Historial de boletas</span>
               </a>
             </li>
             <li>
-              <a href="{% url 'reportes:dashboard' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'reportes:dashboard' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-graph-up-arrow text-lg opacity-80"></i>
                 <span>Reportes</span>
               </a>
@@ -233,7 +288,8 @@
 
             {% if user.rol == 'admin' %}
             <li>
-              <a href="{% url 'tarifas:historial_tarifas' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'tarifas:historial_tarifas' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-cash-coin text-lg opacity-80"></i>
                 <span>Gestión de tarifas</span>
               </a>
@@ -242,7 +298,8 @@
 
             {% if user.rol == 'operario' %}
             <li>
-              <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'medidores:buscar_usuario_para_medidor' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-speedometer text-lg opacity-80"></i>
                 <span>Gestionar medidores</span>
               </a>
@@ -253,7 +310,8 @@
           <p class="text-[0.7rem] uppercase tracking-wide text-base-content/60 px-3 mb-2">Acceso</p>
           <ul class="space-y-1">
             <li>
-              <a href="{% url 'login:home' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
+              <a href="{% url 'login:home' %}"
+                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200/80 transition">
                 <i class="bi bi-box-arrow-in-right text-lg opacity-80"></i>
                 <span>Iniciar sesión</span>
               </a>
@@ -264,12 +322,14 @@
 
         <div class="border-t border-base-300 px-4 py-4 text-xs mt-auto">
           {% if user.is_authenticated %}
-          <a href="{% url 'login:logout' %}" class="btn btn-error btn-sm w-full flex items-center justify-center gap-2">
+          <a href="{% url 'login:logout' %}"
+             class="btn btn-error btn-sm w-full flex items-center justify-center gap-2">
             <i class="bi bi-box-arrow-right"></i>
             <span>Cerrar sesión</span>
           </a>
           {% else %}
-          <a href="{% url 'login:home' %}" class="btn btn-primary btn-sm w-full flex items-center justify-center gap-2">
+          <a href="{% url 'login:home' %}"
+             class="btn btn-primary btn-sm w-full flex items-center justify-center gap-2">
             <i class="bi bi-box-arrow-in-right"></i>
             <span>Iniciar sesión</span>
           </a>

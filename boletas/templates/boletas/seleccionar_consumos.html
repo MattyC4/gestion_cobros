@@ -3,33 +3,38 @@
 {% block title %}Seleccionar Consumos{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto">
-    
-    <div class="text-center mb-8">
+<div class="min-h-[60vh] max-w-3xl mx-auto flex flex-col gap-6">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-2">
         <h2 class="text-3xl font-bold text-primary">Generar Boleta</h2>
-        <div class="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-base-200 rounded-full text-sm text-base-content/80">
-            <i class="bi bi-person-circle"></i>
-            <span>Cliente: <strong>{{ usuario.nombre }}</strong></span>
-            <span class="opacity-50">|</span>
-            <span class="font-mono">{{ usuario.rut }}</span>
+        <div class="mt-3 inline-flex flex-wrap items-center gap-2 px-4 py-2 bg-base-200 rounded-full text-xs sm:text-sm text-base-content/80">
+            <i class="bi bi-person-circle text-base"></i>
+            <span>Cliente: <strong class="text-base-content">{{ usuario.nombre }}</strong></span>
+            <span class="hidden sm:inline opacity-40">|</span>
+            <span class="font-mono text-base-content/70">{{ usuario.rut }}</span>
         </div>
     </div>
 
+    <!-- Tarjeta principal -->
     <div class="card bg-base-100 shadow-xl border border-base-200">
-        <div class="card-body p-6 sm:p-10">
-            
+        <div class="card-body p-6 sm:p-8">
+
+            <!-- Aviso -->
             <div class="flex items-start gap-3 mb-6 p-4 bg-info/10 text-info rounded-lg text-sm">
                 <i class="bi bi-info-circle-fill text-xl mt-0.5"></i>
-                <p>
-                    Selecciona el rango de fechas para calcular el cobro. 
-                    El <strong>Consumo Inicial</strong> debe ser anterior al <strong>Consumo Final</strong>.
+                <p class="text-base-content/80">
+                    Selecciona el rango de consumos que quieres facturar. 
+                    El <strong>consumo inicial</strong> debe ser anterior al <strong>consumo final</strong> 
+                    y ambos deben pertenecer al mismo cliente.
                 </p>
             </div>
 
+            <!-- Mensajes de error de validación -->
             {% if messages %}
             <div role="alert" class="alert alert-error mb-6 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <div>
+                <i class="bi bi-exclamation-triangle-fill text-lg"></i>
+                <div class="text-sm">
                     {% for message in messages %}
                         <div>{{ message }}</div>
                     {% endfor %}
@@ -37,62 +42,91 @@
             </div>
             {% endif %}
 
+            <!-- Formulario -->
             <form method="post">
                 {% csrf_token %}
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
+                    <!-- Consumo inicial -->
                     <div class="form-control w-full">
                         <label for="consumo_inicio" class="label">
                             <span class="label-text font-bold flex items-center gap-2">
-                                <i class="bi bi-calendar-minus text-secondary"></i> Consumo Inicial
+                                <i class="bi bi-calendar-minus text-secondary"></i>
+                                Consumo inicial
                             </span>
                         </label>
-                        <select id="consumo_inicio" name="consumo_inicio" class="select select-bordered w-full focus:select-primary" required>
+                        <select 
+                            id="consumo_inicio" 
+                            name="consumo_inicio" 
+                            class="select select-bordered w-full focus:select-primary"
+                            required>
                             <option value="" disabled selected>-- Seleccionar --</option>
                             {% for consumo in consumos %}
                             <option value="{{ consumo.id }}">
-                                {{ consumo.fecha_consumo|date:"d/m/Y" }} ({{ consumo.cantidad_consumida }} m³)
+                                {{ consumo.fecha_consumo|date:"d/m/Y" }} · {{ consumo.cantidad_consumida }} m³
                             </option>
                             {% endfor %}
                         </select>
                         <label class="label">
-                            <span class="label-text-alt text-base-content/60">Lectura anterior</span>
+                            <span class="label-text-alt text-base-content/60">
+                                Lectura de inicio del periodo.
+                            </span>
                         </label>
                     </div>
 
+                    <!-- Consumo final -->
                     <div class="form-control w-full">
                         <label for="consumo_fin" class="label">
                             <span class="label-text font-bold flex items-center gap-2">
-                                <i class="bi bi-calendar-check text-primary"></i> Consumo Final
+                                <i class="bi bi-calendar-check text-primary"></i>
+                                Consumo final
                             </span>
                         </label>
-                        <select id="consumo_fin" name="consumo_fin" class="select select-bordered w-full focus:select-primary" required>
+                        <select 
+                            id="consumo_fin" 
+                            name="consumo_fin" 
+                            class="select select-bordered w-full focus:select-primary"
+                            required>
                             <option value="" disabled selected>-- Seleccionar --</option>
                             {% for consumo in consumos %}
                             <option value="{{ consumo.id }}">
-                                {{ consumo.fecha_consumo|date:"d/m/Y" }} ({{ consumo.cantidad_consumida }} m³)
+                                {{ consumo.fecha_consumo|date:"d/m/Y" }} · {{ consumo.cantidad_consumida }} m³
                             </option>
                             {% endfor %}
                         </select>
                         <label class="label">
-                            <span class="label-text-alt text-base-content/60">Lectura actual</span>
+                            <span class="label-text-alt text-base-content/60">
+                                Lectura de cierre del periodo.
+                            </span>
                         </label>
                     </div>
                 </div>
 
-                <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-8 pt-6 border-t border-base-200">
-                    <a href="{% url 'boletas:seleccionar_usuario' %}" class="btn btn-ghost w-full sm:w-auto hover:bg-base-200 text-base-content/80">
-                        <i class="bi bi-arrow-left"></i> Volver atrás
-                    </a>
-                    
-                    <button type="submit" class="btn btn-primary w-full sm:w-auto text-white shadow-md shadow-primary/30">
-                        <i class="bi bi-receipt-cutoff"></i> Generar Boleta
-                    </button>
+                <!-- Mini resumen (opcional visual) -->
+                <div class="mt-6 text-xs text-base-content/60">
+                    <i class="bi bi-clipboard-data me-1"></i>
+                    Total de registros disponibles: 
+                    <span class="font-semibold text-base-content">{{ consumos|length }}</span>
                 </div>
 
+                <!-- Botones -->
+                <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-8 pt-6 border-t border-base-200">
+                    <a href="{% url 'boletas:seleccionar_usuario' %}" 
+                       class="btn btn-ghost w-full sm:w-auto hover:bg-base-200 text-base-content/80">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver atrás
+                    </a>
+
+                    <button type="submit" 
+                            class="btn btn-primary w-full sm:w-auto text-white shadow-md shadow-primary/30">
+                        <i class="bi bi-receipt-cutoff"></i>
+                        Generar boleta
+                    </button>
+                </div>
             </form>
+
         </div>
     </div>
+
 </div>
 {% endblock %}

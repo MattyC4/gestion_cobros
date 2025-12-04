@@ -1,33 +1,39 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from datetime import datetime
+import json
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Max
+from django.shortcuts import render, redirect
+
 from roles.decorators import role_required
 from usuarios.models import Usuario
 from tarifas.models import Tarifa
 from consumos.models import Consumo
 from medidores.models import Medidor
 from boletas.models import Boleta
-from django.db.models import Sum, Max
-from datetime import datetime
-import json
+
 
 @login_required
 @role_required('operario')
 def operario_dashboard(request):
     """
     Panel del operario.
+    Enfocado en gestión de medidores y registros de consumo.
     """
     total_usuarios = Usuario.objects.count()
-    medidores_activos = Medidor.objects.filter(estado='activo').count()
+    medidores_activos = Medidor.objects.filter(estado="activo").count()
 
     context = {
-        'titulo': 'Panel de Gestión - Operario',
-        'mensaje_bienvenida': 'Bienvenido al panel del operario. Aquí puedes gestionar consumos y medidores.',
-        'total_usuarios': total_usuarios,
-        'medidores_activos': medidores_activos,
+        "titulo": "Panel de Gestión - Operario",
+        "mensaje_bienvenida": (
+            "Bienvenido al panel del operario. "
+            "Aquí puedes gestionar consumos y medidores."
+        ),
+        "total_usuarios": total_usuarios,
+        "medidores_activos": medidores_activos,
     }
-
-    return render(request, 'roles/operario_dashboard.html', context)
+    return render(request, "roles/operario_dashboard.html", context)
 
 
 @login_required
@@ -35,21 +41,25 @@ def operario_dashboard(request):
 def secretaria_dashboard(request):
     """
     Dashboard de la secretaria.
+    Permite supervisar usuarios, boletas y estado de pagos.
     """
     total_usuarios = Usuario.objects.count()
     boletas_pagadas = Boleta.objects.filter(pagado=True).count()
     boletas_pendientes = Boleta.objects.filter(pagado=False).count()
-    medidores_activos = Medidor.objects.filter(estado='activo').count()
+    medidores_activos = Medidor.objects.filter(estado="activo").count()
 
     context = {
-        'titulo': 'Panel de la Secretaria',
-        'mensaje_bienvenida': 'Bienvenido al panel de gestión de la secretaria. Aquí puedes supervisar y gestionar usuarios, consumos y boletas.',
-        'total_usuarios': total_usuarios,
-        'boletas_pagadas': boletas_pagadas,
-        'boletas_pendientes': boletas_pendientes,
-        'medidores_activos': medidores_activos,
+        "titulo": "Panel de la Secretaria",
+        "mensaje_bienvenida": (
+            "Bienvenido al panel de gestión de la secretaria. "
+            "Aquí puedes supervisar y gestionar usuarios, consumos y boletas."
+        ),
+        "total_usuarios": total_usuarios,
+        "boletas_pagadas": boletas_pagadas,
+        "boletas_pendientes": boletas_pendientes,
+        "medidores_activos": medidores_activos,
     }
-    return render(request, 'roles/secretaria_dashboard.html', context)
+    return render(request, "roles/secretaria_dashboard.html", context)
 
 
 @login_required
@@ -59,19 +69,19 @@ def redireccion_dashboard(request):
     """
     user = request.user
 
-    if hasattr(user, 'rol'):
-        if user.rol == 'admin':
-            return redirect('roles:admin_dashboard')
-        elif user.rol == 'secretaria':
-            return redirect('roles:secretaria_dashboard')
-        elif user.rol == 'operario':
-            return redirect('roles:operario_dashboard')
+    if hasattr(user, "rol"):
+        if user.rol == "admin":
+            return redirect("roles:admin_dashboard")
+        elif user.rol == "secretaria":
+            return redirect("roles:secretaria_dashboard")
+        elif user.rol == "operario":
+            return redirect("roles:operario_dashboard")
         else:
             messages.error(request, "Rol inválido. Contacta al administrador.")
     else:
         messages.error(request, "No tienes un rol asignado. Contacta al administrador.")
 
-    return redirect('login:home')
+    return redirect("login:home")
 
 
 @login_required
@@ -79,68 +89,80 @@ def redireccion_dashboard(request):
 def admin_dashboard(request):
     """
     Dashboard del administrador.
+    Muestra métricas globales de usuarios, medidores, consumos y tarifas.
     """
     total_usuarios = Usuario.objects.count()
-    
-    # Obtener consumos máximos por usuario
+
+    # Consumo "total" aproximado: tomamos la lectura máxima por usuario
+    # (cantidad_consumida está en m³, ya no en litros).
     consumos_maximos = (
         Consumo.objects
-        .values('usuario_id')
-        .annotate(max_consumo=Max('cantidad_consumida'))
+        .values("usuario_id")
+        .annotate(max_consumo=Max("cantidad_consumida"))
     )
-    
-    # Sumar el total en la unidad base (Litros)
-    total_litros = sum(dato['max_consumo'] for dato in consumos_maximos)
-    
-    # Convertir a Metros Cúbicos (Dividir por 1000)
-    # Si total_litros es 3.0, total_consumo_mes será 0.003
-    total_consumo_mes = total_litros 
 
-    tarifa_actual = Tarifa.objects.filter(activo=True).first()
-    medidores_activos = Medidor.objects.filter(estado='activo').count()
-    medidores_inactivos = Medidor.objects.filter(estado='inactivo').count()
+    # Sumamos las lecturas máximas (si alguna es None, la tratamos como 0)
+    total_consumo_mes = sum(
+        (dato["max_consumo"] or 0) for dato in consumos_maximos
+    )
 
-    tarifas = Tarifa.objects.all().order_by('fecha_vigencia')
-    labels_tarifas = [tarifa.fecha_vigencia.strftime('%Y-%m-%d') for tarifa in tarifas]
+    # Tarifa actual (la activa más reciente)
+    tarifa_actual = Tarifa.objects.filter(activo=True).order_by("-fecha_vigencia").first()
+
+    medidores_activos = Medidor.objects.filter(estado="activo").count()
+    medidores_inactivos = Medidor.objects.filter(estado="inactivo").count()
+
+    # ===== Gráfico: evolución de tarifas =====
+    tarifas = Tarifa.objects.all().order_by("fecha_vigencia")
+    labels_tarifas = [
+        tarifa.fecha_vigencia.strftime("%Y-%m-%d") for tarifa in tarifas
+    ]
     valores_tarifas = [float(tarifa.valor) for tarifa in tarifas]
+
     grafico_tarifas_data = {
-        'labels': labels_tarifas,
-        'datasets': [{
-            'label': 'Evolución de Tarifas',
-            'data': valores_tarifas,
-            'borderColor': 'rgba(75, 192, 192, 1)',
-            'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-        }]
+        "labels": labels_tarifas,
+        "datasets": [{
+            "label": "Evolución de tarifas ($/m³)",
+            "data": valores_tarifas,
+            # colores se definan en el front (Chart.js) para respetar tema
+        }],
     }
 
-    consumos = Consumo.objects.values('fecha_consumo__month').annotate(
-        total=Sum('cantidad_consumida')
-    ).order_by('fecha_consumo__month')
+    # ===== Gráfico: consumo mensual agregado =====
+    consumos = (
+        Consumo.objects
+        .values("fecha_consumo__month")
+        .annotate(total=Sum("cantidad_consumida"))
+        .order_by("fecha_consumo__month")
+    )
+
     labels_consumo = [
-        datetime.strptime(str(dato['fecha_consumo__month']), "%m").strftime('%B')
+        # Mes en texto (enero, febrero, etc.) según locale por defecto
+        datetime.strptime(str(dato["fecha_consumo__month"]), "%m").strftime("%B")
         for dato in consumos
     ]
-    valores_consumo = [float(dato['total']) for dato in consumos]
+    valores_consumo = [
+        float(dato["total"] or 0) for dato in consumos
+    ]
+
     grafico_consumo_data = {
-        'labels': labels_consumo,
-        'datasets': [{
-            'label': 'Consumo Mensual',
-            'data': valores_consumo,
-            'backgroundColor': 'rgba(255, 99, 132, 0.2)',
-            'borderColor': 'rgba(255, 99, 132, 1)',
-            'borderWidth': 1,
-        }]
+        "labels": labels_consumo,
+        "datasets": [{
+            "label": "Consumo mensual (m³)",
+            "data": valores_consumo,
+        }],
     }
 
     context = {
-        'titulo': 'Dashboard del Administrador',
-        'mensaje_bienvenida': 'Bienvenido al panel de administración.',
-        'total_usuarios': total_usuarios,
-        'total_consumo_mes': total_consumo_mes, # Este valor ahora está en m3
-        'tarifa_actual': tarifa_actual.valor if tarifa_actual else "N/A",
-        'medidores_activos': medidores_activos,
-        'medidores_inactivos': medidores_inactivos,
-        'grafico_tarifas_data': json.dumps(grafico_tarifas_data),
-        'grafico_consumo_data': json.dumps(grafico_consumo_data),
+        "titulo": "Dashboard del Administrador",
+        "mensaje_bienvenida": "Bienvenido al panel de administración.",
+        # m³ totales (suma de la mayor lectura por usuario)
+        "total_usuarios": total_usuarios,
+        "total_consumo_mes": total_consumo_mes,
+        "tarifa_actual": tarifa_actual.valor if tarifa_actual else None,
+        "medidores_activos": medidores_activos,
+        "medidores_inactivos": medidores_inactivos,
+        "grafico_tarifas_data": json.dumps(grafico_tarifas_data),
+        "grafico_consumo_data": json.dumps(grafico_consumo_data),
     }
-    return render(request, 'roles/admin_dashboard.html', context)
+    return render(request, "roles/admin_dashboard.html", context)

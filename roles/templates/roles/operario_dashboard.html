@@ -3,85 +3,100 @@
 {% block title %}Panel de Operaciones{% endblock %}
 
 {% block content %}
-<div class="flex flex-col gap-8">
+<div class="flex flex-col gap-10">
 
-    <!-- Encabezado de Bienvenida -->
-    <div class="text-center md:text-left">
-        <h2 class="text-3xl font-bold text-primary">Panel de Operaciones</h2>
-        <p class="text-base-content/70 mt-1">
-            Bienvenido al área técnica. Gestiona lecturas y medidores desde aquí.
+    <!-- ENCABEZADO -->
+    <div>
+        <h2 class="text-3xl font-extrabold text-primary">Panel de Operaciones</h2>
+        <p class="text-base-content/70 mt-1 max-w-2xl">
+            Área técnica del sistema APR. Desde aquí se registran lecturas,
+            se administran medidores y se mantiene la información operativa actualizada.
         </p>
     </div>
 
-    <!-- SECCIÓN DE ESTADÍSTICAS (DaisyUI Stats) -->
-    <!-- Se adapta: Vertical en móvil, horizontal en PC -->
-    <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-base-100 border border-base-200 w-full">
-        
-        <!-- Usuarios Totales -->
+    <!-- MÉTRICAS CLAVE -->
+    <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-base-100 border border-base-300 w-full">
+
         <div class="stat">
             <div class="stat-figure text-primary">
                 <i class="bi bi-people-fill text-3xl"></i>
             </div>
-            <div class="stat-title">Usuarios Totales</div>
+            <div class="stat-title">Usuarios registrados</div>
             <div class="stat-value text-primary">{{ total_usuarios }}</div>
-            <div class="stat-desc">Clientes en el sistema</div>
+            <div class="stat-desc">Con suministro activo</div>
         </div>
 
-        <!-- Medidores Activos -->
         <div class="stat">
             <div class="stat-figure text-warning">
                 <i class="bi bi-speedometer text-3xl"></i>
             </div>
-            <div class="stat-title">Medidores Activos</div>
+            <div class="stat-title">Medidores activos</div>
             <div class="stat-value text-warning">{{ medidores_activos }}</div>
-            <div class="stat-desc">Operativos actualmente</div>
+            <div class="stat-desc">En operación</div>
         </div>
-        
+
     </div>
 
-    <!-- SECCIÓN DE ACCESOS RÁPIDOS -->
+    <!-- BLOQUE INFORMATIVO -->
+    <div class="alert bg-primary/10 border border-primary/20 text-base-content shadow-md">
+        <i class="bi bi-tools text-xl text-primary"></i>
+        <div>
+            <h3 class="font-bold">Flujo de trabajo del operario</h3>
+            <p class="text-sm opacity-80">
+                Registra lecturas de consumo y verifica el estado de los medidores asignados
+                para asegurar una correcta facturación.
+            </p>
+        </div>
+    </div>
+
+    <!-- HERRAMIENTAS PRINCIPALES -->
     <div>
-        <h3 class="font-bold text-lg text-base-content mb-4 flex items-center gap-2">
-            <i class="bi bi-tools text-primary"></i> Herramientas de Campo
+        <h3 class="font-bold text-lg mb-4 flex items-center gap-2 text-base-content">
+            <i class="bi bi-clipboard-check text-primary"></i>
+            Herramientas operativas
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Tarjeta Registrar Consumo -->
-            <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl transition-all hover:-translate-y-1">
+
+            <!-- REGISTRAR CONSUMOS -->
+            <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-xl hover:-translate-y-1 transition">
                 <div class="card-body">
-                    <div class="flex items-center gap-4 mb-2">
-                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
                             <i class="bi bi-droplet-half text-2xl"></i>
                         </div>
-                        <h2 class="card-title text-base-content">Registrar Consumos</h2>
+                        <h2 class="card-title">Registrar consumos</h2>
                     </div>
-                    <p class="text-base-content/70 text-sm mb-4">
-                        Ingresa las lecturas mensuales de agua para mantener el cobro al día.
+                    <p class="text-sm text-base-content/70 mb-4">
+                        Ingresa las lecturas mensuales de los medidores asignados a cada usuario.
+                        Esta información es clave para la generación de boletas.
                     </p>
                     <div class="card-actions justify-end">
-                        <a href="{% url 'consumos:lista_usuarios' %}" class="btn btn-primary btn-sm text-white">
-                            Ir a Lecturas <i class="bi bi-arrow-right"></i>
+                        <a href="{% url 'consumos:lista_usuarios' %}"
+                           class="btn btn-primary btn-sm text-white">
+                            Ir a lecturas
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Tarjeta Gestión Medidores -->
-            <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl transition-all hover:-translate-y-1">
+            <!-- GESTIÓN DE MEDIDORES -->
+            <div class="card bg-base-100 shadow-md border border-base-300 hover:shadow-xl hover:-translate-y-1 transition">
                 <div class="card-body">
-                    <div class="flex items-center gap-4 mb-2">
-                        <div class="w-12 h-12 rounded-full bg-info/10 flex items-center justify-center text-info">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-12 h-12 rounded-full bg-info/10 text-info flex items-center justify-center">
                             <i class="bi bi-speedometer2 text-2xl"></i>
                         </div>
-                        <h2 class="card-title text-base-content">Gestión de Medidores</h2>
+                        <h2 class="card-title">Gestión de medidores</h2>
                     </div>
-                    <p class="text-base-content/70 text-sm mb-4">
-                        Asigna nuevos medidores a usuarios, revisa estados o realiza cambios técnicos.
+                    <p class="text-sm text-base-content/70 mb-4">
+                        Asigna nuevos medidores, cambia su estado o revisa información técnica
+                        asociada a cada usuario.
                     </p>
                     <div class="card-actions justify-end">
-                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}" class="btn btn-info btn-sm text-white">
-                            Gestionar <i class="bi bi-arrow-right"></i>
+                        <a href="{% url 'medidores:buscar_usuario_para_medidor' %}"
+                           class="btn btn-info btn-sm text-white">
+                            Gestionar medidores
                         </a>
                     </div>
                 </div>

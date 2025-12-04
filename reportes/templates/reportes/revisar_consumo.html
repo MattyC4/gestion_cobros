@@ -1,65 +1,90 @@
 {% extends "reportes/base_reportes.html" %}
 
-{% block title %}Revisar Consumo{% endblock %}
+{% block title %}Revisar consumo · APR{% endblock %}
 
 {% block content %}
-<div class="w-full max-w-md mx-auto mt-10">
-    
-    <div class="bg-base-100 shadow-xl rounded-2xl border border-base-300 p-6 md:p-8">
-        
-        <div class="text-center mb-6">
-            <h2 class="text-3xl font-bold text-base-content">Consulta tu Historial</h2>
-            <p class="mt-2 text-base-content/70">
-                Ingresa tu RUT para consultar tu historial de consumo, medidores y boletas asociados.
-            </p>
-        </div>
+<div class="max-w-lg mx-auto mt-8 md:mt-14">
 
-        {% if messages %}
-        <div class="mb-6 space-y-2">
-            {% for message in messages %}
-                {% if "reportes" in message.tags %}
-                <div role="alert" class="alert {% if 'error' in message.tags %}alert-error{% else %}alert-warning{% endif %} shadow-md">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>{{ message }}</span>
+    <div class="card bg-base-100 border border-base-300 shadow-xl rounded-2xl">
+        <div class="card-body p-6 md:p-8">
+
+            <!-- Encabezado -->
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <i class="bi bi-droplet-fill text-3xl"></i>
                 </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
+                <h2 class="text-2xl md:text-3xl font-bold text-base-content">
+                    Consulta de consumo
+                </h2>
+                <p class="mt-2 text-sm text-base-content/70 leading-relaxed">
+                    Ingresa tu RUT para revisar tu historial de consumos, boletas emitidas
+                    y medidores asociados a tu cuenta.
+                </p>
+            </div>
 
-        <form method="post" class="space-y-4">
-            {% csrf_token %}
-            
-            <div class="form-control w-full">
-                <label for="rut" class="label">
-                    <span class="label-text font-semibold text-base-content">RUT</span>
-                </label>
-                
-                <div class="relative">
-                    <input type="text" 
-                           class="input input-bordered w-full pl-10 bg-base-100 focus:input-primary" 
-                           id="rut" 
-                           name="rut" 
-                           placeholder="Ej: 12.345.678-9" 
-                           required>
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-id-card text-base-content/40"></i>
+            <!-- Mensajes -->
+            {% if messages %}
+            <div class="mb-6 space-y-3">
+                {% for message in messages %}
+                    {% if "reportes" in message.tags %}
+                    <div class="alert {% if 'error' in message.tags %}alert-error{% else %}alert-warning{% endif %} shadow-sm">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>{{ message }}</span>
                     </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Formulario -->
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                <div class="form-control w-full">
+                    <label for="rut" class="label">
+                        <span class="label-text font-semibold flex items-center gap-2">
+                            <i class="bi bi-person-vcard"></i>
+                            RUT del titular
+                        </span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="rut"
+                        name="rut"
+                        required
+                        placeholder="Ej: 12.345.678-9"
+                        class="input input-bordered w-full bg-base-100 focus:input-primary font-mono"
+                    >
+
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">
+                            Formato requerido: 12.345.678-9
+                        </span>
+                    </label>
                 </div>
 
-                <label class="label">
-                    <span class="label-text-alt text-base-content/60">
-                        Formato requerido: 12.345.678-9
-                    </span>
-                </label>
-            </div>
+                <div class="pt-4">
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-full text-white font-semibold shadow-md shadow-primary/30 hover:shadow-lg transition-all gap-2"
+                    >
+                        <i class="bi bi-search"></i>
+                        Consultar historial
+                    </button>
+                </div>
+            </form>
 
-            <div class="mt-6">
-                <button type="submit" class="btn btn-primary w-full font-bold text-white shadow-md hover:shadow-lg transition-all">
-                    <i class="fas fa-search"></i> Consultar
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
+
+    <!-- Nota informativa -->
+    <div class="mt-6 text-center text-xs text-base-content/50">
+        <p>
+            Esta consulta es informativa.  
+            Para pagos o regularizaciones, comunícate con el Comité APR.
+        </p>
+    </div>
+
 </div>
 {% endblock %}

@@ -1,164 +1,187 @@
 {% extends "login/base_login.html" %}
-
-{% block title %}Inicio - Comité APR Nahueltoro{% endblock %}
+{% block title %}Inicio · FlowWeb APR Nahueltoro{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-10 max-w-6xl space-y-12">
+<div class="container mx-auto px-4 py-12 max-w-6xl space-y-20">
 
+  <!-- HERO / PRESENTACIÓN -->
   <section class="text-center space-y-6">
-    
-    <div>
-      <div class="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full text-primary mb-4">
-        <i class="bi bi-water text-4xl"></i>
+    <div class="flex justify-center">
+      <div class="p-5 bg-primary/10 rounded-full text-primary">
+        <i class="bi bi-droplet-half text-5xl"></i>
       </div>
-      <h1 class="text-4xl md:text-5xl font-bold text-primary">Bienvenido al Comité APR Nahueltoro</h1>
-      
-      <p class="mt-4 text-lg text-base-content/80 max-w-2xl mx-auto font-medium">
-        Gestiona tus consumos y accede a información esencial sobre el agua potable en nuestra comunidad de manera rápida y transparente.
-      </p>
     </div>
 
-    <div class="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm max-w-4xl mx-auto relative overflow-hidden">
-      <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-      
-      <div class="flex flex-col md:flex-row items-center gap-4">
-        <div class="text-primary shrink-0">
-          <i class="bi bi-bullseye text-4xl"></i>
-        </div>
-        <div class="text-left">
-          <h2 class="text-xl font-bold text-base-content">Nuestra Misión</h2>
-          <p class="mt-1 text-base-content/80">
-            Nos dedicamos a garantizar el suministro de agua potable de calidad para nuestra comunidad,
-            promoviendo el uso responsable y sostenible de este recurso vital.
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary">
+      FlowWeb · Comité APR Nahueltoro
+    </h1>
+
+    <p class="text-lg text-base-content/80 max-w-3xl mx-auto">
+      Plataforma digital para la <strong>gestión transparente y eficiente</strong> del
+      consumo de agua potable rural, fortaleciendo la administración del APR
+      y el acceso a la información de sus usuarios.
+    </p>
+
+    <!-- CTA -->
+    <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+      <a href="{% url 'login:login' %}" class="btn btn-primary btn-lg text-white gap-2">
+        <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+      </a>
+
+      <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-outline btn-primary btn-lg gap-2">
+        <i class="bi bi-search"></i> Revisar mi consumo
+      </a>
+    </div>
+  </section>
+
+  <!-- CONTEXTO APR -->
+  <section class="bg-base-100 border border-base-300 rounded-2xl shadow-sm p-8">
+    <h2 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+      <i class="bi bi-people-fill"></i> ¿Qué es el Comité APR?
+    </h2>
+
+    <p class="text-base-content/80 leading-relaxed">
+      El Comité de Agua Potable Rural (APR) Nahueltoro es una organización comunitaria
+      encargada de la administración, distribución y mantenimiento del servicio
+      de agua potable en la localidad.
+    </p>
+
+    <p class="text-base-content/80 leading-relaxed mt-3">
+      FlowWeb surge como una solución tecnológica que permite modernizar los procesos
+      del comité, reducir errores manuales, mejorar la gestión financiera y entregar
+      información clara y oportuna a la comunidad.
+    </p>
+  </section>
+
+  <!-- CÓMO FUNCIONA FLOWWEB -->
+  <section>
+    <h2 class="text-2xl font-bold text-base-content mb-8 text-center">
+      ¿Cómo funciona FlowWeb?
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-speedometer text-4xl text-warning mb-3"></i>
+          <h3 class="font-bold">Registro de Consumo</h3>
+          <p class="text-sm text-base-content/70">
+            Se registran lecturas de medidores de forma manual o digital,
+            permitiendo trazabilidad por período.
           </p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      
-      <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 border border-base-300">
-        <div class="card-body items-center text-center">
-          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-            <i class="bi bi-shield-lock text-4xl"></i>
-          </div>
-          <h3 class="card-title text-2xl text-base-content">Administración</h3>
-          <p class="text-base-content/70">Acceso exclusivo para personal administrativo autorizado.</p>
-          <div class="card-actions mt-6 w-full">
-            <a href="{% url 'admin:index' %}" class="btn btn-primary w-full text-lg text-white">
-              <i class="bi bi-box-arrow-in-right"></i> Entrar al panel
-            </a>
-          </div>
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-receipt text-4xl text-info mb-3"></i>
+          <h3 class="font-bold">Cálculo de Boletas</h3>
+          <p class="text-sm text-base-content/70">
+            El sistema calcula automáticamente el monto según tarifa vigente,
+            disminuyendo errores administrativos.
+          </p>
         </div>
       </div>
 
-      <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 border border-base-300">
-        <div class="card-body items-center text-center">
-          <div class="w-20 h-20 rounded-full bg-info/10 flex items-center justify-center text-info mb-2">
-            <i class="bi bi-bar-chart-fill text-4xl"></i>
-          </div>
-          <h3 class="card-title text-2xl text-base-content">Revisar Mi Consumo</h3>
-          <p class="text-base-content/70">Consulta tu historial de consumos, estado de cuenta y boletas.</p>
-          <div class="card-actions mt-6 w-full">
-            <a href="{% url 'reportes:revisar_consumo' %}" class="btn btn-info text-white w-full text-lg">
-              <i class="bi bi-search"></i> Ver consumo
-            </a>
-          </div>
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-graph-up text-4xl text-success mb-3"></i>
+          <h3 class="font-bold">Reportes y Transparencia</h3>
+          <p class="text-sm text-base-content/70">
+            Usuarios y comité pueden acceder a reportes históricos y estados de cuenta.
+          </p>
         </div>
       </div>
 
     </div>
   </section>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <div class="lg:col-span-2 space-y-8">
-        
-        <div class="card bg-base-100 border border-base-300 shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title flex gap-2 text-primary">
-                    <i class="bi bi-cash-coin"></i> Subsidios de Agua Potable
-                </h2>
-                <p class="text-base-content/80">
-                    El Estado chileno ofrece subsidios para ayudar a las familias a cubrir el costo del consumo de agua potable y servicios de alcantarillado.
-                </p>
-                <div class="mt-4">
-                    <a class="btn btn-outline btn-primary btn-sm"
-                       href="https://www.chileatiende.gob.cl/fichas/51314-subsidio-al-pago-de-consumo-de-agua-potable-y-servicio-de-alcantarillado"
-                       target="_blank" rel="noopener">
-                       <i class="bi bi-box-arrow-up-right"></i> Más información y postulación
-                    </a>
-                </div>
-            </div>
-        </div>
+  <!-- A QUIÉN VA DIRIGIDO -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        <div class="card bg-base-100 border border-base-300 shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title flex gap-2 text-secondary">
-                    <i class="bi bi-newspaper"></i> Noticias y Actualizaciones
-                </h2>
-                <div class="space-y-4 mt-2">
-                    <a href="https://www.gob.cl/noticias/gobierno-lanza-campana-nacional-de-ahorro-de-agua/" 
-                       target="_blank" rel="noopener"
-                       class="block p-4 rounded-lg bg-base-200 hover:bg-base-300 transition-colors group">
-                        <div class="flex items-start gap-3">
-                            <i class="bi bi-megaphone text-xl text-accent group-hover:scale-110 transition-transform"></i>
-                            <div>
-                                <span class="font-semibold block text-base-content group-hover:text-primary transition-colors">Gobierno lanza campaña nacional de ahorro de agua</span>
-                                <span class="text-xs text-base-content/60">Fuente: Gobierno de Chile</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <a href="https://www.biobiochile.cl/noticias/ciencia-y-tecnologia/ciencia/2023/03/22/chile-tiene-el-agua-potable-mas-segura-de-sudamerica-segun-estudio-cuales-son-los-primeros.shtml" 
-                       target="_blank" rel="noopener"
-                       class="block p-4 rounded-lg bg-base-200 hover:bg-base-300 transition-colors group">
-                        <div class="flex items-start gap-3">
-                            <i class="bi bi-award text-xl text-warning group-hover:scale-110 transition-transform"></i>
-                            <div>
-                                <span class="font-semibold block text-base-content group-hover:text-primary transition-colors">Chile tiene el agua potable más segura de Sudamérica</span>
-                                <span class="text-xs text-base-content/60">Fuente: BioBioChile</span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
+    <div class="card bg-base-100 border border-base-300 shadow-md">
+      <div class="card-body">
+        <h3 class="card-title text-primary">
+          <i class="bi bi-person-badge"></i> Funcionarios del APR
+        </h3>
+        <ul class="list-disc ml-5 text-sm text-base-content/80 space-y-1 mt-2">
+          <li>Administradores del sistema</li>
+          <li>Secretaría</li>
+          <li>Operarios de lectura y medidores</li>
+        </ul>
+        <p class="text-sm text-base-content/70 mt-3">
+          Acceden mediante credenciales para gestionar usuarios, tarifas,
+          consumos, boletas y reportes.
+        </p>
+      </div>
     </div>
 
-    <div class="lg:col-span-1">
-        <div class="card bg-base-100 border border-base-300 shadow-sm h-full">
-            <div class="card-body">
-                <h2 class="card-title text-success mb-4">
-                    <i class="bi bi-lightbulb"></i> Consejos de Cuidado
-                </h2>
-                
-                <div class="space-y-4">
-                    <div class="p-4 bg-base-200 rounded-xl text-center border border-base-300">
-                        <i class="bi bi-wrench text-3xl text-primary mb-2 block"></i>
-                        <h3 class="font-bold text-sm text-base-content">Repara Fugas</h3>
-                        <p class="text-xs text-base-content/70">Una gota por segundo desperdicia 30 litros al día.</p>
-                    </div>
-
-                    <div class="p-4 bg-base-200 rounded-xl text-center border border-base-300">
-                        <i class="bi bi-droplet-half text-3xl text-info mb-2 block"></i>
-                        <h3 class="font-bold text-sm text-base-content">Cargas Completas</h3>
-                        <p class="text-xs text-base-content/70">Usa la lavadora solo cuando esté llena.</p>
-                    </div>
-
-                    <div class="p-4 bg-base-200 rounded-xl text-center border border-base-300">
-                        <i class="bi bi-flower1 text-3xl text-success mb-2 block"></i>
-                        <h3 class="font-bold text-sm text-base-content">Riego Inteligente</h3>
-                        <p class="text-xs text-base-content/70">Riega de noche para evitar la evaporación.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card bg-base-100 border border-base-300 shadow-md">
+      <div class="card-body">
+        <h3 class="card-title text-info">
+          <i class="bi bi-house-water"></i> Usuarios del Servicio
+        </h3>
+        <ul class="list-disc ml-5 text-sm text-base-content/80 space-y-1 mt-2">
+          <li>Consulta de consumos</li>
+          <li>Revisión de boletas</li>
+          <li>Estado del servicio</li>
+        </ul>
+        <p class="text-sm text-base-content/70 mt-3">
+          No requiere iniciar sesión, solo ingresar su información
+          para revisar su historial.
+        </p>
+      </div>
     </div>
 
-  </div>
+  </section>
+
+  <!-- INFORMACIÓN PÚBLICA -->
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- SUBSIDIOS -->
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title text-primary">
+          <i class="bi bi-cash-coin"></i> Subsidio de Agua Potable
+        </h3>
+        <p class="text-sm text-base-content/80">
+          Beneficio estatal para apoyar a las familias en el pago del consumo.
+        </p>
+        <a href="https://www.chileatiende.gob.cl/fichas/51314-subsidio-al-pago-de-consumo-de-agua-potable-y-servicio-de-alcantarillado"
+           target="_blank"
+           class="btn btn-outline btn-primary btn-sm mt-4">
+          Más información
+        </a>
+      </div>
+    </div>
+
+    <!-- NOTICIAS -->
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title text-secondary">
+          <i class="bi bi-newspaper"></i> Noticias
+        </h3>
+        <p class="text-sm text-base-content/80">
+          Campañas, información pública y actualidad relacionada al agua potable.
+        </p>
+      </div>
+    </div>
+
+    <!-- EDUCACIÓN -->
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title text-success">
+          <i class="bi bi-lightbulb"></i> Uso Responsable
+        </h3>
+        <ul class="text-sm text-base-content/70 space-y-1">
+          <li>• Reparar fugas</li>
+          <li>• Uso eficiente</li>
+          <li>• Cuidado del recurso hídrico</li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
 
 </div>
 {% endblock %}
