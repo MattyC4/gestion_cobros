@@ -22,6 +22,8 @@ from medidores.models import Medidor
 from tarifas.models import Tarifa
 from .models import Consumo, MedidaRaw
 
+from django.db.models import Q
+
 
 # ================================
 #  Decorador para permisos por rol
@@ -144,20 +146,25 @@ def registrar_consumo(request, usuario_id):
 def lista_usuarios_consumos(request):
     """
     Lista usuarios que tienen al menos un consumo registrado.
-    Permite filtrar por nombre.
+    Permite filtrar por nombre O por RUT.
     """
     query = request.GET.get('search', '').strip()
+    
+    # Mantenemos el filtro base: solo usuarios con consumos
     usuarios = Usuario.objects.filter(consumo__isnull=False).distinct()
 
     if query:
-        usuarios = usuarios.filter(nombre__icontains=query)
+        # Aquí usamos Q para buscar por nombre O (|) por rut
+        usuarios = usuarios.filter(
+            Q(nombre__icontains=query) | 
+            Q(rut__icontains=query)
+        )
 
     context = {
         'usuarios': usuarios,
         'search': query,
     }
     return render(request, 'consumos/lista_usuarios_consumos.html', context)
-
 
 @login_required
 @verificar_permiso(['admin', 'operario'])

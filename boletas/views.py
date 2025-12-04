@@ -8,6 +8,7 @@ from django.db.models import Max
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib import messages
+from django.db.models import Q
 
 from usuarios.models import Usuario
 
@@ -169,8 +170,8 @@ def seleccionar_usuario(request):
     # Filtro por búsqueda
     if search:
         usuarios = usuarios.filter(
-            models.Q(nombre__icontains=search) |
-            models.Q(rut__icontains=search)
+            Q(nombre__icontains=search) |
+            Q(rut__icontains=search)
         )
 
     return render(request, 'boletas/seleccionar_usuario.html', {
