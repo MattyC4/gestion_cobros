@@ -323,8 +323,7 @@ def generar_boleta(request, usuario_id, consumo_inicio_id, consumo_fin_id):
 # ================================
 # 8. Descargar PDF
 # ================================
-@login_required
-@verificar_permiso(["admin", "secretaria"])
+
 def descargar_pdf(request, boleta_id):
     """
     Genera un PDF de la boleta.
