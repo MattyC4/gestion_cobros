@@ -290,7 +290,7 @@ def generar_boleta(request, usuario_id, consumo_inicio_id, consumo_fin_id):
     )
 
     consumo_total = consumo_fin.cantidad_consumida - consumo_inicio.cantidad_consumida
-    tarifa_base = consumo_inicio.tarifa_aplicada.valor
+    tarifa_base = consumo_fin.tarifa_aplicada.valor
 
     # Regla de negocio actual (la mantengo tal cual)
     if consumo_total <= 10:

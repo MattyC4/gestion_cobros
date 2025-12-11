@@ -81,7 +81,7 @@ class Boleta(models.Model):
             raise ValueError("Debe seleccionar consumos válidos para generar la boleta.")
 
         consumo_total = Decimal(self.consumo_fin.cantidad_consumida) - Decimal(self.consumo_inicio.cantidad_consumida)
-        tarifa_base = Decimal(self.consumo_inicio.tarifa_aplicada.valor)
+        tarifa_base = Decimal(self.consumo_fin.tarifa_aplicada.valor)
 
         # Estructura escalonada para tarifas
         if consumo_total > 10:
