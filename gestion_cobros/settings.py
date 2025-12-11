@@ -29,10 +29,6 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-
-
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -65,6 +61,8 @@ LOGOUT_REDIRECT_URL = '/login/'  # Opcional: página a la que se redirige tras c
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
